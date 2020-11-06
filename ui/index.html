@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <!-- <script src="nui://game/ui/jquery.js" type="text/javascript"></script> -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <link href="style.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body>
+        <div class="container">
+            <div id="main">
+                <div id="tabs">
+                    <button class="tablinks" id="tab-identity" onclick="openTab(event, 'identity')">Identity</button>
+                    <button class="tablinks" id="tab-features" onclick="openTab(event, 'features')">Features</button>
+                    <button class="tablinks" id="tab-style"    onclick="openTab(event,    'style')">Style</button>
+                    <button class="tablinks" id="tab-apparel"  onclick="openTab(event,  'apparel')">Apparel</button>
+                    <svg width="4.3vw" height="7vh">
+                        <rect  width="100%" height="100%"></rect>
+                    </svg>
+                </div>
+                <div id="identity" class="tabcontent">
+                    <p>TODO: identity options</p>
+                </div>
+                <div id="features" class="tabcontent">
+                    <p>TODO: feature options</p>
+                </div>
+                <div id="style" class="tabcontent">
+                    <p>TODO: style options</p>
+                </div>
+                <div id="apparel" class="tabcontent">
+                    <p>TODO: apparel options</p>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script src="script.js" type="text/javascript"></script>
+</html>

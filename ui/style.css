@@ -1,0 +1,98 @@
+@font-face {
+    font-family: 'ChaletLondonNineteenSixty';
+    src: url('assets/fonts/chaletlondon1960.woff2') format('woff2')
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    /* background-color: lightblue; */
+    font-family: 'ChaletLondonNineteenSixty', sans-serif;
+    font-weight: bold;
+}
+
+#main {
+    position: absolute;
+    width: 25vw;
+    right: 3vw;
+    top: 5vh;
+    min-height: calc(100% - 11vh);
+    background: rgba(0, 0, 0, 0.3);
+    /* background: red; */
+    border-radius: 20px;
+}
+
+#tabs {
+    position: relative;
+    top: 0vh;
+    height: 8.5vh;
+    width: 100%;
+    opacity: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-bottom: 0.5vh solid rgba(255, 255, 255, 0.2);
+    /*
+    background-color: khaki; 
+    border-radius: 20px;
+    */
+}
+
+input[type=radio] {
+    display: none;
+}
+
+#tabs svg {
+    position: absolute;
+    bottom: 0%;
+    top: 0%;
+    display: none;
+}
+
+#tabs svg rect {
+    fill: #5db6e5;
+}
+
+#tabs button {
+    position: relative;
+    display: inline-block;
+    background: inherit;
+    width: 5.3vw;
+    height: 100%;
+    font-size: 1.2vh;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 5vh 0 0 0;
+    color: white;
+    outline: none;
+    border: none;
+    border-right: 0.01vw dotted white;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 4vh;
+    background-position: 50% 30%;
+}
+
+#tabs button:first-of-type {
+    border-left: 0.01vw dotted white;
+}
+
+#tabs .tablinks.active {
+    background-color: rgba(255, 255, 255, 0.2)
+}
+
+#tabs > #tab-identity {
+    background-image: url(assets/icons/identity.svg);
+}
+
+#tabs > #tab-features {
+    background-image: url(assets/icons/features.svg);
+}
+
+#tabs > #tab-style {
+    background-image: url(assets/icons/style.svg);
+}
+
+#tabs > #tab-apparel {
+    background-image: url(assets/icons/apparel.svg);
+}
