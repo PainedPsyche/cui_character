@@ -18,7 +18,7 @@ ESX.RegisterServerCallback('cui_character:getPlayerSkin', function(source, cb)
     MySQL.Async.fetchAll('SELECT skin FROM users WHERE identifier = @identifier', {
         ['@identifier'] = xPlayer.identifier
     }, function(users)
-        local users = users[1]
+        local user = users[1]
         local skin = nil
 
         if user.skin ~= nil then
@@ -28,3 +28,8 @@ ESX.RegisterServerCallback('cui_character:getPlayerSkin', function(source, cb)
         cb(skin, jobSkin)
     end)
 end)
+
+ESX.RegisterCommand('character', 'admin', function(xPlayer, args, showError)
+	xPlayer.triggerEvent('cui_character:open')
+    end, true, {help = 'Open character editor.', validate = true, arguments = {}
+})

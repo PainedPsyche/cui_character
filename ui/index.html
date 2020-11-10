@@ -5,29 +5,70 @@
         <link href="style.css" rel="stylesheet" type="text/css" />
     </head>
 
-    <body>
+    <body style="display: none;">
         <div class="container">
             <div id="main">
                 <div id="tabs">
-                    <button class="tablinks" id="tab-identity" onclick="openTab(event, 'identity')">Identity</button>
-                    <button class="tablinks" id="tab-features" onclick="openTab(event, 'features')">Features</button>
-                    <button class="tablinks" id="tab-style"    onclick="openTab(event,    'style')">Style</button>
-                    <button class="tablinks" id="tab-apparel"  onclick="openTab(event,  'apparel')">Apparel</button>
-                    <svg width="4.3vw" height="7vh">
-                        <rect  width="100%" height="100%"></rect>
-                    </svg>
+                    <button class="tablinks" id="tab-identity" onclick="openTab(event, 'identity')">
+                        Identity
+                        <img src="assets/icons/identity.svg">
+                    </button>
+                    <button class="tablinks" id="tab-features" onclick="openTab(event, 'features')">
+                        Features
+                        <img src="assets/icons/features.svg">
+                    </button>
+                    <button class="tablinks" id="tab-style"    onclick="openTab(event,    'style')">
+                        Style
+                        <img src="assets/icons/style.svg">
+                    </button>
+                    <button class="tablinks" id="tab-apparel"  onclick="openTab(event,  'apparel')">
+                        Apparel
+                        <img src="assets/icons/apparel.svg">
+                    </button>
                 </div>
-                <div id="identity" class="tabcontent">
-                    <p>TODO: identity options</p>
+                <div id="content">
+                    <div id="identity" class="tabcontent">
+                        <p>TODO: identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>identity options</p>
+                        <p>TODO: identity options</p>
+                    </div>
+                    <div id="features" class="tabcontent">
+                        <p>TODO: feature options</p>
+                    </div>
+                    <div id="style" class="tabcontent">
+                        <p>TODO: style options</p>
+                    </div>
+                    <div id="apparel" class="tabcontent">
+                        <p>TODO: apparel options</p>
+                    </div>
                 </div>
-                <div id="features" class="tabcontent">
-                    <p>TODO: feature options</p>
-                </div>
-                <div id="style" class="tabcontent">
-                    <p>TODO: style options</p>
-                </div>
-                <div id="apparel" class="tabcontent">
-                    <p>TODO: apparel options</p>
+                <div id="footer">
+                    <button class="menuclose" id="accept" onclick="closeWindow(true)">
+                        Accept
+                    </button>
+                    <button class="menuclose" id="cancel" onclick="closeWindow(false)">
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>

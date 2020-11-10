@@ -1,5 +1,6 @@
 ESX = nil
 
+local isVisible = false
 local playerLoaded = false
 local firstSpawn = true
 
@@ -8,6 +9,25 @@ Citizen.CreateThread(function()
         TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
         Citizen.Wait(0)
     end
+end)
+
+function setVisible(visible)
+    SetNuiFocus(visible, visible)
+    SendNUIMessage({
+        action = 'setVisible',
+        show = visible
+    })
+    isVisible = visible
+end
+
+AddEventHandler('cui_character:close', function(save)
+    -- TODO: Saving and discarding changes
+    setVisible(false)
+end)
+
+RegisterNetEvent('cui_character:open')
+AddEventHandler('cui_character:open', function()
+    setVisible(true)
 end)
 
 RegisterNetEvent('esx:playerLoaded')
@@ -30,6 +50,14 @@ AddEventHandler('esx:onPlayerSpawn', function()
             firstSpawn = false
         end
     end)
+end)
+
+RegisterNUICallback('close', function(data, cb)
+    local save = false
+    if data['save'] == 'true' then
+        save = true
+    end
+    TriggerEvent('cui_character:close', save)
 end)
 
 function LoadSkin(isMale, useDefault)
@@ -183,3 +211,4 @@ function LoadCharacter(data)
         SetPedPropIndex(playerPed, 7, data.bracelets_1, data.bracelets_2, 2)    -- Bracelets
     end
 end
+

@@ -6,7 +6,6 @@
 .container {
     width: 100%;
     height: 100%;
-    /* background-color: lightblue; */
     font-family: 'ChaletLondonNineteenSixty', sans-serif;
     font-weight: bold;
 }
@@ -17,46 +16,27 @@
     right: 3vw;
     top: 5vh;
     min-height: calc(100% - 11vh);
-    background: rgba(0, 0, 0, 0.3);
-    /* background: red; */
-    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 #tabs {
-    position: relative;
-    top: 0vh;
     height: 8.5vh;
     width: 100%;
     opacity: 1;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    border-bottom: 0.5vh solid rgba(255, 255, 255, 0.2);
-    /*
-    background-color: khaki; 
-    border-radius: 20px;
-    */
-}
-
-input[type=radio] {
-    display: none;
-}
-
-#tabs svg {
-    position: absolute;
-    bottom: 0%;
-    top: 0%;
-    display: none;
-}
-
-#tabs svg rect {
-    fill: #5db6e5;
+    background: rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    margin-bottom: 1vh;
 }
 
 #tabs button {
     position: relative;
     display: inline-block;
-    background: inherit;
+    background: none;
     width: 5.3vw;
     height: 100%;
     font-size: 1.2vh;
@@ -66,33 +46,86 @@ input[type=radio] {
     color: white;
     outline: none;
     border: none;
-    border-right: 0.01vw dotted white;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 4vh;
-    background-position: 50% 30%;
+    border-right: 0.02vw solid rgba(255, 255, 255, 0.2);
+}
+
+#tabs button > img {
+    position: absolute;
+    width: 4vw;
+    height: 4vh;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -70%);
+    pointer-events: none;
 }
 
 #tabs button:first-of-type {
-    border-left: 0.01vw dotted white;
+    border-left: 0.02vw solid rgba(255, 255, 255, 0.2);
 }
 
 #tabs .tablinks.active {
-    background-color: rgba(255, 255, 255, 0.2)
+    background-color: #f0f0f0;
+    border-top: 0.5vh solid #2d6eb9;
+    color: black;
 }
 
-#tabs > #tab-identity {
-    background-image: url(assets/icons/identity.svg);
+#tabs .tablinks:hover:not(.active) {
+    background-color: #646464;
 }
 
-#tabs > #tab-features {
-    background-image: url(assets/icons/features.svg);
+#tabs .tablinks.active > img {
+    filter: invert();
 }
 
-#tabs > #tab-style {
-    background-image: url(assets/icons/style.svg);
+#content {
+    width: 100%;
+    height: 72vh;
+    background: rgba(0, 0, 0, 0.5);
+    overflow-y: scroll;
+    color: #f0f0f0;
 }
 
-#tabs > #tab-apparel {
-    background-image: url(assets/icons/apparel.svg);
+::-webkit-scrollbar {
+    width: 0.4vw;
+}
+
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 1px #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #f0f0f0
+}
+
+#footer {
+    background: rgba(0, 0, 0, 0.5);
+    height: 5vh;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    margin-top: 1vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#footer button {
+    position: relative;
+    display: inline-block;
+    background: none;
+    height: 100%;
+    width: 10vw;
+    text-align: center;
+    text-transform: uppercase;
+    color: white;
+    outline: none;
+    border: none;
+    border-right: 0.02vw solid rgba(255, 255, 255, 0.2);
+}
+
+#footer button:first-of-type {
+    border-left: 0.02vw solid rgba(255, 255, 255, 0.2);
+}
+
+#footer .menuclose:hover:not(.active) {
+    background-color: #646464;
 }
