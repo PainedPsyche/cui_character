@@ -1,19 +1,67 @@
 $(function () {
     window.addEventListener('message', function(event) {
         if (event.data.action == 'setVisible') {
-            $("body").css("display", event.data.show ? "block" : "none");
+            if (event.data.show) {
+                $('body').fadeIn(100)
+            }
+            else {
+                $('body').fadeOut(100)
+            }
         }
     });
 });
 
 function closeWindow(save) {
-    console.log('hit close')
     $.post('https://cui_character/close', JSON.stringify({save:save}));
 }
 
 function openTab(evt, tab) {
-    $('.tabcontent').hide()
-    $('.tablinks').removeClass('active')
-    $('#' + tab).show()
+    let wasActive = $(evt.target).hasClass('active');
+
+    $('.tabcontent').hide();
+    $('.tablinks').removeClass('active');
+    $('#' + tab).show();
+
+    if (!wasActive) {
+        $.post('https://cui_character/playSound', JSON.stringify({sound:'tabchange'}));
+    }
+
     $(evt.target).addClass('active')
 }
+
+var accept = false;
+$('.panelbottom button').on('click', function(evt) {
+    evt.preventDefault();
+    $.post('https://cui_character/playSound', JSON.stringify({sound:'buttonclick'}));
+});
+
+$('#main .menuclose').on('click', function(evt) {
+    evt.preventDefault();
+    if (evt.target.id == 'accept') {
+        accept = true;
+    }
+    else if (evt.target.id == 'cancel') {
+        accept = false;
+    }
+    $('.popup').fadeIn(100);
+    $('.overlay').fadeIn(100);
+    $('#main').css('pointer-events', 'none');
+});
+
+$('.popup button').on('click', function(evt) {
+    evt.preventDefault();
+    $('.popup').fadeOut(100);
+    $('.overlay').fadeOut(100);
+    $('#main').css('pointer-events', 'auto');
+});
+
+$('.popup #yes').on('click', function(evt) {
+    evt.preventDefault();
+
+    let save = false;
+    if (accept == true) {
+        save = true;
+    }
+
+    closeWindow(save)
+});

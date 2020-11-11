@@ -26,7 +26,7 @@
                         <img src="assets/icons/apparel.svg">
                     </button>
                 </div>
-                <div id="content">
+                <div class="content">
                     <div id="identity" class="tabcontent">
                         <p>TODO: identity options</p>
                         <p>identity options</p>
@@ -62,13 +62,33 @@
                         <p>TODO: apparel options</p>
                     </div>
                 </div>
-                <div id="footer">
-                    <button class="menuclose" id="accept" onclick="closeWindow(true)">
+                <div class="panelbottom">
+                    <button class="menuclose" id="accept">
                         Accept
                     </button>
-                    <button class="menuclose" id="cancel" onclick="closeWindow(false)">
+                    <button class="menuclose" id="cancel">
                         Cancel
                     </button>
+                </div>
+            </div>
+            <div class="overlay">
+            </div>
+            <div class="popup">
+                <div class="content">
+                    <div class="header">
+                        Confirmation
+                    </div>
+                    <div class="message">
+                        Popup question text goes here.
+                    </div>
+                    <div class="panelbottom">
+                        <button id="yes"">
+                            Yes
+                        </button>
+                        <button id="no"">
+                            No
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

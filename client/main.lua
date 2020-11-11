@@ -52,6 +52,15 @@ AddEventHandler('esx:onPlayerSpawn', function()
     end)
 end)
 
+RegisterNUICallback('playSound', function(data, cb)
+    local sound = data['sound']
+    if sound == 'tabchange' then
+        PlaySoundFrontend(-1, 'Continue_Appears', 'DLC_HEIST_PLANNING_BOARD_SOUNDS', 1)
+    elseif sound == 'buttonclick' then
+        PlaySoundFrontend(-1, 'Reset_Prop_Position', 'DLC_Dmod_Prop_Editor_Sounds', 0)
+    end
+end)
+
 RegisterNUICallback('close', function(data, cb)
     local save = false
     if data['save'] == 'true' then
