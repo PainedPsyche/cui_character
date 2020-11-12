@@ -73,8 +73,25 @@
     pointer-events: none;
 }
 
-#tabs button:first-of-type {
+/* only leftmost, visible element has the left border */
+#tabs button {
+    border-left: none;
+}
+
+#tabs button:first-child {
     border-left: 0.02vw solid rgba(255, 255, 255, 0.2);
+}
+
+#tabs button[style*="display: none"] + button:not([style*="display: none"]) {
+    border-left: 0.02vw solid rgba(255, 255, 255, 0.2);
+}
+
+#tabs button:not([style*="display: none"]) + button {
+    border-left: none;
+}
+
+#tabs > button:not([style*="display: none"]) ~ * {
+    border-left: none!important;
 }
 
 #tabs .tablinks.active {

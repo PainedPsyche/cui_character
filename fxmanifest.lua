@@ -24,7 +24,11 @@ files {
     'ui/assets/icons/apparel.svg',
     'ui/assets/icons/features.svg',
     'ui/assets/icons/identity.svg',
-    'ui/assets/icons/style.svg'
+    'ui/assets/icons/style.svg',
+    'ui/pages/apparel.html',
+    'ui/pages/features.html',
+    'ui/pages/identity.html',
+    'ui/pages/style.html'
 }
 
 dependencies {

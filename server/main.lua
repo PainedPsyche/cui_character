@@ -30,6 +30,26 @@ ESX.RegisterServerCallback('cui_character:getPlayerSkin', function(source, cb)
 end)
 
 ESX.RegisterCommand('character', 'admin', function(xPlayer, args, showError)
-	xPlayer.triggerEvent('cui_character:open')
-    end, true, {help = 'Open character editor.', validate = true, arguments = {}
+	xPlayer.triggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' })
+    end, true, {help = 'Open full character editor.', validate = true, arguments = {}
+})
+
+ESX.RegisterCommand('identity', 'admin', function(xPlayer, args, showError)
+	xPlayer.triggerEvent('cui_character:open', { 'identity' })
+    end, true, {help = 'Open character identity editor.', validate = true, arguments = {}
+})
+
+ESX.RegisterCommand('features', 'admin', function(xPlayer, args, showError)
+	xPlayer.triggerEvent('cui_character:open', { 'features' })
+    end, true, {help = 'Open character physical features editor.', validate = true, arguments = {}
+})
+
+ESX.RegisterCommand('style', 'admin', function(xPlayer, args, showError)
+	xPlayer.triggerEvent('cui_character:open', { 'style' })
+    end, true, {help = 'Open character style editor.', validate = true, arguments = {}
+})
+
+ESX.RegisterCommand('apparel', 'admin', function(xPlayer, args, showError)
+	xPlayer.triggerEvent('cui_character:open', { 'apparel' })
+    end, true, {help = 'Open character apparel editor.', validate = true, arguments = {}
 })

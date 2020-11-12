@@ -1,3 +1,18 @@
+-- TODO: DELETE THIS ONCE WE ARE DONE
+function dump(o)
+    if type(o) == 'table' then
+    local s = '{ '
+    for k,v in pairs(o) do
+        if type(k) ~= 'number' then k = '"'..k..'"' end
+        s = s .. '['..k..'] = ' .. dump(v) .. ','
+    end
+    return s .. '} '
+    else
+    return tostring(o)
+    end
+end
+--------------------------------------
+
 ESX = nil
 
 local isVisible = false
@@ -26,7 +41,29 @@ AddEventHandler('cui_character:close', function(save)
 end)
 
 RegisterNetEvent('cui_character:open')
-AddEventHandler('cui_character:open', function()
+AddEventHandler('cui_character:open', function(tabs)
+    SendNUIMessage({
+        action = 'clearAllTabs'
+    })
+
+    local firstTabName = ''
+    for k, v in pairs(tabs) do
+        if k == 1 then
+            firstTabName = v
+        end
+
+        local tabName = tabs[k]
+        SendNUIMessage({
+            action = 'enableTab',
+            tab = tabName
+        })
+    end
+
+    SendNUIMessage({
+        action = 'activateTab',
+        tab = firstTabName
+    })
+
     setVisible(true)
 end)
 

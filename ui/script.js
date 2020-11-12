@@ -1,4 +1,4 @@
-$(function () {
+$(document).ready(function() {
     window.addEventListener('message', function(event) {
         if (event.data.action == 'setVisible') {
             if (event.data.show) {
@@ -7,6 +7,22 @@ $(function () {
             else {
                 $('body').fadeOut(100)
             }
+        }
+        else if (event.data.action == 'clearAllTabs') {
+            $('.tablinks').hide()
+            $('.tablinks').removeClass('active');
+            $('.tabcontent').hide()
+            $('.tabcontent').empty()
+        }
+        else if (event.data.action == 'enableTab') {
+            $('button' + '#tab-' + event.data.tab + '.tablinks').show()
+            $.get('pages/' + event.data.tab + '.html', function(data) {
+                $('div#' + event.data.tab + '.tabcontent').html(data);
+            });
+        }
+        else if (event.data.action == 'activateTab') {
+            $('#tab-' + event.data.tab).addClass('active');
+            $('#' + event.data.tab).show()
         }
     });
 });
