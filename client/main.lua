@@ -18,6 +18,7 @@ ESX = nil
 local isVisible = false
 local playerLoaded = false
 local firstSpawn = true
+local featuresLoaded = false
 
 Citizen.CreateThread(function()
     while ESX == nil do
@@ -37,6 +38,12 @@ end
 
 AddEventHandler('cui_character:close', function(save)
     -- TODO: Saving and discarding changes
+
+    if featuresLoaded == true then
+        SetStreamedTextureDictAsNoLongerNeeded('pause_menu_pages_char_mom_dad')
+        SetStreamedTextureDictAsNoLongerNeeded('char_creator_portraits')
+        featuresLoaded = false
+    end
     setVisible(false)
 end)
 
@@ -53,6 +60,16 @@ AddEventHandler('cui_character:open', function(tabs)
         end
 
         local tabName = tabs[k]
+        if tabName == 'features' then
+            if not featuresLoaded then
+                RequestStreamedTextureDict('pause_menu_pages_char_mom_dad')
+                RequestStreamedTextureDict('char_creator_portraits')
+                while not HasStreamedTextureDictLoaded('pause_menu_pages_char_mom_dad') or not HasStreamedTextureDictLoaded('char_creator_portraits') do
+                    Wait(100)
+                end
+                featuresLoaded = true
+            end
+        end
         SendNUIMessage({
             action = 'enableTab',
             tab = tabName

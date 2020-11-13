@@ -25,6 +25,8 @@ files {
     'ui/assets/icons/features.svg',
     'ui/assets/icons/identity.svg',
     'ui/assets/icons/style.svg',
+    'ui/assets/icons/symbol-female.svg',
+    'ui/assets/icons/symbol-male.svg',
     'ui/pages/apparel.html',
     'ui/pages/features.html',
     'ui/pages/identity.html',
