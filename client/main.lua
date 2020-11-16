@@ -39,6 +39,9 @@ end
 AddEventHandler('cui_character:close', function(save)
     -- TODO: Saving and discarding changes
 
+    -- Release textures
+    SetStreamedTextureDictAsNoLongerNeeded('mparrow')
+    SetStreamedTextureDictAsNoLongerNeeded('mpleaderboard')
     if featuresLoaded == true then
         SetStreamedTextureDictAsNoLongerNeeded('pause_menu_pages_char_mom_dad')
         SetStreamedTextureDictAsNoLongerNeeded('char_creator_portraits')
@@ -49,6 +52,14 @@ end)
 
 RegisterNetEvent('cui_character:open')
 AddEventHandler('cui_character:open', function(tabs)
+
+    -- Request textures
+    RequestStreamedTextureDict('mparrow')
+    RequestStreamedTextureDict('mpleaderboard')
+    while not HasStreamedTextureDictLoaded('mparrow') or not HasStreamedTextureDictLoaded('mpleaderboard') do
+        Wait(100)
+    end
+
     SendNUIMessage({
         action = 'clearAllTabs'
     })
@@ -110,6 +121,8 @@ RegisterNUICallback('playSound', function(data, cb)
     local sound = data['sound']
     if sound == 'tabchange' then
         PlaySoundFrontend(-1, 'Continue_Appears', 'DLC_HEIST_PLANNING_BOARD_SOUNDS', 1)
+    elseif sound == 'mouseover' then
+        PlaySoundFrontend(-1, 'Faster_Click', 'RESPAWN_ONLINE_SOUNDSET', 1)
     elseif sound == 'buttonclick' then
         PlaySoundFrontend(-1, 'Reset_Prop_Position', 'DLC_Dmod_Prop_Editor_Sounds', 0)
     end

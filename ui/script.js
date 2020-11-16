@@ -81,3 +81,13 @@ $('.popup #yes').on('click', function(evt) {
 
     closeWindow(save)
 });
+
+$('.panelbottom button').mouseenter(function(evt) {
+    console.log('hovered')
+    $.post('https://cui_character/playSound', JSON.stringify({sound:'mouseover'}));
+});
+
+$('.radioitem input:radio:not(:checked) + label').hover(function(evt) {
+    console.log('hovered')
+    $.post('https://cui_character/playSound', JSON.stringify({sound:'mouseover'}));
+});

@@ -3,9 +3,20 @@
     src: url('assets/fonts/chaletlondon1960.woff2') format('woff2')
 }
 
+h2, h3 {
+    margin: 0;
+    padding-top: 0.5vh;
+    padding-bottom: 0.5vh;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
 .container {
     width: 100%;
     height: 100%;
+    -webkit-font-smoothing: antialiased;
     font-family: 'ChaletLondonNineteenSixty', sans-serif;
     font-weight: bold;
     user-select: none;
@@ -218,7 +229,7 @@ input[type="radio"] {
 
 .group > h2 {
     color: #646464;
-    text-align: center;
+    text-align: left;
     font-size: 1.7vh;
     text-transform: uppercase;
     letter-spacing: 0.03vw;
@@ -300,4 +311,122 @@ input[type="radio"] {
 }
 #parentswindow #parentsmom {
     left: 13%;
+}
+
+/*  Lists, sliders and color palettes   */
+h3 {
+    display: block;
+    width: 100%;
+    height: 15%;
+    position: absolute;
+    top: 2%;
+    left: 0%;
+    font-size: 1.4vh;
+    color: #f0f0f0;
+}
+
+.controls {
+    position: absolute;
+    bottom: 0%;
+    width: 20vw;
+    height: 4.2vh;
+    background-color: rgba(64, 64, 64, 0.4);
+    border-radius: 20vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.list, .slider {
+    position: relative;
+    width: 20vw;
+    height: 7vh;
+    display: inline-block;
+}
+
+.list .controls button {
+    height: 80%;
+    background: none;
+    background-image: url('https://nui-img/mparrow/mp_arrowlarge');
+    background-size: 100% auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+}
+
+.list .controls .leftarrow {
+    transform: scaleX(-1);
+}
+
+.list .controls select {
+    -webkit-appearance: none;
+    pointer-events: none;
+    width: 85%;
+    height: 80%;
+    font: inherit;
+    text-align-last: center;
+    border: none;
+    background: none;
+    color: #f0f0f0;
+    font-size: 1.8vh;
+    font-weight: normal;
+}
+
+.slider input[type=range] {
+    -webkit-appearance: none;
+    background: 0 0;
+    width: 79%;
+    vertical-align: middle;
+    outline: 0;
+    padding: 0 1.07vh
+}
+
+.slider input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 1.3vh;
+    width: 1.3vh;
+    border-radius: 100%;
+    background: #f0f0f0;
+    margin-top: -0.5vh;
+}
+
+.slider input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 0.18vh;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.slider > .valuelabel {
+    position: absolute;
+    top: 35%;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.slider > .valuelabel.left {
+    left: 4%;
+}
+
+.slider > .valuelabel.right {
+    right: 4%;
+}
+
+.slider.contribution {
+    height: 9vh;
+}
+
+.slider.contribution > .controls > .icon {
+    width: 8%;
+    height: 70%;
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.slider.contribution > .controls > .icon.left {
+    background-image: url('https://nui-img/mpleaderboard/leaderboard_female_icon');
+}
+
+.slider.contribution > .controls > .icon.right {
+    background-image: url('https://nui-img/mpleaderboard/leaderboard_male_icon');
 }
