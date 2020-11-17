@@ -4,24 +4,24 @@
         <img id="parentsdad" src="https://nui-img/char_creator_portraits/special_male_1">
         <img id="parentsmom" src="https://nui-img/char_creator_portraits/special_female_0">
     </div>
-    <div class="list" id="moms">
+    <div class="list">
         <h3 class="header">Mom</h3>
         <div class="controls">
-            <button class="leftarrow"></button>
-            <select id="listcontent">
+            <button class="arrow left"></button>
+            <select id="moms">
                 <option>Mom's name</option>
             </select>
-            <button class="rightarrow"></button>
+            <button class="arrow right"></button>
         </div>
     </div>
-    <div class="list" id="dads">
+    <div class="list">
         <h3 class="header">Dad</h3>
         <div class="controls">
-            <button class="leftarrow"></button>
-            <select id="listcontent">
+            <button class="arrow left"></button>
+            <select id="dads">
                 <option>Dad's name</option>
             </select>
-            <button class="rightarrow"></button>
+            <button class="arrow right"></button>
         </div>
     </div>
     <div class="slider contribution">
@@ -45,3 +45,17 @@
         </div>
     </div>
 </div>
+<div class="group" id="brow">
+    <h2 class="header">Brow</h2>
+    <div class="slider interval">
+        <h3 class="header">Depth</h3>
+        <div class="valuelabel left">In</div>
+        <div class="valuelabel right">Out</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <!-- TODO: Possibly increase granularity for all float sliders -->
+            <input type="range" class="browdepth" min="-1" max="1" step="0.1">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+</div> 

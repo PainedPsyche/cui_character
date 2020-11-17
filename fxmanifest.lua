@@ -22,6 +22,7 @@ files {
     'ui/style.css',
     'ui/assets/fonts/chaletlondon1960.woff2',
     'ui/assets/icons/apparel.svg',
+    'ui/assets/icons/check.svg',
     'ui/assets/icons/features.svg',
     'ui/assets/icons/identity.svg',
     'ui/assets/icons/style.svg',
