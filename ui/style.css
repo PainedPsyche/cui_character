@@ -291,6 +291,7 @@ input[type="radio"] {
 }
 
 #parentswindow {
+    position: relative;
     width: 20vw;
     height: 10vw;
     border: 2px solid white;
@@ -310,7 +311,7 @@ input[type="radio"] {
     left: 43%;
 }
 #parentswindow #parentsmom {
-    left: 13%;
+    left: 7%;
 }
 
 /*  Lists, sliders and color palettes   */
@@ -345,6 +346,7 @@ h3 {
     background-position: center;
     background-repeat: no-repeat;
     border: none;
+    outline: none;
 }
 
 .list, .slider {
