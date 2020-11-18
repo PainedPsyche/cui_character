@@ -27,6 +27,8 @@ $(document).ready(function() {
     });
 });
 
+
+/*  window controls   */
 function closeWindow(save) {
     $.post('https://cui_character/close', JSON.stringify({save:save}));
 }
@@ -82,6 +84,66 @@ $('.popup #yes').on('click', function(evt) {
     closeWindow(save)
 });
 
+/*  option/value ui controls   */
+
+$(document).on('click', '.list .controls button', function(evt) {
+    let list = $(this).siblings('select').first();
+    let numOpt = list.children('option').length
+    let oldVal = list.find('option:selected');
+    let newVal = null;
+
+    if ($(this).hasClass('left')) {
+        if (list.prop('selectedIndex') == 0) {
+            newVal = list.prop('selectedIndex', numOpt - 1);
+        }
+        else {
+            newVal = oldVal.prev();
+        }
+    }
+    else if ($(this).hasClass('right')) {
+        if (list.prop('selectedIndex') == numOpt - 1) {
+            newVal = list.prop('selectedIndex', 0);
+        }
+        else {
+            newVal = oldVal.next();
+        }
+    }
+    oldVal.prop('selected', false)
+    newVal.prop('selected', true)
+    newVal.trigger('change')
+});
+
+/*  option/value change effects     */
+function updateHeadBlend(key, value) {
+    $.post('https://cui_character/updateHeadBlend', JSON.stringify({
+        key: key,
+        value: value,
+    }));
+}
+
+function updateHeadOverlay(value, opacity) {
+    $.post('https://cui_character/updateHeadOverlay', JSON.stringify({
+        value: value,
+        opacity: opacity,
+    }));
+}
+
+$(document).on('change', 'select.headblend', function(evt) {
+    updateHeadBlend($(this).attr('id'), $(this).val())
+});
+
+$(document).on('input', 'input[type=range].headblend', function(evt) {
+    updateHeadBlend($(this).attr('id'), $(this).val())
+});
+
+/*
+$('input[type=radio]').on('change', function(evt) {
+    evt.preventDefault();
+    update()
+});
+*/
+
+/* TODO: Possibly add more sounds (mouseover?)
 $('.panelbottom button').mouseenter(function(evt) {
     console.log('hovered')
     $.post('https://cui_character/playSound', JSON.stringify({sound:'mouseover'}));
@@ -91,3 +153,4 @@ $('.radioitem input:radio:not(:checked) + label').hover(function(evt) {
     console.log('hovered')
     $.post('https://cui_character/playSound', JSON.stringify({sound:'mouseover'}));
 });
+*/
