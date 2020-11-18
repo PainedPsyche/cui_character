@@ -34,6 +34,8 @@ local playerLoaded = false
 local firstSpawn = true
 local identityLoaded = false
 
+local camera = nil
+
 local currentChar = {}
 local oldChar = {}
 
@@ -53,6 +55,36 @@ function setVisible(visible)
     isVisible = visible
 end
 
+function SetCamera(view)
+    local x, y , z = table.unpack(GetEntityCoords(PlayerPedId()))
+
+    if view == 'body' then
+        SetCamCoord(camera, x + 0.3, y + 2.0, z + 0.0)
+        SetCamRot(camera, 0.0, 0.0, 170.0)
+    elseif view == 'head' then
+        SetCamCoord(camera, x + 0.2, y + 0.5, z + 0.7)
+        SetCamRot(camera, 0.0, 0.0, 150.0)
+    end
+end
+
+function CreateCamera()
+    if not DoesCamExist(camera) then
+        camera = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
+    end
+
+    SetEntityHeading(PlayerPedId(), 0.0)
+    SetCamera('head')
+
+    SetCamActive(camera, true)
+    RenderScriptCams(true, true, 500, true, true)
+end
+
+function DeleteCamera()
+    SetCamActive(camera, false)
+    RenderScriptCams(false, true, 500, true, true)
+    camera = nil
+end
+
 AddEventHandler('cui_character:close', function(save)
     -- TODO: Saving and discarding changes
 
@@ -64,12 +96,13 @@ AddEventHandler('cui_character:close', function(save)
         SetStreamedTextureDictAsNoLongerNeeded('char_creator_portraits')
         identityLoaded = false
     end
+
+    DeleteCamera()
     setVisible(false)
 end)
 
 RegisterNetEvent('cui_character:open')
 AddEventHandler('cui_character:open', function(tabs)
-    GetDefaultCharacter(true)
 
     -- Request textures
     RequestStreamedTextureDict('mparrow')
@@ -110,6 +143,7 @@ AddEventHandler('cui_character:open', function(tabs)
         tab = firstTabName
     })
 
+    CreateCamera()
     setVisible(true)
 end)
 
@@ -156,6 +190,18 @@ RegisterNUICallback('close', function(data, cb)
         save = true
     end
     TriggerEvent('cui_character:close', save)
+end)
+
+RegisterNUICallback('updateGender', function(data, cb)
+    local value = tonumber(data['value'])
+    --[[
+             TODO: bring this back if we decide on not doing
+             a complete customization reset here.
+
+            --currentChar['sex'] = value
+    ]]--
+
+    LoadCharacter(GetDefaultCharacter(value == 0))
 end)
 
 RegisterNUICallback('updateHeadBlend', function(data, cb)
@@ -313,7 +359,6 @@ end
 function LoadCharacter(data)
     for k, v in pairs(data) do
         currentChar[k] = v
-        oldChar[k] = v
     end
 
     local isMale = false

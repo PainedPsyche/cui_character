@@ -32,8 +32,33 @@ $(document).ready(function() {
     });
 });
 
+var accept = false;
+
+var popupCallback = null;
+var popupVal = false
 
 /*  window controls   */
+function openPopup(data, callback, val) {
+    $('.popup .title').text(data.title)
+    $('.popup .message').text(data.message)
+    $('.popup').fadeIn(100);
+    $('.overlay').fadeIn(100);
+    $('#main').css('pointer-events', 'none');
+    popupCallback = callback
+    popupVal = val
+}
+
+function closePopup() {
+    $('.popup').fadeOut(100);
+    $('.overlay').fadeOut(100);
+    $('#main').css('pointer-events', 'auto');
+
+    if (popupCallback) {
+        popupCallback = null;
+    }
+    popupVal = false
+}
+
 function closeWindow(save) {
     $.post('https://cui_character/close', JSON.stringify({save:save}));
 }
@@ -52,7 +77,6 @@ function openTab(evt, tab) {
     $(evt.target).addClass('active')
 }
 
-var accept = false;
 $('.panelbottom button').on('click', function(evt) {
     evt.preventDefault();
     $.post('https://cui_character/playSound', JSON.stringify({sound:'buttonclick'}));
@@ -66,27 +90,29 @@ $('#main .menuclose').on('click', function(evt) {
     else if (evt.target.id == 'cancel') {
         accept = false;
     }
-    $('.popup').fadeIn(100);
-    $('.overlay').fadeIn(100);
-    $('#main').css('pointer-events', 'none');
+
+    let action = accept ? 'save' : 'discard';
+    let message = 'Are you sure you want to ' + action + ' your changes and exit?';
+    let popupData = { 
+        title: 'confirmation', 
+        message: message
+    };
+    openPopup(popupData, closeWindow, accept);
 });
 
-$('.popup button').on('click', function(evt) {
+$('.popup #no').on('click', function(evt) {
     evt.preventDefault();
-    $('.popup').fadeOut(100);
-    $('.overlay').fadeOut(100);
-    $('#main').css('pointer-events', 'auto');
+    closePopup();
 });
 
 $('.popup #yes').on('click', function(evt) {
     evt.preventDefault();
 
-    let save = false;
-    if (accept == true) {
-        save = true;
+    if (popupCallback) {
+        popupCallback(popupVal)
     }
 
-    closeWindow(save)
+    closePopup();
 });
 
 /*  option/value ui controls   */
@@ -119,6 +145,12 @@ $(document).on('click', '.list .controls button', function(evt) {
 });
 
 /*  option/value change effects     */
+function updateGender(value) {
+    $.post('https://cui_character/updateGender', JSON.stringify({
+        value: value,
+    }));
+}
+
 function updateHeadBlend(key, value) {
     $.post('https://cui_character/updateHeadBlend', JSON.stringify({
         key: key,
@@ -138,6 +170,18 @@ function updatePortrait(elemId) {
     let portraitName = $('select#' + elemId + '.headblend').find(':selected').data('portrait');
     $(portraitImgId).attr('src', 'https://nui-img/char_creator_portraits/' + portraitName);
 }
+
+$(document).on('click', 'input:radio[name=sex]', function(evt) {
+    let popupData = { 
+        title: 'confirmation', 
+        message: 'Changing your character\'s gender will reset all current customizations. Are you sure you want to do this?'
+    };
+    openPopup(popupData, function(target) {
+        target.prop('checked', true);
+        updateGender(target.val());
+    }, $(this));
+    return false;
+});
 
 $(document).on('change', 'select.headblend', function(evt) {
     updatePortrait($(this).attr('id'));
