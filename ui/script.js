@@ -18,7 +18,12 @@ $(document).ready(function() {
             $('button' + '#tab-' + event.data.tab + '.tablinks').show()
             $.get('pages/' + event.data.tab + '.html', function(data) {
                 $('div#' + event.data.tab + '.tabcontent').html(data);
+                if (event.data.tab == 'identity') {
+                    updatePortrait('mom')
+                    updatePortrait('dad')
+                }
             });
+
         }
         else if (event.data.action == 'activateTab') {
             $('#tab-' + event.data.tab).addClass('active');
@@ -128,11 +133,22 @@ function updateHeadOverlay(value, opacity) {
     }));
 }
 
+function updatePortrait(elemId) {
+    let portraitImgId = '#parents' + elemId;
+    let portraitName = $('select#' + elemId + '.headblend').find(':selected').data('portrait');
+    $(portraitImgId).attr('src', 'https://nui-img/char_creator_portraits/' + portraitName);
+}
+
 $(document).on('change', 'select.headblend', function(evt) {
-    updateHeadBlend($(this).attr('id'), $(this).val())
+    updatePortrait($(this).attr('id'));
+    updateHeadBlend($(this).attr('id'), $(this).val());
 });
 
 $(document).on('input', 'input[type=range].headblend', function(evt) {
+    let valueLeft = $(this).parent().siblings('.valuelabel.left');
+    let valueRight = $(this).parent().siblings('.valuelabel.right');
+    valueLeft.text((100 - $(this).val()).toString() + '%')
+    valueRight.text($(this).val().toString() + '%')
     updateHeadBlend($(this).attr('id'), $(this).val())
 });
 
