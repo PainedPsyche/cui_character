@@ -14,16 +14,19 @@ $(document).ready(function() {
             $('.tabcontent').hide()
             $('.tabcontent').empty()
         }
-        else if (event.data.action == 'enableTab') {
-            $('button' + '#tab-' + event.data.tab + '.tablinks').show()
-            $.get('pages/' + event.data.tab + '.html', function(data) {
-                $('div#' + event.data.tab + '.tabcontent').html(data);
-                if (event.data.tab == 'identity') {
-                    updatePortrait('mom')
-                    updatePortrait('dad')
-                }
-            });
-
+        else if (event.data.action == 'enableTabs') {
+            for (const value of Object.values(event.data.tabs)) {
+                $('button' + '#tab-' + value + '.tablinks').show()
+                $.get('pages/' + value + '.html', function(data) {
+                    let tab =  $('div#' + value + '.tabcontent');
+                    tab.html(data);
+                    refreshTabData(tab, event.data.character);
+                    if (value == 'identity') {
+                        updatePortrait('mom')
+                        updatePortrait('dad')
+                    }
+                });
+            }
         }
         else if (event.data.action == 'activateTab') {
             $('#tab-' + event.data.tab).addClass('active');
@@ -171,15 +174,30 @@ function updatePortrait(elemId) {
     $(portraitImgId).attr('src', 'https://nui-img/char_creator_portraits/' + portraitName);
 }
 
+// working around unintuitive/bad behavior:
+// https://forum.jquery.com/topic/alert-message-when-clicked-selected-radio-button
+var radioChecked = false
+$(document).on('mouseenter', 'input:radio[name=sex] + label', function(evt) {
+    if ($(this).prev().is(':checked')) {
+        radioChecked = true;
+    }
+    else {
+        radioChecked = false;
+    }
+});
+
 $(document).on('click', 'input:radio[name=sex]', function(evt) {
-    let popupData = { 
-        title: 'confirmation', 
-        message: 'Changing your character\'s gender will reset all current customizations. Are you sure you want to do this?'
-    };
-    openPopup(popupData, function(target) {
-        target.prop('checked', true);
-        updateGender(target.val());
-    }, $(this));
+    if(radioChecked == false)
+    {
+        let popupData = {
+            title: 'confirmation', 
+            message: 'Changing your character\'s gender will reset all current customizations. Are you sure you want to do this?'
+        };
+        openPopup(popupData, function(target) {
+            target.prop('checked', true);
+            updateGender(target.val());
+        }, $(this));
+    }
     return false;
 });
 
@@ -191,17 +209,32 @@ $(document).on('change', 'select.headblend', function(evt) {
 $(document).on('input', 'input[type=range].headblend', function(evt) {
     let valueLeft = $(this).parent().siblings('.valuelabel.left');
     let valueRight = $(this).parent().siblings('.valuelabel.right');
-    valueLeft.text((100 - $(this).val()).toString() + '%')
-    valueRight.text($(this).val().toString() + '%')
-    updateHeadBlend($(this).attr('id'), $(this).val())
+    valueLeft.text((100 - $(this).val()).toString() + '%');
+    valueRight.text($(this).val().toString() + '%');
+    updateHeadBlend($(this).attr('id'), $(this).val());
 });
 
-/*
-$('input[type=radio]').on('change', function(evt) {
-    evt.preventDefault();
-    update()
-});
-*/
+/*  interface and current character synchronization     */
+function refreshTabData(tab, data) {
+    for (const [key, value] of Object.entries(data)) {
+        let keyId = '#' + key;
+        let control = tab.find(keyId);
+        if (control.length) {
+            let controltype = control.prop('nodeName');
+            if (controltype == 'SELECT') { // arrow lists
+                control.val(value);
+            }
+            else if (controltype == 'INPUT') { // range sliders
+                // NOTE: Check out property 'type' (ex. range) if this isn't unique enough
+                control.val(value)
+            }
+            else if (controltype == 'DIV') { // radio button groups
+                let radio = control.find(':radio[value=' + value + ']');
+                radio.prop('checked', true);
+            }
+        }
+    }
+}
 
 /* TODO: Possibly add more sounds (mouseover?)
 $('.panelbottom button').mouseenter(function(evt) {

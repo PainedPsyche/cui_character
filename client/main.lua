@@ -86,7 +86,12 @@ function DeleteCamera()
 end
 
 AddEventHandler('cui_character:close', function(save)
-    -- TODO: Saving and discarding changes
+    -- Saving and discarding changes
+    if save then
+        TriggerServerEvent('cui_character:save', currentChar)
+    else
+        LoadCharacter(oldChar)
+    end
 
     -- Release textures
     SetStreamedTextureDictAsNoLongerNeeded('mparrow')
@@ -132,11 +137,13 @@ AddEventHandler('cui_character:open', function(tabs)
                 identityLoaded = true
             end
         end
-        SendNUIMessage({
-            action = 'enableTab',
-            tab = tabName
-        })
     end
+
+    SendNUIMessage({
+        action = 'enableTabs',
+        tabs = tabs,
+        character = currentChar
+    })
 
     SendNUIMessage({
         action = 'activateTab',
@@ -162,10 +169,12 @@ AddEventHandler('esx:onPlayerSpawn', function()
             ESX.TriggerServerCallback('cui_character:getPlayerSkin', function(skin)
                 if skin ~= nil then
                     print('character found, loading...')
+                    oldChar = skin
                     LoadCharacter(skin)
                 else
                     print('character not found, loading default...')
-                    LoadCharacter(GetDefaultCharacter(true))
+                    oldChar = GetDefaultCharacter(true)
+                    LoadCharacter(oldChar)
                 end
             end)
             firstSpawn = false
@@ -185,11 +194,7 @@ RegisterNUICallback('playSound', function(data, cb)
 end)
 
 RegisterNUICallback('close', function(data, cb)
-    local save = false
-    if data['save'] == 'true' then
-        save = true
-    end
-    TriggerEvent('cui_character:close', save)
+    TriggerEvent('cui_character:close', data['save'])
 end)
 
 RegisterNUICallback('updateGender', function(data, cb)
@@ -465,17 +470,4 @@ function LoadCharacter(data)
     else
         SetPedPropIndex (playerPed, 2, data.ears_1, data.ears_2, 2)             -- Earrings
     end
-end
-
--- Refreshing ui (each tab) to be consistent with current character data
-function RefreshIndentity()
-end
-
-function RefreshFeatures()
-end
-
-function RefreshStyle()
-end
-
-function RefreshApparel()
 end
