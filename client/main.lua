@@ -224,6 +224,24 @@ RegisterNUICallback('updateHeadBlend', function(data, cb)
     SetPedHeadBlendData(playerPed, currentChar.mom, currentChar.dad, 0, currentChar.mom, currentChar.dad, 0, weightFace, weightSkin, 0.0, false)
 end)
 
+RegisterNUICallback('updateFaceFeature', function(data, cb)
+    local key = data['key']
+    local value = tonumber(data['value'])
+    local index = tonumber(data['index'])
+    currentChar[key] = value
+
+    local playerPed = PlayerPedId()
+    SetPedFaceFeature(playerPed, index, (currentChar[key] / 100) + 0.0)
+end)
+
+RegisterNUICallback('updateEyeColor', function(data, cb)
+    local value = tonumber(data['value'])
+    currentChar['eye_color'] = value
+
+    local playerPed = PlayerPedId()
+    SetPedEyeColor(playerPed, currentChar.eye_color)
+end)
+
 RegisterNUICallback('updateHeadOverlay', function(data, cb)
 end)
 
@@ -384,26 +402,26 @@ function LoadCharacter(data)
     SetPedHeadBlendData(playerPed, data.mom, data.dad, 0, data.mom, data.dad, 0, weightFace, weightSkin, 0.0, false)
 
     -- Facial Features
-    SetPedFaceFeature(playerPed, 0,  (data.nose_1 / 10)         + 0.0)  -- Nose Width
-    SetPedFaceFeature(playerPed, 1,  (data.nose_2 / 10)         + 0.0)  -- Nose Peak Height
-    SetPedFaceFeature(playerPed, 2,  (data.nose_3 / 10)         + 0.0)  -- Nose Peak Length
-    SetPedFaceFeature(playerPed, 3,  (data.nose_4 / 10)         + 0.0)  -- Nose Bone Height
-    SetPedFaceFeature(playerPed, 4,  (data.nose_5 / 10)         + 0.0)  -- Nose Peak Lowering
-    SetPedFaceFeature(playerPed, 5,  (data.nose_6 / 10)         + 0.0)  -- Nose Bone Twist
-    SetPedFaceFeature(playerPed, 6,  (data.eyebrows_5 / 10)     + 0.0)  -- Eyebrow height
-    SetPedFaceFeature(playerPed, 7,  (data.eyebrows_6 / 10)     + 0.0)  -- Eyebrow depth
-    SetPedFaceFeature(playerPed, 8,  (data.cheeks_1 / 10)       + 0.0)  -- Cheekbones Height
-    SetPedFaceFeature(playerPed, 9,  (data.cheeks_2 / 10)       + 0.0)  -- Cheekbones Width
-    SetPedFaceFeature(playerPed, 10, (data.cheeks_3 / 10)       + 0.0)  -- Cheeks Width
-    SetPedFaceFeature(playerPed, 11, (data.eye_squint / 10)     + 0.0)  -- Eyes squint
-    SetPedFaceFeature(playerPed, 12, (data.lip_thickness / 10)  + 0.0)  -- Lip Fullness
-    SetPedFaceFeature(playerPed, 13, (data.jaw_1 / 10)          + 0.0)  -- Jaw Bone Width
-    SetPedFaceFeature(playerPed, 14, (data.jaw_2 / 10)          + 0.0)  -- Jaw Bone Length
-    SetPedFaceFeature(playerPed, 15, (data.chin_1 / 10)         + 0.0)  -- Chin Height
-    SetPedFaceFeature(playerPed, 16, (data.chin_2 / 10)         + 0.0)  -- Chin Length
-    SetPedFaceFeature(playerPed, 17, (data.chin_3 / 10)         + 0.0)  -- Chin Width
-    SetPedFaceFeature(playerPed, 18, (data.chin_4 / 10)         + 0.0)  -- Chin Hole Size
-    SetPedFaceFeature(playerPed, 19, (data.neck_thickness / 10) + 0.0)  -- Neck Thickness
+    SetPedFaceFeature(playerPed, 0,  (data.nose_1 / 100)         + 0.0)  -- Nose Width
+    SetPedFaceFeature(playerPed, 1,  (data.nose_2 / 100)         + 0.0)  -- Nose Peak Height
+    SetPedFaceFeature(playerPed, 2,  (data.nose_3 / 100)         + 0.0)  -- Nose Peak Length
+    SetPedFaceFeature(playerPed, 3,  (data.nose_4 / 100)         + 0.0)  -- Nose Bone Height
+    SetPedFaceFeature(playerPed, 4,  (data.nose_5 / 100)         + 0.0)  -- Nose Peak Lowering
+    SetPedFaceFeature(playerPed, 5,  (data.nose_6 / 100)         + 0.0)  -- Nose Bone Twist
+    SetPedFaceFeature(playerPed, 6,  (data.eyebrows_5 / 100)     + 0.0)  -- Eyebrow height
+    SetPedFaceFeature(playerPed, 7,  (data.eyebrows_6 / 100)     + 0.0)  -- Eyebrow depth
+    SetPedFaceFeature(playerPed, 8,  (data.cheeks_1 / 100)       + 0.0)  -- Cheekbones Height
+    SetPedFaceFeature(playerPed, 9,  (data.cheeks_2 / 100)       + 0.0)  -- Cheekbones Width
+    SetPedFaceFeature(playerPed, 10, (data.cheeks_3 / 100)       + 0.0)  -- Cheeks Width
+    SetPedFaceFeature(playerPed, 11, (data.eye_squint / 100)     + 0.0)  -- Eyes squint
+    SetPedFaceFeature(playerPed, 12, (data.lip_thickness / 100)  + 0.0)  -- Lip Fullness
+    SetPedFaceFeature(playerPed, 13, (data.jaw_1 / 100)          + 0.0)  -- Jaw Bone Width
+    SetPedFaceFeature(playerPed, 14, (data.jaw_2 / 100)          + 0.0)  -- Jaw Bone Length
+    SetPedFaceFeature(playerPed, 15, (data.chin_1 / 100)         + 0.0)  -- Chin Height
+    SetPedFaceFeature(playerPed, 16, (data.chin_2 / 100)         + 0.0)  -- Chin Length
+    SetPedFaceFeature(playerPed, 17, (data.chin_3 / 100)         + 0.0)  -- Chin Width
+    SetPedFaceFeature(playerPed, 18, (data.chin_4 / 100)         + 0.0)  -- Chin Hole Size
+    SetPedFaceFeature(playerPed, 19, (data.neck_thickness / 100) + 0.0)  -- Neck Thickness
 
     -- Appearance
     SetPedComponentVariation(playerPed, 2, data.hair_1, data.hair_2, 2)                 -- Hair Style
@@ -424,7 +442,7 @@ function LoadCharacter(data)
     SetPedHeadOverlay(playerPed, 6, data.complexion_1, data.complexion_2 / 10 + 0.0)    -- Complexion + Opacity
     SetPedHeadOverlay(playerPed, 9, data.moles_1, data.moles_2 / 10 + 0.0)              -- Moles/Freckles + Opacity
     SetPedHeadOverlay(playerPed, 7, data.sun_1, data.sun_2 / 10 + 0.0)                  -- Sun Damage + Opacity
-    SetPedEyeColor(playerPed, data.eye_color, 0, 1)                                     -- Eyes Color
+    SetPedEyeColor(playerPed, data.eye_color)                                           -- Eyes Color
     SetPedHeadOverlay(playerPed, 4, data.makeup_1, data.makeup_2 / 10 + 0.0)            -- Makeup + Opacity
     SetPedHeadOverlayColor(playerPed, 4, 2, data.makeup_3, data.makeup_4)               -- Makeup Color
     SetPedHeadOverlay(playerPed, 5, data.blush_1, data.blush_2 / 10 + 0.0)              -- Blush + Opacity

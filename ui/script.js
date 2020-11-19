@@ -161,6 +161,20 @@ function updateHeadBlend(key, value) {
     }));
 }
 
+function updateFaceFeature(key, value, index) {
+    $.post('https://cui_character/updateFaceFeature', JSON.stringify({
+        key: key,
+        value: value,
+        index: index,
+    }));
+}
+
+function updateEyeColor(value) {
+    $.post('https://cui_character/updateEyeColor', JSON.stringify({
+        value: value,
+    }));
+}
+
 function updateHeadOverlay(value, opacity) {
     $.post('https://cui_character/updateHeadOverlay', JSON.stringify({
         value: value,
@@ -206,6 +220,10 @@ $(document).on('change', 'select.headblend', function(evt) {
     updateHeadBlend($(this).attr('id'), $(this).val());
 });
 
+$(document).on('change', 'select.eyecolor', function(evt) {
+    updateEyeColor($(this).val());
+});
+
 $(document).on('refresh', 'input[type=range].headblend', function(evt) {
     let valueLeft = $(this).parent().siblings('.valuelabel.left');
     let valueRight = $(this).parent().siblings('.valuelabel.right');
@@ -216,6 +234,10 @@ $(document).on('refresh', 'input[type=range].headblend', function(evt) {
 $(document).on('input', 'input[type=range].headblend', function(evt) {
     $(this).trigger('refresh')
     updateHeadBlend($(this).attr('id'), $(this).val());
+});
+
+$(document).on('input', 'input[type=range].facefeature', function(evt) {
+    updateFaceFeature($(this).attr('id'), $(this).val(), $(this).data('index'));
 });
 
 /*  interface and current character synchronization     */

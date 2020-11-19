@@ -6,9 +6,225 @@
         <div class="valuelabel right">Out</div>
         <div class="controls">
             <button class="arrow left"></button>
-            <!-- TODO: Possibly increase granularity for all float sliders -->
-            <input type="range" class="browdepth" min="-1" max="1" step="0.1">
+            <input type="range" min="-100" max="100" class="facefeature" id="eyebrows_6" data-index="7">
             <button class="arrow right"></button>
         </div>
     </div>
-</div> 
+    <div class="slider interval">
+        <h3 class="header">Height</h3>
+        <div class="valuelabel left">Down</div>
+        <div class="valuelabel right">Up</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="eyebrows_5" data-index="6">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+</div>
+<div class="group" id="eyes">
+    <h2 class="header">Eyes</h2>
+    <div class="list">
+        <h3 class="header">Color</h3>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <select class="eyecolor" id="eye_color">
+                <!-- TODO: natural/all color options -->
+                <option value="0" selected="selected">Green</option>
+                <option value="1">Emerald</option>
+                <option value="2">Light Blue</option>
+                <option value="3">Ocean Blue</option>
+                <option value="4">Light Brown</option>
+                <option value="5">Dark Brown</option>
+                <option value="6">Hazel</option>
+                <option value="7">Dark Gray</option>
+                <option value="8">Light Gray</option>
+            </select>
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Opening</h3>
+        <div class="valuelabel left">Squint</div>
+        <div class="valuelabel right">Wide</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="eye_squint" data-index="11">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+</div>
+<div class="group" id="nose">
+    <h2 class="header">Nose</h2>
+    <div class="slider interval">
+        <h3 class="header">Width</h3>
+        <div class="valuelabel left">Narrow</div>
+        <div class="valuelabel right">Wide</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="nose_1" data-index="0">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Height</h3>
+        <div class="valuelabel left">Down</div>
+        <div class="valuelabel right">Up</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="nose_2" data-index="1">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Length</h3>
+        <div class="valuelabel left">Short</div>
+        <div class="valuelabel right">Long</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="nose_3" data-index="2">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Bridge shape</h3>
+        <div class="valuelabel left">Curved</div>
+        <div class="valuelabel right">Crooked</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="nose_4" data-index="3">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Bridge twist</h3>
+        <div class="valuelabel left">Left</div>
+        <div class="valuelabel right">Right</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="nose_6" data-index="5">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Tip direction</h3>
+        <div class="valuelabel left">Down</div>
+        <div class="valuelabel right">Up</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="nose_5" data-index="4">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+</div>
+<div class="group" id="cheeks">
+    <h2 class="header">Cheeks</h2>
+    <div class="slider interval">
+        <h3 class="header">Shape</h3>
+        <div class="valuelabel left">Gaunt</div>
+        <div class="valuelabel right">Puffed</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="cheeks_3" data-index="10">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Cheekbones width</h3>
+        <div class="valuelabel left">Flat</div>
+        <div class="valuelabel right">Protruding</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="cheeks_2" data-index="9">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Cheekbones height</h3>
+        <div class="valuelabel left">Low</div>
+        <div class="valuelabel right">High</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="cheeks_1" data-index="8">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+</div>
+<div class="group" id="jaw">
+    <h2 class="header">Jaw</h2>
+    <div class="slider interval">
+        <h3 class="header">Jawbone base</h3>
+        <div class="valuelabel left">Narrow</div>
+        <div class="valuelabel right">Wide</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="jaw_1" data-index="13">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Jawbone angle</h3>
+        <div class="valuelabel left">Round</div>
+        <div class="valuelabel right">Square</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="jaw_2" data-index="14">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+</div>
+<div class="group" id="chin">
+    <h2 class="header">Chin</h2>
+    <div class="slider interval">
+        <h3 class="header">Width</h3>
+        <div class="valuelabel left">Pointed</div>
+        <div class="valuelabel right">Square</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="chin_3" data-index="17">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Length</h3>
+        <div class="valuelabel left">Short</div>
+        <div class="valuelabel right">Long</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="chin_1" data-index="15">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Alignment</h3>
+        <div class="valuelabel left">Receding</div>
+        <div class="valuelabel right">Protruding</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="chin_2" data-index="16">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider interval">
+        <h3 class="header">Shape</h3>
+        <div class="valuelabel left">Rounded</div>
+        <div class="valuelabel right">Bum</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature" id="chin_4" data-index="18">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+</div>
+<div class="group" id="lips">
+    <h2 class="header">Lips</h2>
+    <div class="slider interval">
+        <h3 class="header">Lip fullness</h3>
+        <div class="valuelabel left">Thin</div>
+        <div class="valuelabel right">Full</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="-100" max="100" class="facefeature inverted" id="lip_thickness" data-index="12">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+</div>

@@ -406,6 +406,10 @@ h3 {
     background: rgba(255, 255, 255, 0.5);
 }
 
+.slider input[type=range].inverted {
+    direction: rtl;
+}
+
 .slider > .valuelabel {
     position: absolute;
     top: 35%;
