@@ -206,11 +206,15 @@ $(document).on('change', 'select.headblend', function(evt) {
     updateHeadBlend($(this).attr('id'), $(this).val());
 });
 
-$(document).on('input', 'input[type=range].headblend', function(evt) {
+$(document).on('refresh', 'input[type=range].headblend', function(evt) {
     let valueLeft = $(this).parent().siblings('.valuelabel.left');
     let valueRight = $(this).parent().siblings('.valuelabel.right');
     valueLeft.text((100 - $(this).val()).toString() + '%');
     valueRight.text($(this).val().toString() + '%');
+});
+
+$(document).on('input', 'input[type=range].headblend', function(evt) {
+    $(this).trigger('refresh')
     updateHeadBlend($(this).attr('id'), $(this).val());
 });
 
@@ -227,6 +231,7 @@ function refreshTabData(tab, data) {
             else if (controltype == 'INPUT') { // range sliders
                 // NOTE: Check out property 'type' (ex. range) if this isn't unique enough
                 control.val(value)
+                control.trigger('refresh')
             }
             else if (controltype == 'DIV') { // radio button groups
                 let radio = control.find(':radio[value=' + value + ']');
