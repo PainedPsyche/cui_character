@@ -88,6 +88,9 @@ end
 AddEventHandler('cui_character:close', function(save)
     -- Saving and discarding changes
     if save then
+        for k, v in pairs(oldChar) do
+            oldChar[k] = currentChar[k]
+        end
         TriggerServerEvent('cui_character:save', currentChar)
     else
         LoadCharacter(oldChar)
