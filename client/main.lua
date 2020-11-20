@@ -243,6 +243,19 @@ RegisterNUICallback('updateEyeColor', function(data, cb)
 end)
 
 RegisterNUICallback('updateHeadOverlay', function(data, cb)
+    local key = data['key']
+    local keyPaired = data['keyPaired']
+    local value = tonumber(data['value'])
+    local index = tonumber(data['index'])
+    local isOpacity = (data['isOpacity'])
+    currentChar[key] = value
+
+    local playerPed = PlayerPedId()
+    if isOpacity then
+        SetPedHeadOverlay(playerPed, index, currentChar[keyPaired], currentChar[key] / 100 + 0.0)
+    else
+        SetPedHeadOverlay(playerPed, index, currentChar[key], currentChar[keyPaired] / 100 + 0.0)
+    end
 end)
 
 function GetDefaultCharacter(isMale)
@@ -426,28 +439,28 @@ function LoadCharacter(data)
     -- Appearance
     SetPedComponentVariation(playerPed, 2, data.hair_1, data.hair_2, 2)                 -- Hair Style
     SetPedHairColor(playerPed, data.hair_color_1, data.hair_color_2)                    -- Hair Color
-    SetPedHeadOverlay(playerPed, 2, data.eyebrows_1, data.eyebrows_2 / 10 + 0.0)        -- Eyebrow Style + Opacity
+    SetPedHeadOverlay(playerPed, 2, data.eyebrows_1, data.eyebrows_2 / 100 + 0.0)        -- Eyebrow Style + Opacity
     SetPedHeadOverlayColor(playerPed, 2, 1, data.eyebrows_3, data.eyebrows_4)           -- Eyebrow Color
-    SetPedHeadOverlay(playerPed, 1, data.beard_1, data.beard_2 / 10 + 0.0)              -- Beard Style + Opacity
+    SetPedHeadOverlay(playerPed, 1, data.beard_1, data.beard_2 / 100 + 0.0)              -- Beard Style + Opacity
     SetPedHeadOverlayColor(playerPed, 1, 1, data.beard_3, data.beard_4)                 -- Beard Color
 
-    SetPedHeadOverlay(playerPed, 0, data.blemishes_1, data.blemishes_2 / 10 + 0.0)      -- Face blemishes + Opacity
+    SetPedHeadOverlay(playerPed, 0, data.blemishes_1, data.blemishes_2 / 100 + 0.0)      -- Face blemishes + Opacity
     if data.bodyb_1 == -1 then
-        SetPedHeadOverlay(playerPed, 11, 255, data.bodyb_2 / 10 + 0.0)                  -- Body Blemishes + Opacity
+        SetPedHeadOverlay(playerPed, 11, 255, data.bodyb_2 / 100 + 0.0)                  -- Body Blemishes + Opacity
     else
-        SetPedHeadOverlay(playerPed, 11, data.bodyb_1, data.bodyb_2 / 10 + 0.0)
+        SetPedHeadOverlay(playerPed, 11, data.bodyb_1, data.bodyb_2 / 100 + 0.0)
     end
 
-    SetPedHeadOverlay(playerPed, 3, data.age_1, data.age_2 / 10 + 0.0)                  -- Age + opacity
-    SetPedHeadOverlay(playerPed, 6, data.complexion_1, data.complexion_2 / 10 + 0.0)    -- Complexion + Opacity
-    SetPedHeadOverlay(playerPed, 9, data.moles_1, data.moles_2 / 10 + 0.0)              -- Moles/Freckles + Opacity
-    SetPedHeadOverlay(playerPed, 7, data.sun_1, data.sun_2 / 10 + 0.0)                  -- Sun Damage + Opacity
+    SetPedHeadOverlay(playerPed, 3, data.age_1, data.age_2 / 100 + 0.0)                  -- Age + opacity
+    SetPedHeadOverlay(playerPed, 6, data.complexion_1, data.complexion_2 / 100 + 0.0)    -- Complexion + Opacity
+    SetPedHeadOverlay(playerPed, 9, data.moles_1, data.moles_2 / 100 + 0.0)              -- Moles/Freckles + Opacity
+    SetPedHeadOverlay(playerPed, 7, data.sun_1, data.sun_2 / 100 + 0.0)                  -- Sun Damage + Opacity
     SetPedEyeColor(playerPed, data.eye_color)                                           -- Eyes Color
-    SetPedHeadOverlay(playerPed, 4, data.makeup_1, data.makeup_2 / 10 + 0.0)            -- Makeup + Opacity
+    SetPedHeadOverlay(playerPed, 4, data.makeup_1, data.makeup_2 / 100 + 0.0)            -- Makeup + Opacity
     SetPedHeadOverlayColor(playerPed, 4, 2, data.makeup_3, data.makeup_4)               -- Makeup Color
-    SetPedHeadOverlay(playerPed, 5, data.blush_1, data.blush_2 / 10 + 0.0)              -- Blush + Opacity
+    SetPedHeadOverlay(playerPed, 5, data.blush_1, data.blush_2 / 100 + 0.0)              -- Blush + Opacity
     SetPedHeadOverlayColor(playerPed, 5, 2,	data.blush_3)                               -- Blush Color
-    SetPedHeadOverlay(playerPed, 8, data.lipstick_1, data.lipstick_2 / 10 + 0.0)        -- Lipstick + Opacity
+    SetPedHeadOverlay(playerPed, 8, data.lipstick_1, data.lipstick_2 / 100 + 0.0)        -- Lipstick + Opacity
     SetPedHeadOverlayColor(playerPed, 8, 1, data.lipstick_3, data.lipstick_4)           -- Lipstick Color
 
     -- Clothing and Accessories

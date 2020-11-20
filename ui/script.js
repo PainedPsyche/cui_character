@@ -175,10 +175,13 @@ function updateEyeColor(value) {
     }));
 }
 
-function updateHeadOverlay(value, opacity) {
+function updateHeadOverlay(key, keyPaired, value, index, isOpacity) {
     $.post('https://cui_character/updateHeadOverlay', JSON.stringify({
+        key: key,
+        keyPaired: keyPaired,
         value: value,
-        opacity: opacity,
+        index: index,
+        isOpacity: isOpacity,
     }));
 }
 
@@ -238,6 +241,25 @@ $(document).on('input', 'input[type=range].headblend', function(evt) {
 
 $(document).on('input', 'input[type=range].facefeature', function(evt) {
     updateFaceFeature($(this).attr('id'), $(this).val(), $(this).data('index'));
+});
+
+$(document).on('change', 'select.headoverlay', function(evt) {
+    // find the opacity range slider id for this feature
+    let pairedId = $(this).parents().eq(2).find('.headoverlay').eq(1).attr('id');
+    updateHeadOverlay($(this).attr('id'), pairedId, $(this).val(), $(this).data('index'), false);
+});
+
+$(document).on('refresh', 'input[type=range].headoverlay', function(evt) {
+    let valueCenter = $(this).parent().siblings('.valuelabel.center');
+    valueCenter.text($(this).val().toString() + '%');
+});
+
+$(document).on('input', 'input[type=range].headoverlay', function(evt) {
+    $(this).trigger('refresh')
+
+    // find the style select list id for which this is the opacity value
+    let pairedId = $(this).parents().eq(2).find('.headoverlay').eq(0).attr('id');
+    updateHeadOverlay($(this).attr('id'), pairedId, $(this).val(), $(this).data('index'), true);
 });
 
 /*  interface and current character synchronization     */
