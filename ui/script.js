@@ -1,3 +1,8 @@
+var hairColors = {}
+var lipstickColors = {}
+var facepaintColors = {}
+var blusherColors = {}
+
 $(document).ready(function() {
     window.addEventListener('message', function(event) {
         if (event.data.action == 'setVisible') {
@@ -28,6 +33,12 @@ $(document).ready(function() {
             $('div#' + event.data.tab + '.tabcontent').empty();
             loadTabContent(event.data.tab, event.data.character)
         }
+        else if (event.data.action == 'loadColorData') {
+            hairColors = event.data.hair
+            lipstickColors = event.data.lipstick
+            facepaintColors = event.data.facepaint
+            blusherColors = event.data.blusher
+        }
     });
 });
 
@@ -38,6 +49,7 @@ function loadTabContent(tabName, charData) {
         tab.html(data);
         if (tabName == 'style') {
             loadOptionalContent(tab, charData.sex);
+            loadColorPalettes(tab)
         }
         refreshTabData(tab, charData);
         if (tabName == 'identity') {
@@ -84,6 +96,33 @@ function loadOptionalContent(element, gender) {
 
     $.get(hairpage, function(data) {
         hair.html(data)
+    });
+}
+
+function loadColorPalettes(element) {
+    $(element).find('.palette').each(function() {
+        let colorData = null
+        if ($(this).hasClass('hair')) {
+            colorData = hairColors;
+        }
+        else if ($(this).hasClass('lipstick')) {
+            colorData = lipstickColors;
+        }
+        else if ($(this).hasClass('facepaint')) {
+            colorData = facepaintColors;
+        }
+        else if ($(this).hasClass('blusher')) {
+            colorData = blusherColors;
+        }
+
+        $(this).empty()
+        let id = $(this).attr('id')
+        for (const [key, value] of Object.entries(colorData)) {
+            let inputTag = '<input type="radio" name="' + id + '" ' + 'value="' + value + '"/>';
+            let newElement = $('<div class="radiocolor">' + inputTag + '<label></label></div>');
+            newElement.find('input[type="radio"] + label').css('background-color', key);
+            $(this).append(newElement);
+        }
     });
 }
 

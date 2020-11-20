@@ -28,6 +28,7 @@ end
 --------------------------------------
 
 ESX = nil
+local initialized = false
 
 local isVisible = false
 local playerLoaded = false
@@ -183,6 +184,20 @@ AddEventHandler('esx:onPlayerSpawn', function()
             firstSpawn = false
         end
     end)
+
+    Citizen.CreateThread(function()
+        while not initialized do
+            SendNUIMessage({
+                action = 'loadColorData',
+                hair = GetColorData(GetHairColors(), true),
+                lipstick = GetColorData(GetLipstickColors(), false),
+                facepaint = GetColorData(GetFacepaintColors(), false),
+                blusher = GetColorData(GetBlusherColors(), false)
+            })
+            initialized = true
+            Citizen.Wait(100)
+        end
+    end)
 end)
 
 RegisterNUICallback('playSound', function(data, cb)
@@ -203,7 +218,7 @@ end)
 RegisterNUICallback('updateGender', function(data, cb)
     local value = tonumber(data['value'])
     --[[
-             TODO: bring this back if we decide on not doing
+             NOTE: bring this back if we decide on not doing
              a complete customization reset here.
 
             --currentChar['sex'] = value
@@ -261,6 +276,101 @@ RegisterNUICallback('updateHeadOverlay', function(data, cb)
         SetPedHeadOverlay(playerPed, index, currentChar[key], currentChar[keyPaired] / 100 + 0.0)
     end
 end)
+
+function GetHairColors()
+    local result = {}
+    local i = 0
+
+    if Config.UseNaturalHairColors then
+        for i = 0, 18 do
+            table.insert(result, i)
+        end
+        table.insert(result, 24)
+        table.insert(result, 26)
+        table.insert(result, 27)
+        table.insert(result, 28)
+        for i = 55, 60 do
+            table.insert(result, i)
+        end
+    else
+        for i = 0, 60 do
+            table.insert(result, i)
+        end
+    end
+
+    return result
+end
+
+function GetLipstickColors()
+    local result = {}
+    local i = 0
+
+    for i = 0, 31 do
+        table.insert(result, i)
+    end
+    table.insert(result, 48)
+    table.insert(result, 49)
+    table.insert(result, 55)
+    table.insert(result, 56)
+    table.insert(result, 62)
+    table.insert(result, 63)
+
+    return result
+end
+
+function GetFacepaintColors()
+    local result = {}
+    local i = 0
+
+    for i = 0, 63 do
+        table.insert(result, i)
+    end
+
+    return result
+end
+
+function GetBlusherColors()
+    local result = {}
+    local i = 0
+
+    for i = 0, 22 do
+        table.insert(result, i)
+    end
+    table.insert(result, 25)
+    table.insert(result, 26)
+    table.insert(result, 51)
+    table.insert(result, 60)
+
+    return result
+end
+
+function RGBToHexCode(r, g, b)
+    local result = string.format('#%x', ((r << 16) | (g << 8) | b))
+    return result
+end
+
+function GetColorData(indexes, isHair)
+    local result = {}
+    local GetRgbColor = nil
+
+    if isHair then
+        GetRgbColor = function(index)
+            return GetPedHairRgbColor(index)
+        end
+    else
+        GetRgbColor = function(index)
+            return GetPedMakeupRgbColor(index)
+        end
+    end
+
+    for i, index in ipairs(indexes) do
+        local r, g, b = GetRgbColor(index)
+        local hex = RGBToHexCode(r, g, b)
+        result[hex] = index
+    end
+
+    return result
+end
 
 function GetDefaultCharacter(isMale)
     local result = {
