@@ -31,7 +31,11 @@ files {
     'ui/pages/apparel.html',
     'ui/pages/features.html',
     'ui/pages/identity.html',
-    'ui/pages/style.html'
+    'ui/pages/style.html',
+    'ui/pages/optional/blusher.html',
+    'ui/pages/optional/facialhair.html',
+    'ui/pages/optional/hair_female.html',
+    'ui/pages/optional/hair_male.html'
 }
 
 dependencies {

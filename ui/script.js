@@ -17,23 +17,75 @@ $(document).ready(function() {
         else if (event.data.action == 'enableTabs') {
             for (const value of Object.values(event.data.tabs)) {
                 $('button' + '#tab-' + value + '.tablinks').show()
-                $.get('pages/' + value + '.html', function(data) {
-                    let tab =  $('div#' + value + '.tabcontent');
-                    tab.html(data);
-                    refreshTabData(tab, event.data.character);
-                    if (value == 'identity') {
-                        updatePortrait('mom')
-                        updatePortrait('dad')
-                    }
-                });
+                loadTabContent(value, event.data.character)
             }
         }
         else if (event.data.action == 'activateTab') {
             $('#tab-' + event.data.tab).addClass('active');
             $('#' + event.data.tab).show()
         }
+        else if (event.data.action == 'reloadTab') {
+            $('div#' + event.data.tab + '.tabcontent').empty();
+            loadTabContent(event.data.tab, event.data.character)
+        }
     });
 });
+
+/*  content loading     */
+function loadTabContent(tabName, charData) {
+    $.get('pages/' + tabName + '.html', function(data) {
+        let tab =  $('div#' + tabName + '.tabcontent');
+        tab.html(data);
+        if (tabName == 'style') {
+            loadOptionalContent(tab, charData.sex);
+        }
+        refreshTabData(tab, charData);
+        if (tabName == 'identity') {
+            updatePortrait('mom');
+            updatePortrait('dad');
+        }
+    });
+}
+
+function loadOptionalContent(element, gender) {
+    let hair = element.find('#hair');
+    let facialhair = element.find('#facialhair')
+    let blusher = element.find('#blusher')
+
+    hair.empty()
+    facialhair.empty()
+    blusher.empty()
+
+    if (facialhair.hasClass('group')) {
+        facialhair.removeClass('group')
+    }
+
+    if (blusher.hasClass('group')) {
+        blusher.removeClass('group')
+    }
+
+    let hairpage = 'pages/optional/hair_';
+    // male
+    if (gender == 0) {
+        hairpage = hairpage + 'male.html'
+        facialhair.addClass('group')
+        $.get('pages/optional/facialhair.html', function(data) {
+            facialhair.html(data)
+        });
+    }
+    // female
+    else if (gender == 1) {
+        hairpage = hairpage + 'female.html'
+        blusher.addClass('group')
+        $.get('pages/optional/blusher.html', function(data) {
+            blusher.html(data)
+        });
+    }
+
+    $.get(hairpage, function(data) {
+        hair.html(data)
+    });
+}
 
 var accept = false;
 

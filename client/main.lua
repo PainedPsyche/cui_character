@@ -208,8 +208,12 @@ RegisterNUICallback('updateGender', function(data, cb)
 
             --currentChar['sex'] = value
     ]]--
-
     LoadCharacter(GetDefaultCharacter(value == 0))
+    SendNUIMessage({
+        action = 'reloadTab',
+        tab = 'style',
+        character = currentChar
+    })
 end)
 
 RegisterNUICallback('updateHeadBlend', function(data, cb)
