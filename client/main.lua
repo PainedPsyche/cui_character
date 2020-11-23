@@ -504,7 +504,7 @@ function GetDefaultCharacter(isMale)
         sun_2 = 0,
         moles_1 = 0,
         moles_2 = 0,
-        beard_1 = 0,
+        beard_1 = 29,
         beard_2 = 0,
         beard_3 = 0,
         beard_4 = 0
