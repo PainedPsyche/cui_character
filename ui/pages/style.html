@@ -69,4 +69,38 @@
 </div>
 <div class="group" id="lipstick">
     <h2 class="header">Lipstick</h2>
+    <div class="list">
+        <h3 class="header">Style</h3>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <select class="headoverlay" id="lipstick_1" data-index="8">
+                <option value="10" selected="selected">None</option>
+                <option value="0">Color Matte</option>
+                <option value="1">Color Gloss</option>
+                <option value="2">Lined Matte</option>
+                <option value="3">Lined Gloss</option>
+                <option value="4">Heavy Lined Matte</option>
+                <option value="5">Heavy Lined Gloss</option>
+                <option value="6">Lined Nude Matte</option>
+                <option value="7">Lined Nude Gloss</option>
+                <option value="8">Smudged</option>
+                <option value="9">Geisha</option>
+            </select>
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="slider opacity">
+        <h3 class="header">Opacity</h3>
+        <div class="valuelabel center">50%</div>
+        <div class="controls">
+            <button class="arrow left"></button>
+            <input type="range" min="0" max="100" class="headoverlay" id="lipstick_2" data-index="8">
+            <button class="arrow right"></button>
+        </div>
+    </div>
+    <div class="colorselect">
+        <h3 class="header">Color</h3>
+        <div class="palette lipstick overlaycolor" id="lipstick_3" data-index="8" data-colortype="2">
+        </div>
+    </div>
 </div>

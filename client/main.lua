@@ -613,7 +613,7 @@ function LoadCharacter(data)
     SetPedHeadOverlay(playerPed, 5, data.blush_1, data.blush_2 / 100 + 0.0)              -- Blush + Opacity
     SetPedHeadOverlayColor(playerPed, 5, 2,	data.blush_3)                               -- Blush Color
     SetPedHeadOverlay(playerPed, 8, data.lipstick_1, data.lipstick_2 / 100 + 0.0)        -- Lipstick + Opacity
-    SetPedHeadOverlayColor(playerPed, 8, 1, data.lipstick_3, data.lipstick_4)           -- Lipstick Color
+    SetPedHeadOverlayColor(playerPed, 8, 2, data.lipstick_3, data.lipstick_4)           -- Lipstick Color
 
     -- Clothing and Accessories
     SetPedComponentVariation(playerPed, 8,  data.tshirt_1, data.tshirt_2, 2)    -- Undershirts
