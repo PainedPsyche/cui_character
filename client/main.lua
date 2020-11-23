@@ -484,9 +484,10 @@ function GetDefaultCharacter(isMale)
         lipstick_4 = 0,
         ears_1 = -1,
         ears_2 = 0,
-        chest_1 = 0,
+        chest_1 = 255,
         chest_2 = 0,
         chest_3 = 0,
+        chest_4 = 0,
         bodyb_1 = -1,
         bodyb_2 = 0,
         bodyb_3 = -1,
@@ -607,13 +608,15 @@ function LoadCharacter(data)
     SetPedHeadOverlay(playerPed, 6, data.complexion_1, data.complexion_2 / 100 + 0.0)    -- Complexion + Opacity
     SetPedHeadOverlay(playerPed, 9, data.moles_1, data.moles_2 / 100 + 0.0)              -- Moles/Freckles + Opacity
     SetPedHeadOverlay(playerPed, 7, data.sun_1, data.sun_2 / 100 + 0.0)                  -- Sun Damage + Opacity
-    SetPedEyeColor(playerPed, data.eye_color)                                           -- Eyes Color
+    SetPedEyeColor(playerPed, data.eye_color)                                            -- Eyes Color
     SetPedHeadOverlay(playerPed, 4, data.makeup_1, data.makeup_2 / 100 + 0.0)            -- Makeup + Opacity
-    SetPedHeadOverlayColor(playerPed, 4, 2, data.makeup_3, data.makeup_4)               -- Makeup Color
+    SetPedHeadOverlayColor(playerPed, 4, 2, data.makeup_3, data.makeup_4)                -- Makeup Color
     SetPedHeadOverlay(playerPed, 5, data.blush_1, data.blush_2 / 100 + 0.0)              -- Blush + Opacity
-    SetPedHeadOverlayColor(playerPed, 5, 2,	data.blush_3)                               -- Blush Color
+    SetPedHeadOverlayColor(playerPed, 5, 2,	data.blush_3)                                -- Blush Color
     SetPedHeadOverlay(playerPed, 8, data.lipstick_1, data.lipstick_2 / 100 + 0.0)        -- Lipstick + Opacity
-    SetPedHeadOverlayColor(playerPed, 8, 2, data.lipstick_3, data.lipstick_4)           -- Lipstick Color
+    SetPedHeadOverlayColor(playerPed, 8, 2, data.lipstick_3, data.lipstick_4)            -- Lipstick Color
+    SetPedHeadOverlay(playerPed, 10, data.chest_1, data.chest_2 / 100 + 0.0)             -- Chest Hair + Opacity
+    SetPedHeadOverlayColor(playerPed, 10, 1, data.chest_3, data.chest_4)                 -- Chest Hair Color
 
     -- Clothing and Accessories
     SetPedComponentVariation(playerPed, 8,  data.tshirt_1, data.tshirt_2, 2)    -- Undershirts

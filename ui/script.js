@@ -62,14 +62,19 @@ function loadTabContent(tabName, charData) {
 function loadOptionalContent(element, charData) {
     let hair = element.find('#hair');
     let facialhair = element.find('#facialhair')
+    let chesthair = element.find('#chesthair')
     let blusher = element.find('#blusher')
 
     hair.empty()
     facialhair.empty()
     blusher.empty()
 
-    if (facialhair.hasClass('group')) {
-        facialhair.removeClass('group')
+    if (chesthair.hasClass('group')) {
+        chesthair.removeClass('group')
+    }
+
+    if (chesthair.hasClass('group')) {
+        chesthair.removeClass('group')
     }
 
     if (blusher.hasClass('group')) {
@@ -85,6 +90,12 @@ function loadOptionalContent(element, charData) {
             facialhair.html(data)
             loadColorPalettes(facialhair)
             refreshTabData(facialhair, charData);
+        });
+        chesthair.addClass('group')
+        $.get('pages/optional/chesthair.html', function(data) {
+            chesthair.html(data)
+            loadColorPalettes(chesthair)
+            refreshTabData(chesthair, charData);
         });
     }
     // female
