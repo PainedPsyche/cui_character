@@ -117,10 +117,10 @@ function loadColorPalettes(element) {
 
         $(this).empty()
         let id = $(this).attr('id')
-        for (const [key, value] of Object.entries(colorData)) {
-            let inputTag = '<input type="radio" name="' + id + '" ' + 'value="' + value + '"/>';
+        for (const color of colorData) {
+            let inputTag = '<input type="radio" name="' + id + '" ' + 'value="' + color.index + '"/>';
             let newElement = $('<div class="radiocolor">' + inputTag + '<label></label></div>');
-            newElement.find('input[type="radio"] + label').css('background-color', key);
+            newElement.find('input[type="radio"] + label').css('background-color', color.hex);
             $(this).append(newElement);
         }
     });

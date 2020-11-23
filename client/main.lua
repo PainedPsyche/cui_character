@@ -366,7 +366,7 @@ function GetColorData(indexes, isHair)
     for i, index in ipairs(indexes) do
         local r, g, b = GetRgbColor(index)
         local hex = RGBToHexCode(r, g, b)
-        result[hex] = index
+        table.insert(result, { index = index, hex = hex })
     end
 
     return result
