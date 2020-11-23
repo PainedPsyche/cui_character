@@ -478,7 +478,7 @@ function GetDefaultCharacter(isMale)
         makeup_2 = 0,
         makeup_3 = 0,
         makeup_4 = 0,
-        lipstick_1 = 10,
+        lipstick_1 = 255,
         lipstick_2 = 0,
         lipstick_3 = 0,
         lipstick_4 = 0,
@@ -505,7 +505,7 @@ function GetDefaultCharacter(isMale)
         sun_2 = 0,
         moles_1 = 0,
         moles_2 = 0,
-        beard_1 = 29,
+        beard_1 = 255,
         beard_2 = 0,
         beard_3 = 0,
         beard_4 = 0
