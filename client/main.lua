@@ -261,6 +261,20 @@ RegisterNUICallback('updateEyeColor', function(data, cb)
     SetPedEyeColor(playerPed, currentChar.eye_color)
 end)
 
+RegisterNUICallback('updateHairColor', function(data, cb)
+    local key = data['key']
+    local value = tonumber(data['value'])
+    local highlight = data['highlight']
+    currentChar[key] = value
+
+    local playerPed = PlayerPedId()
+    if highlight then
+        SetPedHairColor(playerPed, currentChar['hair_color_1'], currentChar[key])
+    else
+        SetPedHairColor(playerPed, currentChar[key], currentChar['hair_color_2'])
+    end
+end)
+
 RegisterNUICallback('updateHeadOverlay', function(data, cb)
     local key = data['key']
     local keyPaired = data['keyPaired']
@@ -275,6 +289,30 @@ RegisterNUICallback('updateHeadOverlay', function(data, cb)
     else
         SetPedHeadOverlay(playerPed, index, currentChar[key], currentChar[keyPaired] / 100 + 0.0)
     end
+end)
+
+RegisterNUICallback('updateOverlayColor', function(data, cb)
+    local key = data['key']
+    local value = tonumber(data['value'])
+    local index = tonumber(data['index'])
+    local colortype = tonumber(data['colortype'])
+    currentChar[key] = value
+
+    local playerPed = PlayerPedId()
+    SetPedHeadOverlayColor(playerPed, index, colortype, currentChar[key])
+end)
+
+RegisterNUICallback('updateComponent', function(data, cb)
+    local drawableKey = data['drawable']
+    local drawableValue = tonumber(data['dvalue'])
+    local textureKey = data['texture']
+    local textureValue = tonumber(data['tvalue'])
+    local index = tonumber(data['index'])
+    currentChar[drawableKey] = drawableValue
+    currentChar[textureKey] = textureValue
+
+    local playerPed = PlayerPedId()
+    SetPedComponentVariation(playerPed, index, currentChar[drawableKey], currentChar[textureKey], 2)
 end)
 
 function GetHairColors()

@@ -48,7 +48,7 @@ function loadTabContent(tabName, charData) {
         let tab =  $('div#' + tabName + '.tabcontent');
         tab.html(data);
         if (tabName == 'style') {
-            loadOptionalContent(tab, charData.sex);
+            loadOptionalContent(tab, charData);
             loadColorPalettes(tab)
         }
         refreshTabData(tab, charData);
@@ -59,7 +59,7 @@ function loadTabContent(tabName, charData) {
     });
 }
 
-function loadOptionalContent(element, gender) {
+function loadOptionalContent(element, charData) {
     let hair = element.find('#hair');
     let facialhair = element.find('#facialhair')
     let blusher = element.find('#blusher')
@@ -78,24 +78,30 @@ function loadOptionalContent(element, gender) {
 
     let hairpage = 'pages/optional/hair_';
     // male
-    if (gender == 0) {
+    if (charData.sex == 0) {
         hairpage = hairpage + 'male.html'
         facialhair.addClass('group')
         $.get('pages/optional/facialhair.html', function(data) {
             facialhair.html(data)
+            loadColorPalettes(facialhair)
+            refreshTabData(facialhair, charData);
         });
     }
     // female
-    else if (gender == 1) {
+    else if (charData.sex == 1) {
         hairpage = hairpage + 'female.html'
         blusher.addClass('group')
         $.get('pages/optional/blusher.html', function(data) {
             blusher.html(data)
+            loadColorPalettes(blusher)
+            refreshTabData(blusher, charData);
         });
     }
 
     $.get(hairpage, function(data) {
         hair.html(data)
+        loadColorPalettes(hair)
+        refreshTabData(hair, charData);
     });
 }
 
@@ -266,6 +272,14 @@ function updateEyeColor(value) {
     }));
 }
 
+function updateHairColor(key, value, highlight) {
+    $.post('https://cui_character/updateHairColor', JSON.stringify({
+        key: key,
+        value: value,
+        highlight: highlight,
+    }));
+}
+
 function updateHeadOverlay(key, keyPaired, value, index, isOpacity) {
     $.post('https://cui_character/updateHeadOverlay', JSON.stringify({
         key: key,
@@ -273,6 +287,25 @@ function updateHeadOverlay(key, keyPaired, value, index, isOpacity) {
         value: value,
         index: index,
         isOpacity: isOpacity,
+    }));
+}
+
+function updateOverlayColor(key, value, index, colortype) {
+    $.post('https://cui_character/updateOverlayColor', JSON.stringify({
+        key: key,
+        value: value,
+        index: index,
+        colortype: colortype,
+    }));
+}
+
+function updateComponent(drawable, dvalue, texture, tvalue, index) {
+    $.post('https://cui_character/updateComponent', JSON.stringify({
+        drawable: drawable,
+        dvalue: dvalue,
+        texture: texture,
+        tvalue: tvalue,
+        index: index,
     }));
 }
 
@@ -309,6 +342,14 @@ $(document).on('click', 'input:radio[name=sex]', function(evt) {
     return false;
 });
 
+$(document).on('click', '.palette input:radio + label', function(evt) {
+    let radio = $(this).prev();
+    if (radio.is(':not(:checked)')) {
+        radio.prop('checked', true);
+        radio.trigger('change');
+    }
+});
+
 $(document).on('change', 'select.headblend', function(evt) {
     updatePortrait($(this).attr('id'));
     updateHeadBlend($(this).attr('id'), $(this).val());
@@ -316,6 +357,11 @@ $(document).on('change', 'select.headblend', function(evt) {
 
 $(document).on('change', 'select.eyecolor', function(evt) {
     updateEyeColor($(this).val());
+});
+
+$(document).on('change', 'select.component.hairstyle', function(evt) {
+    // NOTE: hairstyle is a special case as you don't get to select texture for it
+    updateComponent($(this).attr('id'), $(this).val(), 'hair_2', 0, $(this).data('index'));
 });
 
 $(document).on('refresh', 'input[type=range].headblend', function(evt) {
@@ -351,6 +397,18 @@ $(document).on('input', 'input[type=range].headoverlay', function(evt) {
     // find the style select list id for which this is the opacity value
     let pairedId = $(this).parents().eq(2).find('.headoverlay').eq(0).attr('id');
     updateHeadOverlay($(this).attr('id'), pairedId, $(this).val(), $(this).data('index'), true);
+});
+
+$(document).on('change', '.palette.haircolor input:radio', function(evt) {
+    // NOTE: 'name' attribute value is taken from palette's id
+    let highlight = $(this).attr('name') != 'hair_color_1' ? true : false;
+    updateHairColor($(this).attr('name'), $(this).val(), highlight)
+});
+
+$(document).on('change', '.palette.overlaycolor input:radio', function(evt) {
+    // NOTE: 'name' attribute value is taken from palette's id
+    let palette = $(this).parents().eq(1)
+    updateOverlayColor($(this).attr('name'), $(this).val(), palette.data('index'), palette.data('colortype'))
 });
 
 /*  interface and current character synchronization     */
