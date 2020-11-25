@@ -42,6 +42,46 @@ $(document).ready(function() {
     });
 });
 
+/*  camera control  */
+var moving = false
+var lastOffsetX = 0
+var lastOffsetY = 0
+var lastScreenX = 0.5 * screen.width
+var lastScreenY = 0.5 * screen.height
+
+$('#cameracontrol').on('mousedown', function(event) {
+    if (event.button == 0) {
+        moving = true;
+    }
+});
+
+$('#cameracontrol').on('mouseup', function(event) {
+    if (moving && event.button == 0) {
+        moving = false;
+    }
+});
+
+$('#cameracontrol').on('mousemove', function(event) {
+    if (moving == true) {
+        let offsetX = event.screenX - lastScreenX;
+        let offsetY = event.screenY - lastScreenY;
+        if ((lastOffsetX > 0 && offsetX < 0) || (lastOffsetX < 0 && offsetX > 0)) {
+            offsetX = 0
+        }
+        if ((lastOffsetY > 0 && offsetY < 0) || (lastOffsetY < 0 && offsetY > 0)) {
+            offsetY = 0
+        }
+        lastScreenX = event.screenX;
+        lastScreenY = event.screenY;
+        lastOffsetX = offsetX;
+        lastOffsetY = offsetY;
+        $.post('https://cui_character/updateCameraRotation', JSON.stringify({
+            x: offsetX,
+            y: offsetY,
+        }));
+    }
+});
+
 /*  content loading     */
 function loadTabContent(tabName, charData) {
     $.get('pages/' + tabName + '.html', function(data) {

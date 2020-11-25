@@ -5,7 +5,7 @@ client_scripts {
     '@es_extended/locale.lua',
     'config.lua',
     'locales/en.lua',
-    'client/data.lua',
+    'client/camera.lua',
     'client/main.lua'
 }
 

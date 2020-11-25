@@ -35,8 +35,6 @@ local playerLoaded = false
 local firstSpawn = true
 local identityLoaded = false
 
-local camera = nil
-
 local currentChar = {}
 local oldChar = {}
 
@@ -54,36 +52,6 @@ function setVisible(visible)
         show = visible
     })
     isVisible = visible
-end
-
-function SetCamera(view)
-    local x, y , z = table.unpack(GetEntityCoords(PlayerPedId()))
-
-    if view == 'body' then
-        SetCamCoord(camera, x + 0.3, y + 2.0, z + 0.0)
-        SetCamRot(camera, 0.0, 0.0, 170.0)
-    elseif view == 'head' then
-        SetCamCoord(camera, x + 0.2, y + 0.5, z + 0.7)
-        SetCamRot(camera, 0.0, 0.0, 150.0)
-    end
-end
-
-function CreateCamera()
-    if not DoesCamExist(camera) then
-        camera = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
-    end
-
-    SetEntityHeading(PlayerPedId(), 0.0)
-    SetCamera('head')
-
-    SetCamActive(camera, true)
-    RenderScriptCams(true, true, 500, true, true)
-end
-
-function DeleteCamera()
-    SetCamActive(camera, false)
-    RenderScriptCams(false, true, 500, true, true)
-    camera = nil
 end
 
 AddEventHandler('cui_character:close', function(save)
@@ -106,7 +74,8 @@ AddEventHandler('cui_character:close', function(save)
         identityLoaded = false
     end
 
-    DeleteCamera()
+    --DeleteCamera()
+    Camera.Deactivate()
     setVisible(false)
 end)
 
@@ -154,7 +123,7 @@ AddEventHandler('cui_character:open', function(tabs)
         tab = firstTabName
     })
 
-    CreateCamera()
+    Camera.Activate()
     setVisible(true)
 end)
 
@@ -198,6 +167,12 @@ AddEventHandler('esx:onPlayerSpawn', function()
             Citizen.Wait(100)
         end
     end)
+end)
+
+RegisterNUICallback('updateCameraRotation', function(data, cb)
+    Camera.mouseX = tonumber(data['x'])
+    Camera.mouseY = tonumber(data['y'])
+    Camera.update = true
 end)
 
 RegisterNUICallback('playSound', function(data, cb)
