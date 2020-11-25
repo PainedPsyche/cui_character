@@ -195,6 +195,7 @@ function openPopup(data, callback, val) {
     $('.popup').fadeIn(100);
     $('.overlay').fadeIn(100);
     $('#main').css('pointer-events', 'none');
+    $('#cameracontrol').css('pointer-events', 'none');
     popupCallback = callback
     popupVal = val
 }
@@ -203,6 +204,7 @@ function closePopup() {
     $('.popup').fadeOut(100);
     $('.overlay').fadeOut(100);
     $('#main').css('pointer-events', 'auto');
+    $('#cameracontrol').css('pointer-events', 'auto');
 
     if (popupCallback) {
         popupCallback = null;
