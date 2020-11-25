@@ -82,6 +82,13 @@ $('#cameracontrol').on('mousemove', function(event) {
     }
 });
 
+$('#cameracontrol').on('wheel', function(event) {
+    let zoom = event.originalEvent.deltaY / 2000;
+    $.post('https://cui_character/updateCameraZoom', JSON.stringify({
+        zoom: zoom,
+    }));
+});
+
 /*  content loading     */
 function loadTabContent(tabName, charData) {
     $.get('pages/' + tabName + '.html', function(data) {

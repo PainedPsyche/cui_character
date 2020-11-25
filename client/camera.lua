@@ -1,10 +1,11 @@
 Camera = {}
 
 Camera.entity       = nil
+Camera.position     = vector3(0.0, 0.0, 0.0)
 Camera.active       = false
-Camera.update       = false
+Camera.updateRot    = false
+Camera.updateZoom   = false
 Camera.radius       = 1.25
-
 Camera.angleX       = 0.0
 Camera.angleY       = 0.0
 Camera.mouseX       = 0
@@ -18,8 +19,8 @@ Camera.Activate = function()
     local playerPed = PlayerPedId()
     local pedCoords = GetEntityCoords(playerPed)
 
-    local pos = Camera.CalculatePosition()
-    SetCamCoord(Camera.entity, pos.x, pos.y, pos.z)
+    Camera.position = Camera.CalculatePosition(true)
+    SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
     PointCamAtCoord(Camera.entity, pedCoords.x, pedCoords.y, pedCoords.z + 0.5)
 
     SetCamActive(Camera.entity, true)
@@ -36,6 +37,12 @@ Camera.Deactivate = function()
 end
 
 Camera.CalculateMaxRadius = function()
+    if Camera.radius < 1.0 then
+        Camera.radius = 1.0
+    elseif Camera.radius > 2.25 then
+        Camera.radius = 2.25
+    end
+
     local result = Camera.radius
 
     local playerPed = PlayerPedId()
@@ -56,14 +63,16 @@ Camera.CalculateMaxRadius = function()
     return result
 end
 
-Camera.CalculatePosition = function()
-    Camera.angleX = Camera.angleX - Camera.mouseX * 0.1
-    Camera.angleY = Camera.angleY + Camera.mouseY * 0.1
+Camera.CalculatePosition = function(adjustedAngle)
+    if adjustedAngle then
+        Camera.angleX = Camera.angleX - Camera.mouseX * 0.1
+        Camera.angleY = Camera.angleY + Camera.mouseY * 0.1
+    end
 
     if Camera.angleY > 80.0 then
         Camera.angleY = 80.0
-    elseif Camera.angleY < -50.0 then
-        Camera.angleY = -50.0
+    elseif Camera.angleY < -30.0 then
+        Camera.angleY = -30.0
     end
 
     local radiusMax = Camera.CalculateMaxRadius()
@@ -87,11 +96,16 @@ Citizen.CreateThread(function()
 
             DisableFirstPersonCamThisFrame()
 
-            if Camera.update then
-                local pos = Camera.CalculatePosition()
-                SetCamCoord(Camera.entity, pos.x, pos.y, pos.z)
+            if Camera.updateRot then
+                Camera.position = Camera.CalculatePosition(true)
+                SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
                 PointCamAtCoord(Camera.entity, pedCoords.x, pedCoords.y, pedCoords.z + 0.5)
-                Camera.update = false
+                Camera.updateRot = false
+            end
+            if Camera.updateZoom then
+                local pos = Camera.CalculatePosition(false)
+                SetCamCoord(Camera.entity, pos.x, pos.y, pos.z)
+                Camera.updateZoom = false
             end
         end
     end

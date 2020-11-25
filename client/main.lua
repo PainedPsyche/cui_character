@@ -74,7 +74,6 @@ AddEventHandler('cui_character:close', function(save)
         identityLoaded = false
     end
 
-    --DeleteCamera()
     Camera.Deactivate()
     setVisible(false)
 end)
@@ -172,7 +171,12 @@ end)
 RegisterNUICallback('updateCameraRotation', function(data, cb)
     Camera.mouseX = tonumber(data['x'])
     Camera.mouseY = tonumber(data['y'])
-    Camera.update = true
+    Camera.updateRot = true
+end)
+
+RegisterNUICallback('updateCameraZoom', function(data, cb)
+    Camera.radius = Camera.radius + (tonumber(data['zoom']))
+    Camera.updateZoom = true
 end)
 
 RegisterNUICallback('playSound', function(data, cb)
