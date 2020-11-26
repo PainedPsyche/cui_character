@@ -6,10 +6,15 @@ Camera.active       = false
 Camera.updateRot    = false
 Camera.updateZoom   = false
 Camera.radius       = 1.25
-Camera.angleX       = 0.0
+Camera.angleX       = 30.0  --TODO: Find out a way to calculate initial angleX so the camera is always in front of the ped
 Camera.angleY       = 0.0
 Camera.mouseX       = 0
 Camera.mouseY       = 0
+
+Camera.radiusMin    = 1.0
+Camera.radiusMax    = 2.25
+Camera.angleYMin    = -30.0
+Camera.angleYMax    = 80.0
 
 Camera.Activate = function()
     if not DoesCamExist(Camera.entity) then
@@ -19,9 +24,7 @@ Camera.Activate = function()
     local playerPed = PlayerPedId()
     local pedCoords = GetEntityCoords(playerPed)
 
-    Camera.position = Camera.CalculatePosition(true)
-    SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
-    PointCamAtCoord(Camera.entity, pedCoords.x, pedCoords.y, pedCoords.z + 0.5)
+    Camera.SetView('head')
 
     SetCamActive(Camera.entity, true)
     RenderScriptCams(true, true, 500, true, true)
@@ -36,11 +39,41 @@ Camera.Deactivate = function()
     Camera.active = false
 end
 
+Camera.SetView = function(view)
+    local boneIndex = -1
+
+    if view == 'head' then
+        boneIndex = 31086
+        Camera.radiusMin    = 0.8
+        Camera.radiusMax    = 1.0
+        Camera.angleYMin    = 40.0
+        Camera.angleYMax    = 60.0
+    elseif view == 'body' then
+        boneIndex = 11816
+        Camera.radiusMin    = 1.0
+        Camera.radiusMax    = 2.0
+        Camera.angleYMin    = 0.0
+        Camera.angleYMax    = 35.0
+    elseif view == 'legs' then 
+        boneIndex = 46078
+        Camera.radiusMin    = 1.1
+        Camera.radiusMax    = 1.25
+        Camera.angleYMin    = -30.0
+        Camera.angleYMax    = 10.0
+    end
+
+    Camera.radius = Camera.radiusMin
+    Camera.angleY = Camera.angleYMin
+    Camera.position = Camera.CalculatePosition(false)
+    SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
+    PointCamAtPedBone(Camera.entity, PlayerPedId(), boneIndex, 0.0, 0.0, 0.0, 0)
+end
+
 Camera.CalculateMaxRadius = function()
-    if Camera.radius < 1.0 then
-        Camera.radius = 1.0
-    elseif Camera.radius > 2.25 then
-        Camera.radius = 2.25
+    if Camera.radius < Camera.radiusMin then
+        Camera.radius = Camera.radiusMin
+    elseif Camera.radius > Camera.radiusMax then
+        Camera.radius = Camera.radiusMax
     end
 
     local result = Camera.radius
@@ -69,10 +102,10 @@ Camera.CalculatePosition = function(adjustedAngle)
         Camera.angleY = Camera.angleY + Camera.mouseY * 0.1
     end
 
-    if Camera.angleY > 80.0 then
-        Camera.angleY = 80.0
-    elseif Camera.angleY < -30.0 then
-        Camera.angleY = -30.0
+    if Camera.angleY > Camera.angleYMax then
+        Camera.angleY = Camera.angleYMax
+    elseif Camera.angleY < Camera.angleYMin then
+        Camera.angleY = Camera.angleYMin
     end
 
     local radiusMax = Camera.CalculateMaxRadius()
@@ -97,9 +130,8 @@ Citizen.CreateThread(function()
             DisableFirstPersonCamThisFrame()
 
             if Camera.updateRot then
-                Camera.position = Camera.CalculatePosition(true)
                 SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
-                PointCamAtCoord(Camera.entity, pedCoords.x, pedCoords.y, pedCoords.z + 0.5)
+                Camera.position = Camera.CalculatePosition(true)
                 Camera.updateRot = false
             end
             if Camera.updateZoom then

@@ -43,6 +43,12 @@ $(document).ready(function() {
 });
 
 /*  camera control  */
+function setView(event, view) {
+    $.post('https://cui_character/setCameraView', JSON.stringify({
+        view: view,
+    }));
+}
+
 var moving = false
 var lastOffsetX = 0
 var lastOffsetY = 0

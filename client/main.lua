@@ -168,6 +168,10 @@ AddEventHandler('esx:onPlayerSpawn', function()
     end)
 end)
 
+RegisterNUICallback('setCameraView', function(data, cb)
+    Camera.SetView(data['view'])
+end)
+
 RegisterNUICallback('updateCameraRotation', function(data, cb)
     Camera.mouseX = tonumber(data['x'])
     Camera.mouseY = tonumber(data['y'])
