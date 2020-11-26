@@ -35,6 +35,50 @@ h2, h3 {
     pointer-events: none;
 }
 
+#camerapanel {
+    position: absolute;
+    width: 10vw;
+    height: 6vh;
+    left: 40vw;
+    top: 5vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.cameraview {
+    flex: 1;
+    margin: 1%;
+    border: none;
+    outline: none;
+    border-radius: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 0.02vw solid rgba(255, 255, 255, 0.2);
+}
+
+.cameraview.active {
+    background-color: #f0f0f0;
+    border: 0.3vh solid #2d6eb9;
+}
+
+.cameraview > img {
+    max-height: 50%;
+    max-width: 50%;
+    pointer-events: none;
+}
+
+.cameraview#viewbody > img {
+    max-width: auto;
+}
+
+.cameraview:hover:not(.active) {
+    background-color: #646464;
+}
+
+.cameraview.active > img {
+    filter: invert();
+}
+
 #main {
     position: absolute;
     width: 25vw;

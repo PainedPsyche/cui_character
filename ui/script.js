@@ -33,6 +33,10 @@ $(document).ready(function() {
             $('div#' + event.data.tab + '.tabcontent').empty();
             loadTabContent(event.data.tab, event.data.character)
         }
+        else if (event.data.action == 'refreshViewButtons') {
+            $('.cameraview').removeClass('active')
+            $('#view' + event.data.view).addClass('active')
+        }
         else if (event.data.action == 'loadColorData') {
             hairColors = event.data.hair
             lipstickColors = event.data.lipstick
@@ -44,9 +48,16 @@ $(document).ready(function() {
 
 /*  camera control  */
 function setView(event, view) {
-    $.post('https://cui_character/setCameraView', JSON.stringify({
-        view: view,
-    }));
+    let wasActive = $(event.target).hasClass('active');
+    $('.cameraview').removeClass('active')
+
+    if (!wasActive) {
+        $.post('https://cui_character/setCameraView', JSON.stringify({
+            view: view,
+        }));
+    }
+
+    $(event.target).addClass('active')
 }
 
 var moving = false

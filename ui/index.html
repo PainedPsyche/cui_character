@@ -7,10 +7,19 @@
 
     <body style="display: none;">
         <div class="container">
-            <button id="viewhead" onclick="setView(event, 'head')">Head</button>
-            <button id="viewbody" onclick="setView(event, 'body')">Body</button>
-            <button id="viewlegs" onclick="setView(event, 'legs')">Legs</button>
-            <div id="cameracontrol" style="width: 100%; height: 100%;"></div>
+            <div id="cameracontrol" style="width: 100%; height: 100%;">
+                <div id="camerapanel">
+                    <button class="cameraview active" id="viewhead" onclick="setView(event, 'head')">
+                        <img src="assets/icons/head.svg">
+                    </button>
+                    <button class="cameraview" id="viewbody" onclick="setView(event, 'body')">
+                        <img src="assets/icons/body.svg">
+                    </button>
+                    <button class="cameraview" id="viewlegs" onclick="setView(event, 'legs')">
+                        <img src="assets/icons/legs.svg">
+                    </button>
+                </div>
+            </div>
             <div id="main">
                 <div id="tabs">
                     <button class="tablinks" id="tab-identity" onclick="openTab(event, 'identity')">

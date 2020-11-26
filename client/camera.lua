@@ -2,6 +2,7 @@ Camera = {}
 
 Camera.entity       = nil
 Camera.position     = vector3(0.0, 0.0, 0.0)
+Camera.currentView  = 'head'
 Camera.active       = false
 Camera.updateRot    = false
 Camera.updateZoom   = false
@@ -24,7 +25,7 @@ Camera.Activate = function()
     local playerPed = PlayerPedId()
     local pedCoords = GetEntityCoords(playerPed)
 
-    Camera.SetView('head')
+    Camera.SetView(Camera.currentView)
 
     SetCamActive(Camera.entity, true)
     RenderScriptCams(true, true, 500, true, true)
@@ -41,7 +42,6 @@ end
 
 Camera.SetView = function(view)
     local boneIndex = -1
-
     if view == 'head' then
         boneIndex = 31086
         Camera.radiusMin    = 0.8
@@ -67,6 +67,8 @@ Camera.SetView = function(view)
     Camera.position = Camera.CalculatePosition(false)
     SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
     PointCamAtPedBone(Camera.entity, PlayerPedId(), boneIndex, 0.0, 0.0, 0.0, 0)
+
+    Camera.currentView = view
 end
 
 Camera.CalculateMaxRadius = function()

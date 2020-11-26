@@ -123,6 +123,12 @@ AddEventHandler('cui_character:open', function(tabs)
     })
 
     Camera.Activate()
+
+    SendNUIMessage({
+        action = 'refreshViewButtons',
+        view = Camera.currentView
+    })
+
     setVisible(true)
 end)
 
