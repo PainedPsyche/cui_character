@@ -35,11 +35,15 @@ files {
     'ui/pages/features.html',
     'ui/pages/identity.html',
     'ui/pages/style.html',
-    'ui/pages/optional/blusher.html',
     'ui/pages/optional/chesthair.html',
     'ui/pages/optional/facialhair.html',
     'ui/pages/optional/hair_female.html',
-    'ui/pages/optional/hair_male.html'
+    'ui/pages/optional/hair_male.html',
+    'ui/pages/optional/makeup_blusher.html',
+    'ui/pages/optional/makeup_eye.html',
+    'ui/pages/optional/makeup_facepaint.html',
+    'ui/pages/optional/makeup_female.html',
+    'ui/pages/optional/makeup_male.html'
 }
 
 dependencies {

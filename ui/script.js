@@ -37,6 +37,9 @@ $(document).ready(function() {
             $('.cameraview').removeClass('active')
             $('#view' + event.data.view).addClass('active')
         }
+        else if (event.data.action == 'refreshMakeup') {
+            refreshMakeupUI(event.data.character, true)
+        }
         else if (event.data.action == 'loadColorData') {
             hairColors = event.data.hair
             lipstickColors = event.data.lipstick
@@ -115,7 +118,7 @@ function loadTabContent(tabName, charData) {
             loadOptionalContent(tab, charData);
             loadColorPalettes(tab)
         }
-        refreshTabData(tab, charData);
+        refreshContentData(tab, charData);
         if (tabName == 'identity') {
             updatePortrait('mom');
             updatePortrait('dad');
@@ -125,13 +128,13 @@ function loadTabContent(tabName, charData) {
 
 function loadOptionalContent(element, charData) {
     let hair = element.find('#hair');
+    let makeup = element.find('#makeup');
     let facialhair = element.find('#facialhair')
     let chesthair = element.find('#chesthair')
-    let blusher = element.find('#blusher')
 
     hair.empty()
+    makeup.empty()
     facialhair.empty()
-    blusher.empty()
 
     if (chesthair.hasClass('group')) {
         chesthair.removeClass('group')
@@ -139,44 +142,46 @@ function loadOptionalContent(element, charData) {
 
     if (chesthair.hasClass('group')) {
         chesthair.removeClass('group')
-    }
-
-    if (blusher.hasClass('group')) {
-        blusher.removeClass('group')
     }
 
     let hairpage = 'pages/optional/hair_';
+    let makeuppage = 'pages/optional/makeup_';
     // male
     if (charData.sex == 0) {
-        hairpage = hairpage + 'male.html'
+        let suffix = 'male.html'
+        hairpage = hairpage + suffix;
+        makeuppage = makeuppage + suffix;
         facialhair.addClass('group')
         $.get('pages/optional/facialhair.html', function(data) {
-            facialhair.html(data)
-            loadColorPalettes(facialhair)
-            refreshTabData(facialhair, charData);
+            facialhair.html(data);
+            loadColorPalettes(facialhair);
+            refreshContentData(facialhair, charData);
         });
         chesthair.addClass('group')
         $.get('pages/optional/chesthair.html', function(data) {
-            chesthair.html(data)
-            loadColorPalettes(chesthair)
-            refreshTabData(chesthair, charData);
+            chesthair.html(data);
+            loadColorPalettes(chesthair);
+            refreshContentData(chesthair, charData);
         });
     }
     // female
     else if (charData.sex == 1) {
-        hairpage = hairpage + 'female.html'
-        blusher.addClass('group')
-        $.get('pages/optional/blusher.html', function(data) {
-            blusher.html(data)
-            loadColorPalettes(blusher)
-            refreshTabData(blusher, charData);
-        });
+        let suffix = 'female.html'
+        hairpage = hairpage + suffix;
+        makeuppage = makeuppage + suffix;
     }
 
     $.get(hairpage, function(data) {
-        hair.html(data)
-        loadColorPalettes(hair)
-        refreshTabData(hair, charData);
+        hair.html(data);
+        loadColorPalettes(hair);
+        refreshContentData(hair, charData);
+    });
+
+    $.get(makeuppage, function(data) {
+        makeup.html(data);
+        loadColorPalettes(makeup);
+        refreshMakeupUI(charData, false)
+        refreshContentData(makeup, charData);
     });
 }
 
@@ -488,11 +493,60 @@ $(document).on('change', '.palette.overlaycolor input:radio', function(evt) {
     updateOverlayColor($(this).attr('name'), $(this).val(), palette.data('index'), palette.data('colortype'))
 });
 
+$(document).on('change', 'select.makeuptype', function(evt) {
+    let value = $(this).find('option:selected').val();
+    $.post('https://cui_character/updateMakeupType', JSON.stringify({type:value}));
+});
+
+function refreshMakeupUI(charData, setDefaultMakeup) {
+    let makeupcontrol = $(document).find('#makeup .list').first()
+    let makeuppage = 'pages/optional/makeup_'
+    let type = charData.makeup_type;
+
+    switch (type) {
+        // 'None'
+        case 0:
+            $.post('https://cui_character/clearMakeup', JSON.stringify({}));
+            break;
+        // 'Eye Makeup'
+        case 1:
+            makeuppage += 'eye.html'
+            break;
+        // 'Face Paint'
+        case 2:
+            makeuppage += 'facepaint.html'
+            break;
+        // 'Blusher'
+        case 3:
+            makeuppage += 'blusher.html'
+            break;
+        default:
+            break;
+    }
+
+    // Remove all content
+    makeupcontrol.nextAll('div').remove();
+
+    $.get(makeuppage, function(data) {
+        let makeupcontent = makeupcontrol.after(data).next()
+        loadColorPalettes(makeupcontent);
+        refreshContentData(makeupcontent, charData);
+
+        if (setDefaultMakeup) {
+            let makeupoption = makeupcontent.find('select option').first()
+            if (makeupoption) {
+                makeupoption.prop('selected', true)
+                makeupoption.trigger('change')
+            }
+        }
+    });
+}
+
 /*  interface and current character synchronization     */
-function refreshTabData(tab, data) {
+function refreshContentData(element, data) {
     for (const [key, value] of Object.entries(data)) {
         let keyId = '#' + key;
-        let control = tab.find(keyId);
+        let control = element.find(keyId);
         if (control.length) {
             let controltype = control.prop('nodeName');
             if (controltype == 'SELECT') { // arrow lists

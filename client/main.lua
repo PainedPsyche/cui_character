@@ -204,6 +204,43 @@ RegisterNUICallback('close', function(data, cb)
     TriggerEvent('cui_character:close', data['save'])
 end)
 
+RegisterNUICallback('updateMakeupType', function(data, cb)
+    --[[
+            NOTE:   This is a pure control variable that does not call any natives.
+                    It only modifies which options are going to be visible in the ui.
+
+                    Since blusher, face paint and eye makeup exclude eachother,
+                    we need to save in the database which type the player selected:
+
+                    0 - 'None',
+                    1 - 'Eye Makeup',
+                    2 - 'Face Paint',
+                    3 - 'Blusher'
+    ]]--
+    local type = tonumber(data['type'])
+    currentChar['makeup_type'] = type
+
+    SendNUIMessage({
+        action = 'refreshMakeup',
+        character = currentChar
+    })
+end)
+
+RegisterNUICallback('clearMakeup', function(data, cb)
+    -- TODO: update this when eye makeup/facepaint is done
+    currentChar['blush_1'] = 255
+    currentChar['blush_2'] = 100
+    currentChar['blush_3'] = 0
+    currentChar['makeup_2'] = 100
+    currentChar['makeup_1'] = 0
+    currentChar['makeup_2'] = 0
+    currentChar['makeup_3'] = 0
+    currentChar['makeup_4'] = 0
+
+    local playerPed = PlayerPedId()
+    SetPedHeadOverlay(playerPed, 5, currentChar.blush_1, currentChar.blush_2 / 100 + 0.0) -- Blusher
+end)
+
 RegisterNUICallback('updateGender', function(data, cb)
     local value = tonumber(data['value'])
     --[[
@@ -463,8 +500,9 @@ function GetDefaultCharacter(isMale)
         eyebrows_4 = 0,
         eyebrows_5 = 0,
         eyebrows_6 = 0,
+        makeup_type = 0,
         makeup_1 = 0,
-        makeup_2 = 0,
+        makeup_2 = 100,
         makeup_3 = 0,
         makeup_4 = 0,
         lipstick_1 = 255,
@@ -486,7 +524,7 @@ function GetDefaultCharacter(isMale)
         blemishes_1 = 0,
         blemishes_2 = 0,
         blush_1 = 255,
-        blush_2 = 0,
+        blush_2 = 100,
         blush_3 = 0,
         complexion_1 = 0,
         complexion_2 = 0,
