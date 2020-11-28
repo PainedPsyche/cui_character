@@ -468,7 +468,7 @@ $(document).on('change', 'select.headoverlay', function(evt) {
     updateHeadOverlay($(this).attr('id'), pairedId, $(this).val(), $(this).data('index'), false);
 });
 
-$(document).on('refresh', 'input[type=range].headoverlay', function(evt) {
+$(document).on('refresh', 'input[type=range].headoverlay, input[type=range].facepaintoverlay', function(evt) {
     let valueCenter = $(this).parent().siblings('.valuelabel.center');
     valueCenter.text($(this).val().toString() + '%');
 });
@@ -480,6 +480,62 @@ $(document).on('input', 'input[type=range].headoverlay', function(evt) {
     let pairedId = $(this).parents().eq(2).find('.headoverlay').eq(0).attr('id');
     updateHeadOverlay($(this).attr('id'), pairedId, $(this).val(), $(this).data('index'), true);
 });
+
+//// Face paints are a special (and really complex) case of headoverlay. ////
+$(document).on('change', 'select.facepaintoverlay', function(evt) {
+    let selected = $(this).find('option:selected');
+    let id = selected.attr('class');
+    let pairedId = null;
+    let type = null;
+    let prevtype = $(this).data('prev');
+    if (id == 'makeup_1') {
+        pairedId = 'makeup_2';
+        type = 'makeup';
+    }
+    else if (id == 'blush_1') {
+        pairedId = 'blush_2';
+        type = 'blush';
+    }
+    if (prevtype != type) {
+        $.post('https://cui_character/syncFacepaintOpacity', JSON.stringify({
+            prevtype: prevtype,
+            currenttype: type,
+        }));
+    }
+    $.post('https://cui_character/clearMakeup', JSON.stringify({clearopacity:false}));
+    updateHeadOverlay(id, pairedId, selected.val(), selected.data('index'), false);
+    $(this).data('prev', type)
+});
+
+$(document).on('input', 'input[type=range].facepaintoverlay', function(evt) {
+    $(this).trigger('refresh');
+    let selected = $(this).parents().eq(2).find('select').eq(0).find('option:selected');
+    let pairedId = selected.attr('class');
+    let id = null;
+    let type = null;
+    if (pairedId == 'makeup_1') {
+        id = 'makeup_2';
+        type = 'makeup';
+    }
+    else if (pairedId == 'blush_1') {
+        id = 'blush_2';
+        type = 'blush';
+    }
+    updateHeadOverlay(id, pairedId, $(this).val(), selected.data('index'), true);
+    if (type == 'makeup') {
+        $.post('https://cui_character/syncFacepaintOpacity', JSON.stringify({
+            prevtype: 'makeup',
+            currenttype: 'blush',
+        }));
+    }
+    else if (type == 'blush') {
+        $.post('https://cui_character/syncFacepaintOpacity', JSON.stringify({
+            prevtype: 'blush',
+            currenttype: 'makeup',
+        }));
+    }
+});
+////////////////////////////////////////////////////////
 
 $(document).on('change', '.palette.haircolor input:radio', function(evt) {
     // NOTE: 'name' attribute value is taken from palette's id
@@ -495,6 +551,7 @@ $(document).on('change', '.palette.overlaycolor input:radio', function(evt) {
 
 $(document).on('change', 'select.makeuptype', function(evt) {
     let value = $(this).find('option:selected').val();
+    $.post('https://cui_character/clearMakeup', JSON.stringify({clearopacity:true}));
     $.post('https://cui_character/updateMakeupType', JSON.stringify({type:value}));
 });
 
@@ -506,7 +563,6 @@ function refreshMakeupUI(charData, setDefaultMakeup) {
     switch (type) {
         // 'None'
         case 0:
-            $.post('https://cui_character/clearMakeup', JSON.stringify({}));
             break;
         // 'Eye Makeup'
         case 1:
@@ -533,7 +589,14 @@ function refreshMakeupUI(charData, setDefaultMakeup) {
         refreshContentData(makeupcontent, charData);
 
         if (setDefaultMakeup) {
-            let makeupoption = makeupcontent.find('select option').first()
+            let makeupoption = null;
+            if ((charData.makeup_type != 2) || 
+                ((charData.makeup_1 == 255) && (charData.blush_1 == 255))) {
+                makeupoption = makeupcontent.find('select option').first()
+            }
+            else {
+                makeupoption = makeupcontent.find('select option[value="7"]')
+            }
             if (makeupoption) {
                 makeupoption.prop('selected', true)
                 makeupoption.trigger('change')
@@ -544,6 +607,15 @@ function refreshMakeupUI(charData, setDefaultMakeup) {
 
 /*  interface and current character synchronization     */
 function refreshContentData(element, data) {
+    if (element.hasClass('facepaint')) {
+        if (data.makeup_type == 2) {
+            let facepaintcontrols = element.find('.facepaintoverlay');
+            let facepainttype = (data.makeup_1 == 255) ? 'blush' : 'makeup';
+            facepaintcontrols.eq(0).data('prev', facepainttype);
+            facepaintcontrols.eq(0).attr('id', facepainttype + '_1');
+            facepaintcontrols.eq(1).attr('id', facepainttype + '_2');
+        }
+    }
     for (const [key, value] of Object.entries(data)) {
         let keyId = '#' + key;
         let control = element.find(keyId);

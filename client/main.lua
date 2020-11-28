@@ -226,19 +226,31 @@ RegisterNUICallback('updateMakeupType', function(data, cb)
     })
 end)
 
+RegisterNUICallback('syncFacepaintOpacity', function(data, cb)
+    local prevtype = data['prevtype']
+    local currenttype = data['currenttype']
+    local prevopacity = prevtype .. '_2'
+    local currentopacity = currenttype .. '_2'
+    currentChar[currentopacity] = currentChar[prevopacity]
+end)
+
 RegisterNUICallback('clearMakeup', function(data, cb)
-    -- TODO: update this when eye makeup/facepaint is done
+    if data['clearopacity'] then
+        currentChar['blush_2'] = 100
+        currentChar['makeup_2'] = 100
+    end
+
     currentChar['blush_1'] = 255
-    currentChar['blush_2'] = 100
     currentChar['blush_3'] = 0
-    currentChar['makeup_2'] = 100
-    currentChar['makeup_1'] = 0
-    currentChar['makeup_2'] = 0
-    currentChar['makeup_3'] = 0
-    currentChar['makeup_4'] = 0
+    currentChar['makeup_1'] = 255
+    currentChar['makeup_3'] = 255
+    currentChar['makeup_4'] = 255
 
     local playerPed = PlayerPedId()
-    SetPedHeadOverlay(playerPed, 5, currentChar.blush_1, currentChar.blush_2 / 100 + 0.0) -- Blusher
+    SetPedHeadOverlay(playerPed, 5, currentChar.blush_1, currentChar.blush_2 / 100 + 0.0)   -- Blusher
+    SetPedHeadOverlayColor(playerPed, 5, 2, currentChar.blush_3, 255)                       -- Blusher Color
+    SetPedHeadOverlay(playerPed, 4, currentChar.makeup_1, currentChar.makeup_2 / 100 + 0.0) -- Eye Makeup
+    SetPedHeadOverlayColor(playerPed, 4, 0, currentChar.makeup_3, currentChar.makeup_4)     -- Eye Makeup Color
 end)
 
 RegisterNUICallback('updateGender', function(data, cb)
@@ -501,10 +513,10 @@ function GetDefaultCharacter(isMale)
         eyebrows_5 = 0,
         eyebrows_6 = 0,
         makeup_type = 0,
-        makeup_1 = 0,
+        makeup_1 = 255,
         makeup_2 = 100,
-        makeup_3 = 0,
-        makeup_4 = 0,
+        makeup_3 = 255,
+        makeup_4 = 255,
         lipstick_1 = 255,
         lipstick_2 = 0,
         lipstick_3 = 0,
@@ -637,7 +649,7 @@ function LoadCharacter(data)
     SetPedHeadOverlay(playerPed, 7, data.sun_1, data.sun_2 / 100 + 0.0)                  -- Sun Damage + Opacity
     SetPedEyeColor(playerPed, data.eye_color)                                            -- Eyes Color
     SetPedHeadOverlay(playerPed, 4, data.makeup_1, data.makeup_2 / 100 + 0.0)            -- Makeup + Opacity
-    SetPedHeadOverlayColor(playerPed, 4, 2, data.makeup_3, data.makeup_4)                -- Makeup Color
+    SetPedHeadOverlayColor(playerPed, 4, 0, data.makeup_3, data.makeup_4)                -- Makeup Color
     SetPedHeadOverlay(playerPed, 5, data.blush_1, data.blush_2 / 100 + 0.0)              -- Blush + Opacity
     SetPedHeadOverlayColor(playerPed, 5, 2,	data.blush_3)                                -- Blush Color
     SetPedHeadOverlay(playerPed, 8, data.lipstick_1, data.lipstick_2 / 100 + 0.0)        -- Lipstick + Opacity
