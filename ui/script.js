@@ -298,7 +298,6 @@ $('.popup #yes').on('click', function(evt) {
 });
 
 /*  option/value ui controls   */
-
 $(document).on('click', '.list .controls button', function(evt) {
     let list = $(this).siblings('select').first();
     let numOpt = list.children('option').length
@@ -481,7 +480,37 @@ $(document).on('input', 'input[type=range].headoverlay', function(evt) {
     updateHeadOverlay($(this).attr('id'), pairedId, $(this).val(), $(this).data('index'), true);
 });
 
-//// Face paints are a special (and really complex) case of headoverlay. ////
+/*  Face paints are a special (and really complex) case of headoverlay. 
+    Some count as makeup and have fixed colors, while others count as blusher and are colorable.
+
+    We need to make sure the color palette appears only when appropriate,
+    and that opacity slider doesn't suddenly jump when switching between these types.
+*/
+
+function setupFacepaintColors(facepaintgroup, colorable, resetcolor) {
+        // Here we create or destroy color palette depending on the chosen facepaint type
+        if (colorable) {
+            let newelement = `
+            <div class="colorselect">
+                <h3 class="header">Color</h3>
+                <div class="palette facepaint overlaycolor" id="blush_3" data-index="5" data-colortype="2">
+                </div>
+            </div>
+            `
+            facepaintgroup.append(newelement);
+            loadColorPalettes(facepaintgroup);
+
+            if (resetcolor) {
+                let firstcolor = facepaintgroup.find('.colorselect .palette input:radio').first();
+                firstcolor.prop('checked', true);
+                firstcolor.trigger('change');
+            }
+        }
+        else {
+            colors = facepaintgroup.find('.colorselect').remove();
+        }
+}
+
 $(document).on('change', 'select.facepaintoverlay', function(evt) {
     let selected = $(this).find('option:selected');
     let id = selected.attr('class');
@@ -496,13 +525,18 @@ $(document).on('change', 'select.facepaintoverlay', function(evt) {
         pairedId = 'blush_2';
         type = 'blush';
     }
+
     if (prevtype != type) {
         $.post('https://cui_character/syncFacepaintOpacity', JSON.stringify({
             prevtype: prevtype,
             currenttype: type,
         }));
+
+        let colorable = (prevtype == 'makeup');
+        let group = $(this).parents().eq(2);
+        setupFacepaintColors(group, colorable, true);
+        $.post('https://cui_character/clearMakeup', JSON.stringify({clearopacity:false}));
     }
-    $.post('https://cui_character/clearMakeup', JSON.stringify({clearopacity:false}));
     updateHeadOverlay(id, pairedId, selected.val(), selected.data('index'), false);
     $(this).data('prev', type)
 });
@@ -607,13 +641,20 @@ function refreshMakeupUI(charData, setDefaultMakeup) {
 
 /*  interface and current character synchronization     */
 function refreshContentData(element, data) {
+    let facepaintcolorable = false;
     if (element.hasClass('facepaint')) {
         if (data.makeup_type == 2) {
             let facepaintcontrols = element.find('.facepaintoverlay');
-            let facepainttype = (data.makeup_1 == 255) ? 'blush' : 'makeup';
+            let facepainttype = 'makeup';
+            if (data.makeup_1 == 255) {
+                facepainttype = 'blush';
+                facepaintcolorable = true;
+            }
             facepaintcontrols.eq(0).data('prev', facepainttype);
             facepaintcontrols.eq(0).attr('id', facepainttype + '_1');
             facepaintcontrols.eq(1).attr('id', facepainttype + '_2');
+
+            setupFacepaintColors(facepaintcontrols.eq(0).parents().eq(2), facepaintcolorable, false);
         }
     }
     for (const [key, value] of Object.entries(data)) {
@@ -623,6 +664,20 @@ function refreshContentData(element, data) {
             let controltype = control.prop('nodeName');
             if (controltype == 'SELECT') { // arrow lists
                 control.val(value);
+
+                /* NOTE: For facepaint list we need an extra check since it has multiple
+                         options with duplicated values.
+
+                         This part of the code needs to be revised if Rockstar ever adds
+                         more colorable facepaint variants.
+                */
+                if ((control.hasClass('facepaintoverlay') && facepaintcolorable)) {
+                    if ((value >= 26) && (value < 33)) {
+                        let duplicateoptions = control.find('option[value="' + value + '"]');
+                        duplicateoptions.eq(0).prop('selected', false); // incorrect
+                        duplicateoptions.eq(1).prop('selected', true);  // correct
+                    }
+                }
             }
             else if (controltype == 'INPUT') { // range sliders
                 // NOTE: Check out property 'type' (ex. range) if this isn't unique enough
