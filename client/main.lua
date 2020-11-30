@@ -209,13 +209,12 @@ RegisterNUICallback('updateMakeupType', function(data, cb)
             NOTE:   This is a pure control variable that does not call any natives.
                     It only modifies which options are going to be visible in the ui.
 
-                    Since blusher, face paint and eye makeup exclude eachother,
+                    Since face paint replaces blusher and eye makeup,
                     we need to save in the database which type the player selected:
 
                     0 - 'None',
                     1 - 'Eye Makeup',
-                    2 - 'Face Paint',
-                    3 - 'Blusher'
+                    2 - 'Face Paint'
     ]]--
     local type = tonumber(data['type'])
     currentChar['makeup_type'] = type
@@ -236,21 +235,26 @@ end)
 
 RegisterNUICallback('clearMakeup', function(data, cb)
     if data['clearopacity'] then
-        currentChar['blush_2'] = 100
         currentChar['makeup_2'] = 100
+        if data['clearblusher'] then
+            currentChar['blush_2'] = 100
+        end
     end
 
-    currentChar['blush_1'] = 255
-    currentChar['blush_3'] = 0
     currentChar['makeup_1'] = 255
     currentChar['makeup_3'] = 255
     currentChar['makeup_4'] = 255
 
     local playerPed = PlayerPedId()
-    SetPedHeadOverlay(playerPed, 5, currentChar.blush_1, currentChar.blush_2 / 100 + 0.0)   -- Blusher
-    SetPedHeadOverlayColor(playerPed, 5, 2, currentChar.blush_3, 255)                       -- Blusher Color
     SetPedHeadOverlay(playerPed, 4, currentChar.makeup_1, currentChar.makeup_2 / 100 + 0.0) -- Eye Makeup
     SetPedHeadOverlayColor(playerPed, 4, 0, currentChar.makeup_3, currentChar.makeup_4)     -- Eye Makeup Color
+
+    if data['clearblusher'] then
+        currentChar['blush_1'] = 255
+        currentChar['blush_3'] = 0
+        SetPedHeadOverlay(playerPed, 5, currentChar.blush_1, currentChar.blush_2 / 100 + 0.0)   -- Blusher
+        SetPedHeadOverlayColor(playerPed, 5, 2, currentChar.blush_3, 255)                       -- Blusher Color
+    end
 end)
 
 RegisterNUICallback('updateGender', function(data, cb)
