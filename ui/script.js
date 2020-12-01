@@ -384,9 +384,22 @@ function updateHairColor(key, value, highlight) {
 function updateHeadOverlay(key, keyPaired, value, index, isOpacity) {
     $.post('https://cui_character/updateHeadOverlay', JSON.stringify({
         key: key,
+        keyPaired: keyPaired, // NOTE: opacity for type and type for opacity
+        value: value,
+        index: index,
+        isOpacity: isOpacity,
+    }));
+}
+
+function updateHeadOverlayExtra(key, keyPaired, value, index, keyExtra, valueExtra, indexExtra, isOpacity) {
+    $.post('https://cui_character/updateHeadOverlayExtra', JSON.stringify({
+        key: key,
         keyPaired: keyPaired,
         value: value,
         index: index,
+        keyExtra: keyExtra,
+        valueExtra: valueExtra,
+        indexExtra: indexExtra,
         isOpacity: isOpacity,
     }));
 }
@@ -487,7 +500,7 @@ $(document).on('change', 'select.headoverlay', function(evt) {
     updateHeadOverlay($(this).attr('id'), pairedId, $(this).val(), $(this).data('index'), false);
 });
 
-$(document).on('refresh', 'input[type=range].headoverlay, input[type=range].facepaintoverlay', function(evt) {
+$(document).on('refresh', 'input[type=range].headoverlay, input[type=range].headoverlayextra, input[type=range].facepaintoverlay', function(evt) {
     let valueCenter = $(this).parent().siblings('.valuelabel.center');
     valueCenter.text($(this).val().toString() + '%');
 });
@@ -500,7 +513,43 @@ $(document).on('input', 'input[type=range].headoverlay', function(evt) {
     updateHeadOverlay($(this).attr('id'), pairedId, $(this).val(), $(this).data('index'), true);
 });
 
-/*  Face paints are a special (and really complex) case of headoverlay. 
+/*
+    This is a special (extended) case of headoverlay that is used by 'skin blemishes'
+    and 'moles & freckles' properties. In addition to changing the face, these also
+    change the body.
+*/
+$(document).on('change', 'select.headoverlayextra', function(evt) {
+    let pairedId = $(this).parents().eq(2).find('.headoverlayextra').eq(1).attr('id');
+    updateHeadOverlayExtra(
+        $(this).attr('id'),
+        pairedId,
+        $(this).val(),
+        $(this).data('index'),
+        $(this).data('keyextra'),
+        $(this).find('option:selected').data('extra'),
+        $(this).data('indexextra'),
+        false
+    );
+});
+
+$(document).on('input', 'input[type=range].headoverlayextra', function(evt) {
+    $(this).trigger('refresh')
+    let pairedkey = $(this).parents().eq(2).find('.headoverlayextra').eq(0)
+    let pairedid = pairedkey.attr('id');
+    updateHeadOverlayExtra(
+        $(this).attr('id'),
+        pairedid,
+        $(this).val(),
+        $(this).data('index'),
+        $(this).data('keyextra'),
+        pairedkey.find('option:selected').data('extra'), // NOTE: For opacity this field is used to pass paired (non-opacity) value since we need it in the native call.
+        $(this).data('indexextra'),
+        true
+    );
+});
+
+/*
+    Face paints are a special (and really complex) case of headoverlay. 
     Some count as makeup and have fixed colors, while others count as blusher and are colorable.
 
     We need to make sure the color palette appears only when appropriate,

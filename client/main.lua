@@ -333,6 +333,30 @@ RegisterNUICallback('updateHeadOverlay', function(data, cb)
     end
 end)
 
+RegisterNUICallback('updateHeadOverlayExtra', function(data, cb)
+    local key = data['key']
+    local keyPaired = data['keyPaired']
+    local value = tonumber(data['value'])
+    local index = tonumber(data['index'])
+    local keyExtra = data['keyExtra']
+    local valueExtra = tonumber(data['valueExtra'])
+    local indexExtra = tonumber(data['indexExtra'])
+    local isOpacity = (data['isOpacity'])
+
+    currentChar[key] = value
+
+    local playerPed = PlayerPedId()
+    if isOpacity then
+        currentChar[keyExtra] = value
+        SetPedHeadOverlay(playerPed, index, currentChar[keyPaired], currentChar[key] / 100 + 0.0)
+        SetPedHeadOverlay(playerPed, indexExtra, valueExtra, currentChar[key] / 100 + 0.0)
+    else
+        currentChar[keyExtra] = valueExtra
+        SetPedHeadOverlay(playerPed, index, currentChar[key], currentChar[keyPaired] / 100 + 0.0)
+        SetPedHeadOverlay(playerPed, indexExtra, currentChar[keyExtra], currentChar[keyPaired] / 100 + 0.0)
+    end
+end)
+
 RegisterNUICallback('updateOverlayColor', function(data, cb)
     local key = data['key']
     local value = tonumber(data['value'])
@@ -531,23 +555,23 @@ function GetDefaultCharacter(isMale)
         chest_2 = 0,
         chest_3 = 0,
         chest_4 = 0,
-        bodyb_1 = -1,
-        bodyb_2 = 0,
-        bodyb_3 = -1,
-        bodyb_4 = 0,
-        age_1 = 0,
-        age_2 = 0,
-        blemishes_1 = 0,
-        blemishes_2 = 0,
+        bodyb_1 = 255,
+        bodyb_2 = 100,
+        bodyb_3 = 255,
+        bodyb_4 = 100,
+        age_1 = 255,
+        age_2 = 100,
+        blemishes_1 = 255,
+        blemishes_2 = 100,
         blush_1 = 255,
         blush_2 = 100,
         blush_3 = 0,
-        complexion_1 = 0,
-        complexion_2 = 0,
-        sun_1 = 0,
-        sun_2 = 0,
-        moles_1 = 0,
-        moles_2 = 0,
+        complexion_1 = 255,
+        complexion_2 = 100,
+        sun_1 = 255,
+        sun_2 = 100,
+        moles_1 = 255,
+        moles_2 = 100,
         beard_1 = 255,
         beard_2 = 0,
         beard_3 = 0,
@@ -640,12 +664,10 @@ function LoadCharacter(data)
     SetPedHeadOverlay(playerPed, 1, data.beard_1, data.beard_2 / 100 + 0.0)              -- Beard Style + Opacity
     SetPedHeadOverlayColor(playerPed, 1, 1, data.beard_3, data.beard_4)                 -- Beard Color
 
-    SetPedHeadOverlay(playerPed, 0, data.blemishes_1, data.blemishes_2 / 100 + 0.0)      -- Face blemishes + Opacity
-    if data.bodyb_1 == -1 then
-        SetPedHeadOverlay(playerPed, 11, 255, data.bodyb_2 / 100 + 0.0)                  -- Body Blemishes + Opacity
-    else
-        SetPedHeadOverlay(playerPed, 11, data.bodyb_1, data.bodyb_2 / 100 + 0.0)
-    end
+    SetPedHeadOverlay(playerPed, 0, data.blemishes_1, data.blemishes_2 / 100 + 0.0)      -- Skin blemishes + Opacity
+    SetPedHeadOverlay(playerPed, 12, data.bodyb_3, data.bodyb_4 / 100 + 0.0)             -- Skin blemishes body effect + Opacity
+
+    SetPedHeadOverlay(playerPed, 11, data.bodyb_1, data.bodyb_2 / 100 + 0.0)             -- Body Blemishes + Opacity
 
     SetPedHeadOverlay(playerPed, 3, data.age_1, data.age_2 / 100 + 0.0)                  -- Age + opacity
     SetPedHeadOverlay(playerPed, 6, data.complexion_1, data.complexion_2 / 100 + 0.0)    -- Complexion + Opacity
