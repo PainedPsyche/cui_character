@@ -30,6 +30,9 @@ end
 ESX = nil
 local initialized = false
 
+local openTabs = {}
+local currentTab = nil
+
 local isVisible = false
 local playerLoaded = false
 local firstSpawn = true
@@ -54,6 +57,31 @@ function setVisible(visible)
     isVisible = visible
 end
 
+function ResetAllTabs()
+    local clothes = nil
+    for k, v in pairs(openTabs) do
+        if openTabs[k] == 'apparel' then
+            clothes = GetClothesData()
+        end
+    end
+        
+    SendNUIMessage({
+        action = 'clearAllTabs'
+    })
+
+    SendNUIMessage({
+        action = 'enableTabs',
+        tabs = openTabs,
+        character = currentChar,
+        clothes = clothes
+    })
+
+    SendNUIMessage({
+        action = 'activateTab',
+        tab = currentTab
+    })
+end
+
 AddEventHandler('cui_character:close', function(save)
     -- Saving and discarding changes
     if save then
@@ -76,6 +104,10 @@ AddEventHandler('cui_character:close', function(save)
 
     Camera.Deactivate()
     setVisible(false)
+
+    for i = 0, #openTabs do
+        openTabs[i] = nil
+    end
 end)
 
 RegisterNetEvent('cui_character:open')
@@ -93,12 +125,17 @@ AddEventHandler('cui_character:open', function(tabs)
 
     local firstTabName = ''
     local clothes = nil
+    for i = 0, #openTabs do
+        openTabs[i] = nil
+    end
+
     for k, v in pairs(tabs) do
         if k == 1 then
             firstTabName = v
         end
 
         local tabName = tabs[k]
+        table.insert(openTabs, tabName)
         if tabName == 'identity' then
             if not identityLoaded then
                 RequestStreamedTextureDict('pause_menu_pages_char_mom_dad')
@@ -204,6 +241,10 @@ RegisterNUICallback('playSound', function(data, cb)
     end
 end)
 
+RegisterNUICallback('setCurrentTab', function(data, cb)
+    currentTab = data['tab']
+end)
+
 RegisterNUICallback('close', function(data, cb)
     TriggerEvent('cui_character:close', data['save'])
 end)
@@ -263,19 +304,8 @@ end)
 
 RegisterNUICallback('updateGender', function(data, cb)
     local value = tonumber(data['value'])
-    --[[
-             NOTE: bring this back if we decide on not doing
-             a complete customization reset here.
-
-            --currentChar['sex'] = value
-    ]]--
     LoadCharacter(GetDefaultCharacter(value == 0))
-    SendNUIMessage({
-        action = 'reloadTab',
-        tab = 'style',
-        character = currentChar,
-        clothes = nil
-    })
+    ResetAllTabs()
 end)
 
 RegisterNUICallback('updateHeadBlend', function(data, cb)
@@ -426,15 +456,20 @@ RegisterNUICallback('updateApparelComponent', function(data, cb)
         end
     end
 
-    -- Forced components do not pick proper torso for female character's 'None' variant, need manual correction
+    -- Forced components do not pick proper torso for 'None' variant, need manual correction
     if GetEntityModel(playerPed) == GetHashKey('mp_f_freemode_01') then
         if (GetPedDrawableVariation(playerPed, 11) == 15) and (GetPedTextureVariation(playerPed, 11) == 16) then
             currentChar['arms'] = 15
             currentChar['arms_2'] = 0
             SetPedComponentVariation(playerPed, 3, 15, 0, 2);
         end
+    elseif GetEntityModel(playerPed) == GetHashKey('mp_m_freemode_01') then
+        if (GetPedDrawableVariation(playerPed, 11) == 15) and (GetPedTextureVariation(playerPed, 11) == 0) then
+            currentChar['arms'] = 15
+            currentChar['arms_2'] = 0
+            SetPedComponentVariation(playerPed, 3, 15, 0, 2);
+        end
     end
-
 end)
 
 RegisterNUICallback('updateApparelProp', function(data, cb)

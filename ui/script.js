@@ -33,6 +33,9 @@ $(document).ready(function() {
         else if (event.data.action == 'activateTab') {
             $('#tab-' + event.data.tab).addClass('active');
             $('#' + event.data.tab).show()
+            $.post('https://cui_character/setCurrentTab', JSON.stringify({
+                tab: event.data.tab,
+            }));
         }
         else if (event.data.action == 'reloadTab') {
             $('div#' + event.data.tab + '.tabcontent').empty();
@@ -401,7 +404,12 @@ function openTab(evt, tab) {
     $('#' + tab).show();
 
     if (!wasActive) {
-        $.post('https://cui_character/playSound', JSON.stringify({sound:'tabchange'}));
+        $.post('https://cui_character/playSound', JSON.stringify({
+            sound:'tabchange'
+        }));
+        $.post('https://cui_character/setCurrentTab', JSON.stringify({
+            tab: tab,
+        }));
     }
 
     $(evt.target).addClass('active')
