@@ -288,6 +288,27 @@ function loadClothesTab(tab, clothesData, male) {
         shoeslist.append(option);
     });
 
+    /* bags     NOTE: there seems to be no named components in this category, commenting it out
+    let bagslist = tab.find('select#bag.clotheslist');
+    bagslist.empty();
+    bagslist.append($('<option data-component="5" data-drawable="0" data-texture="0">None</option>')) // "None" option
+    clothesData.bags.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        bagslist.append(option);
+    });
+    */
+
+    // neck or arm accessory
+    let neckarmslist = tab.find('select#neckarm.clotheslist');
+    neckarmslist.empty();
+    neckarmslist.append($('<option data-component="7" data-drawable="0" data-texture="0">None</option>')) // "None" option
+    clothesData.neckarms.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        neckarmslist.append(option);
+    });
+
     // hat
     let hatslist = tab.find('select#hat.clotheslist');
     hatslist.empty();
@@ -906,6 +927,8 @@ function refreshContentData(element, data) {
         refreshComponentList(element, '#topunder', 8, data.tshirt_1, data.tshirt_2);
         refreshComponentList(element, '#pants', 4, data.pants_1, data.pants_2);
         refreshComponentList(element, '#shoes', 6, data.shoes_1, data.shoes_2);
+        // refreshComponentList(element, '#bag', 5, data.bags_1, data.bags_2); NOTE: there seems to be no named components in this category, commenting it out
+        refreshComponentList(element, '#neckarm', 7, data.neckarm_1, data.neckarm_2);
 
         // props
         refreshPropList(element, '#hat', 0, data.helmet_1, data.helmet_2);

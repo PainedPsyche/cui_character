@@ -664,6 +664,8 @@ function GetClothesData()
         topsunder = {},
         pants = {},
         shoes = {},
+        bags = {},
+        neckarms = {},
         hats = {},
         ears = {},
         glasses = {},
@@ -675,6 +677,8 @@ function GetClothesData()
     result.topsunder = GetComponentsData(8)
     result.pants = GetComponentsData(4)
     result.shoes = GetComponentsData(6)
+    -- result.bags = GetComponentsData(5)   -- there seems to be no named components in this category
+    result.neckarms = GetComponentsData(7)  -- chains/ties/suspenders/bangles
 
     result.hats = GetPropsData(0)
     result.ears = GetPropsData(2)
@@ -729,8 +733,8 @@ function GetDefaultCharacter(isMale)
         mask_2 = 0,
         bproof_1 = 0,
         bproof_2 = 0,
-        chain_1 = 0,
-        chain_2 = 0,
+        neckarm_1 = 0,
+        neckarm_2 = 0,
         helmet_1 = -1,
         helmet_2 = 0,
         glasses_1 = -1,
@@ -893,16 +897,16 @@ function LoadCharacter(data)
     SetPedHeadOverlayColor(playerPed, 10, 1, data.chest_3, data.chest_4)                 -- Chest Hair Color
 
     -- Clothing and Accessories
-    SetPedComponentVariation(playerPed, 8,  data.tshirt_1, data.tshirt_2, 2)    -- Undershirts
-    SetPedComponentVariation(playerPed, 11, data.torso_1,  data.torso_2,  2)    -- Jackets
-    SetPedComponentVariation(playerPed, 3,  data.arms,     data.arms_2,   2)    -- Torsos
-    SetPedComponentVariation(playerPed, 10, data.decals_1, data.decals_2, 2)    -- Decals
-    SetPedComponentVariation(playerPed, 4,  data.pants_1,  data.pants_2,  2)    -- Legs
-    SetPedComponentVariation(playerPed, 6,  data.shoes_1,  data.shoes_2,  2)    -- Shoes
-    SetPedComponentVariation(playerPed, 1,  data.mask_1,   data.mask_2,   2)    -- Masks
-    SetPedComponentVariation(playerPed, 9,  data.bproof_1, data.bproof_2, 2)    -- Vests
-    SetPedComponentVariation(playerPed, 7,  data.chain_1,  data.chain_2,  2)    -- Necklaces/Chains
-    SetPedComponentVariation(playerPed, 5,  data.bags_1,   data.bags_2,   2)    -- Bags
+    SetPedComponentVariation(playerPed, 8,  data.tshirt_1, data.tshirt_2, 2)        -- Undershirts
+    SetPedComponentVariation(playerPed, 11, data.torso_1,  data.torso_2,  2)        -- Jackets
+    SetPedComponentVariation(playerPed, 3,  data.arms,     data.arms_2,   2)        -- Torsos
+    SetPedComponentVariation(playerPed, 10, data.decals_1, data.decals_2, 2)        -- Decals
+    SetPedComponentVariation(playerPed, 4,  data.pants_1,  data.pants_2,  2)        -- Legs
+    SetPedComponentVariation(playerPed, 6,  data.shoes_1,  data.shoes_2,  2)        -- Shoes
+    SetPedComponentVariation(playerPed, 1,  data.mask_1,   data.mask_2,   2)        -- Masks
+    SetPedComponentVariation(playerPed, 9,  data.bproof_1, data.bproof_2, 2)        -- Vests
+    SetPedComponentVariation(playerPed, 7,  data.neckarm_1,  data.neckarm_2,  2)    -- Necklaces/Chains/Ties/Suspenders
+    SetPedComponentVariation(playerPed, 5,  data.bags_1,   data.bags_2,   2)        -- Bags
 
     if data.helmet_1 == -1 then
         ClearPedProp(playerPed, 0)
@@ -919,18 +923,18 @@ function LoadCharacter(data)
     if data.lefthand_1 == -1 then
         ClearPedProp(playerPed, 6)
     else
-        SetPedPropIndex(playerPed, 6, data.lefthand_1, data.lefthand_2, 2)        -- Left Hand Accessory
+        SetPedPropIndex(playerPed, 6, data.lefthand_1, data.lefthand_2, 2)      -- Left Hand Accessory
     end
 
     if data.righthand_1 == -1 then
         ClearPedProp(playerPed,	7)
     else
-        SetPedPropIndex(playerPed, 7, data.righthand_1, data.righthand_2, 2)      -- Right Hand Accessory
+        SetPedPropIndex(playerPed, 7, data.righthand_1, data.righthand_2, 2)    -- Right Hand Accessory
     end
 
     if data.ears_1 == -1 then
         ClearPedProp(playerPed, 2)
     else
-        SetPedPropIndex (playerPed, 2, data.ears_1, data.ears_2, 2)               -- Ear Accessory
+        SetPedPropIndex (playerPed, 2, data.ears_1, data.ears_2, 2)             -- Ear Accessory
     end
 end
