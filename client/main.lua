@@ -973,3 +973,78 @@ function LoadCharacter(data)
         SetPedPropIndex (playerPed, 2, data.ears_1, data.ears_2, 2)             -- Ear Accessory
     end
 end
+
+-- Map Locations
+function GetDistanceToLocation(locations)
+    local result = 1000
+    local pedPosition = GetEntityCoords(PlayerPedId())
+
+    for i = 1, #locations do
+        local loc = locations[i]
+        local distance = GetDistanceBetweenCoords(pedPosition.x, pedPosition.y, pedPosition.z, loc[1], loc[2], loc[3], false)
+
+        if distance < result then
+            result = distance
+        end
+
+        if (distance < 20.0) and (distance > 1.0) then
+            DrawMarker(
+                20,
+                loc[1], loc[2], loc[3] + 1.0,
+                0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0,
+                1.0, 1.0, 1.0,
+                45, 110, 185, 128,
+                true,   -- move up and down
+                false,
+                2,
+                true,  -- rotate
+                nil,
+                nil,
+                false
+            )
+        end
+    end
+
+    return result
+end
+
+function DisplayTooltip(suffix)
+    SetTextComponentFormat('STRING')
+    AddTextComponentString('Press ~INPUT_PICKUP~ to ' .. suffix)
+    DisplayHelpTextFromStringLabel(0, 0, 1, -1)
+end
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(1)
+    
+        if Config.EnableClothingShops then
+            local dstCloth = GetDistanceToLocation(Config.ClothingShops)
+            if (dstCloth < 1.0) and (not isVisible) then
+                DisplayTooltip('use clothing store.')
+                -- TODO: make nearby players invisible, 
+                --       use https://runtime.fivem.net/doc/natives/?_0xE135A9FF3F5D05D8
+                if IsControlJustPressed(1, 38) then
+                    TriggerEvent('cui_character:open', { 'apparel' })
+                end
+            end
+        end
+    end
+end)
+
+-- Map Blips
+if Config.EnableClothingShops then
+    Citizen.CreateThread(function()
+        for k, v in ipairs(Config.ClothingShops) do
+            local blip = AddBlipForCoord(v)
+            SetBlipSprite(blip, 73)
+            SetBlipColour(blip, 84)
+            SetBlipAsShortRange(blip, true)
+
+            BeginTextCommandSetBlipName('STRING')
+            AddTextComponentString('Clothing Store')
+            EndTextCommandSetBlipName(blip)
+        end
+    end)
+end
