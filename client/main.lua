@@ -80,7 +80,6 @@ end)
 
 RegisterNetEvent('cui_character:open')
 AddEventHandler('cui_character:open', function(tabs)
-
     -- Request textures
     RequestStreamedTextureDict('mparrow')
     RequestStreamedTextureDict('mpleaderboard')
@@ -93,6 +92,7 @@ AddEventHandler('cui_character:open', function(tabs)
     })
 
     local firstTabName = ''
+    local clothes = nil
     for k, v in pairs(tabs) do
         if k == 1 then
             firstTabName = v
@@ -108,13 +108,17 @@ AddEventHandler('cui_character:open', function(tabs)
                 end
                 identityLoaded = true
             end
+        elseif tabName == 'apparel' then
+            -- load clothes data from natives here
+            clothes = GetClothesData()
         end
     end
 
     SendNUIMessage({
         action = 'enableTabs',
         tabs = tabs,
-        character = currentChar
+        character = currentChar,
+        clothes = clothes
     })
 
     SendNUIMessage({
@@ -269,7 +273,8 @@ RegisterNUICallback('updateGender', function(data, cb)
     SendNUIMessage({
         action = 'reloadTab',
         tab = 'style',
-        character = currentChar
+        character = currentChar,
+        clothes = nil
     })
 end)
 
@@ -381,6 +386,73 @@ RegisterNUICallback('updateComponent', function(data, cb)
     SetPedComponentVariation(playerPed, index, currentChar[drawableKey], currentChar[textureKey], 2)
 end)
 
+RegisterNUICallback('updateApparelComponent', function(data, cb)
+    local drawableKey = data['drwkey']
+    local textureKey = data['texkey']
+    local component = tonumber(data['cmpid'])
+    currentChar[drawableKey] = tonumber(data['drwval'])
+    currentChar[textureKey] = tonumber(data['texval'])
+
+    local playerPed = PlayerPedId()
+    SetPedComponentVariation(playerPed, component, currentChar[drawableKey], currentChar[textureKey], 2)
+
+    -- Some clothes have 'forced components' that change torso and other parts.
+    -- adapted from: https://gist.github.com/root-cause/3b80234367b0c856d60bf5cb4b826f86
+    local hash = GetHashNameForComponent(playerPed, component, currentChar[drawableKey], currentChar[textureKey])
+    --print('main component hash ' .. hash)
+    local fcDrawable, fcTexture, fcType = -1, -1, -1
+    local fcCount = GetShopPedApparelForcedComponentCount(hash) - 1
+    --print('found ' .. fcCount + 1 .. ' forced components')
+    for fcId = 0, fcCount do
+        local fcNameHash, fcEnumVal, f5, f7, f8 = -1, -1, -1, -1, -1
+        fcNameHash, fcEnumVal, fcType = GetForcedComponent(hash, fcId)
+        --print('forced component [' .. fcId .. ']: nameHash: ' .. fcNameHash .. ', enumVal: ' .. fcEnumVal .. ', type: ' .. fcType--[[.. ', field5: ' .. f5 .. ', field7: ' .. f7 .. ', field8: ' .. f8 --]])
+
+        -- only set torsos, using other types here seems to glitch out
+        if fcType == 3 then
+            if (fcNameHash == 0) or (fcNameHash == GetHashKey('0')) then
+                fcDrawable = fcEnumVal
+                fcTexture = 0
+            else
+                fcType, fcDrawable, fcTexture = GetComponentDataFromHash(fcNameHash)
+            end
+
+            -- Apply component to ped, save it in current character data
+            if IsPedComponentVariationValid(playerPed, fcType, fcDrawable, fcTexture) then
+                currentChar['arms'] = fcDrawable
+                currentChar['arms_2'] = fcTexture
+                SetPedComponentVariation(playerPed, fcType, fcDrawable, fcTexture, 2)
+            end
+        end
+    end
+
+    -- Forced components do not pick proper torso for female character's 'None' variant, need manual correction
+    if GetEntityModel(playerPed) == GetHashKey('mp_f_freemode_01') then
+        if (GetPedDrawableVariation(playerPed, 11) == 15) and (GetPedTextureVariation(playerPed, 11) == 16) then
+            currentChar['arms'] = 15
+            currentChar['arms_2'] = 0
+            SetPedComponentVariation(playerPed, 3, 15, 0, 2);
+        end
+    end
+
+end)
+
+RegisterNUICallback('updateApparelProp', function(data, cb)
+    local drawableKey = data['drwkey']
+    local textureKey = data['texkey']
+    local prop = tonumber(data['propid'])
+    currentChar[drawableKey] = tonumber(data['drwval'])
+    currentChar[textureKey] = tonumber(data['texval'])
+
+    local playerPed = PlayerPedId()
+
+    if currentChar[drawableKey] == -1 then
+        ClearPedProp(playerPed, prop)
+    else
+        SetPedPropIndex(playerPed, prop, currentChar[drawableKey], currentChar[textureKey], false)
+    end
+end)
+
 function GetHairColors()
     local result = {}
     local i = 0
@@ -476,6 +548,143 @@ function GetColorData(indexes, isHair)
     return result
 end
 
+function GetComponentDataFromHash(hash)
+    local blob = string.rep('\0\0\0\0\0\0\0\0', 9 + 16)
+    if not Citizen.InvokeNative(0x74C0E2A57EC66760, hash, blob) then
+        return nil
+    end
+
+    -- adapted from: https://gist.github.com/root-cause/3b80234367b0c856d60bf5cb4b826f86
+    local lockHash = string.unpack('<i4', blob, 1)
+    local hash = string.unpack('<i4', blob, 9)
+    local locate = string.unpack('<i4', blob, 17)
+    local drawable = string.unpack('<i4', blob, 25)
+    local texture = string.unpack('<i4', blob, 33)
+    local field5 = string.unpack('<i4', blob, 41)
+    local component = string.unpack('<i4', blob, 49)
+    local field7 = string.unpack('<i4', blob, 57)
+    local field8 = string.unpack('<i4', blob, 65)
+    local gxt = string.unpack('c64', blob, 73)
+
+    return component, drawable, texture, gxt, field5, field7, field8
+end
+
+function GetPropDataFromHash(hash)
+    local blob = string.rep('\0\0\0\0\0\0\0\0', 9 + 16)
+    if not Citizen.InvokeNative(0x5D5CAFF661DDF6FC, hash, blob) then
+        return nil
+    end
+
+    -- adapted from: https://gist.github.com/root-cause/3b80234367b0c856d60bf5cb4b826f86
+    local lockHash = string.unpack('<i4', blob, 1)
+    local hash = string.unpack('<i4', blob, 9)
+    local locate = string.unpack('<i4', blob, 17)
+    local drawable = string.unpack('<i4', blob, 25)
+    local texture = string.unpack('<i4', blob, 33)
+    local field5 = string.unpack('<i4', blob, 41)
+    local prop = string.unpack('<i4', blob, 49)
+    local field7 = string.unpack('<i4', blob, 57)
+    local field8 = string.unpack('<i4', blob, 65)
+    local gxt = string.unpack('c64', blob, 73)
+
+    return prop, drawable, texture, gxt, field5, field7, field8
+end
+
+function GetComponentsData(id)
+    local result = {}
+
+    local playerPed = PlayerPedId()
+    local drawableCount = GetNumberOfPedDrawableVariations(playerPed, id) - 1
+
+    for drawable = 0, drawableCount do
+        local textureCount = GetNumberOfPedTextureVariations(playerPed, id, drawable) - 1
+
+        for texture = 0, textureCount do
+            local hash = GetHashNameForComponent(playerPed, id, drawable, texture)
+
+            if hash ~= 0 then
+                local component, drawable, texture, gxt = GetComponentDataFromHash(hash)
+
+                -- only named components
+                if gxt ~= '' then
+                    label = GetLabelText(gxt)
+                    if label ~= 'NULL' then
+                        table.insert(result, {
+                            name = label,
+                            component = component,
+                            drawable = drawable,
+                            texture = texture
+                        })
+                    end
+                end
+            end
+        end
+    end
+
+    return result
+end
+
+function GetPropsData(id)
+    local result = {}
+
+    local playerPed = PlayerPedId()
+    local drawableCount = GetNumberOfPedPropDrawableVariations(playerPed, id) - 1
+
+    for drawable = 0, drawableCount do
+        local textureCount = GetNumberOfPedPropTextureVariations(playerPed, id, drawable) - 1
+
+        for texture = 0, textureCount do
+            local hash = GetHashNameForProp(playerPed, id, drawable, texture)
+
+            if hash ~= 0 then
+                local prop, drawable, texture, gxt = GetPropDataFromHash(hash)
+
+                -- only named props
+                if gxt ~= '' then
+                    label = GetLabelText(gxt)
+                    if label ~= 'NULL' then
+                        table.insert(result, {
+                            name = label,
+                            prop = prop,
+                            drawable = drawable,
+                            texture = texture
+                        })
+                    end
+                end
+            end
+        end
+    end
+
+    return result
+end
+
+function GetClothesData()
+    local result = {
+        topsover = {},
+        topsunder = {},
+        pants = {},
+        shoes = {},
+        hats = {},
+        ears = {},
+        glasses = {},
+        lefthands = {},
+        righthands = {},
+    }
+
+    result.topsover = GetComponentsData(11)
+    result.topsunder = GetComponentsData(8)
+    result.pants = GetComponentsData(4)
+    result.shoes = GetComponentsData(6)
+
+    result.hats = GetPropsData(0)
+    result.ears = GetPropsData(2)
+    result.glasses = GetPropsData(1)
+    result.lefthands = GetPropsData(6)
+    result.righthands = GetPropsData(7)
+
+    return result
+end
+
 function GetDefaultCharacter(isMale)
     local result = {
         sex = 1,
@@ -526,10 +735,10 @@ function GetDefaultCharacter(isMale)
         helmet_2 = 0,
         glasses_1 = -1,
         glasses_2 = 0,
-        watches_1 = -1,
-        watches_2 = 0,
-        bracelets_1 = -1,
-        bracelets_2 = 0,
+        lefthand_1 = -1,
+        lefthand_2 = 0,
+        righthand_1 = -1,
+        righthand_2 = 0,
         bags_1 = 0,
         bags_2 = 0,
         eye_color = 0,
@@ -657,12 +866,12 @@ function LoadCharacter(data)
     SetPedFaceFeature(playerPed, 19, (data.neck_thickness / 100) + 0.0)  -- Neck Thickness
 
     -- Appearance
-    SetPedComponentVariation(playerPed, 2, data.hair_1, data.hair_2, 2)                 -- Hair Style
-    SetPedHairColor(playerPed, data.hair_color_1, data.hair_color_2)                    -- Hair Color
+    SetPedComponentVariation(playerPed, 2, data.hair_1, data.hair_2, 2)                  -- Hair Style
+    SetPedHairColor(playerPed, data.hair_color_1, data.hair_color_2)                     -- Hair Color
     SetPedHeadOverlay(playerPed, 2, data.eyebrows_1, data.eyebrows_2 / 100 + 0.0)        -- Eyebrow Style + Opacity
-    SetPedHeadOverlayColor(playerPed, 2, 1, data.eyebrows_3, data.eyebrows_4)           -- Eyebrow Color
+    SetPedHeadOverlayColor(playerPed, 2, 1, data.eyebrows_3, data.eyebrows_4)            -- Eyebrow Color
     SetPedHeadOverlay(playerPed, 1, data.beard_1, data.beard_2 / 100 + 0.0)              -- Beard Style + Opacity
-    SetPedHeadOverlayColor(playerPed, 1, 1, data.beard_3, data.beard_4)                 -- Beard Color
+    SetPedHeadOverlayColor(playerPed, 1, 1, data.beard_3, data.beard_4)                  -- Beard Color
 
     SetPedHeadOverlay(playerPed, 0, data.blemishes_1, data.blemishes_2 / 100 + 0.0)      -- Skin blemishes + Opacity
     SetPedHeadOverlay(playerPed, 12, data.bodyb_3, data.bodyb_4 / 100 + 0.0)             -- Skin blemishes body effect + Opacity
@@ -707,21 +916,21 @@ function LoadCharacter(data)
         SetPedPropIndex(playerPed, 1, data.glasses_1, data.glasses_2, 2)        -- Glasses
     end
 
-    if data.watches_1 == -1 then
+    if data.lefthand_1 == -1 then
         ClearPedProp(playerPed, 6)
     else
-        SetPedPropIndex(playerPed, 6, data.watches_1, data.watches_2, 2)        -- Watches
+        SetPedPropIndex(playerPed, 6, data.lefthand_1, data.lefthand_2, 2)        -- Left Hand Accessory
     end
 
-    if data.bracelets_1 == -1 then
+    if data.righthand_1 == -1 then
         ClearPedProp(playerPed,	7)
     else
-        SetPedPropIndex(playerPed, 7, data.bracelets_1, data.bracelets_2, 2)    -- Bracelets
+        SetPedPropIndex(playerPed, 7, data.righthand_1, data.righthand_2, 2)      -- Right Hand Accessory
     end
 
     if data.ears_1 == -1 then
         ClearPedProp(playerPed, 2)
     else
-        SetPedPropIndex (playerPed, 2, data.ears_1, data.ears_2, 2)             -- Earrings
+        SetPedPropIndex (playerPed, 2, data.ears_1, data.ears_2, 2)               -- Ear Accessory
     end
 end

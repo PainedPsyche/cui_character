@@ -22,7 +22,12 @@ $(document).ready(function() {
         else if (event.data.action == 'enableTabs') {
             for (const value of Object.values(event.data.tabs)) {
                 $('button' + '#tab-' + value + '.tablinks').show()
-                loadTabContent(value, event.data.character)
+                if (event.data.clothes) {
+                    loadTabContent(value, event.data.character, event.data.clothes)
+                }
+                else {
+                    loadTabContent(value, event.data.character, null)
+                }
             }
         }
         else if (event.data.action == 'activateTab') {
@@ -31,7 +36,12 @@ $(document).ready(function() {
         }
         else if (event.data.action == 'reloadTab') {
             $('div#' + event.data.tab + '.tabcontent').empty();
-            loadTabContent(event.data.tab, event.data.character)
+            if (event.data.clothes) {
+                loadTabContent(event.data.tab, event.data.character, event.data.clothes)
+            }
+            else {
+                loadTabContent(event.data.tab, event.data.character, null)
+            }
         }
         else if (event.data.action == 'refreshViewButtons') {
             $('.cameraview').removeClass('active')
@@ -127,7 +137,7 @@ $('#cameracontrol').on('wheel', function(event) {
 });
 
 /*  content loading     */
-function loadTabContent(tabName, charData) {
+function loadTabContent(tabName, charData, clothesData) {
     $.get('pages/' + tabName + '.html', function(data) {
         let tab =  $('div#' + tabName + '.tabcontent');
         tab.html(data);
@@ -135,6 +145,10 @@ function loadTabContent(tabName, charData) {
             loadOptionalContent(tab, charData);
             refreshMakeupUI(charData, false)
             loadColorPalettes(tab)
+        }
+        else if ((tabName == 'apparel') && clothesData) {
+            let male = (charData.sex == 0)
+            loadClothesTab(tab, clothesData, male)
         }
         refreshContentData(tab, charData);
         if (tabName == 'identity') {
@@ -229,6 +243,99 @@ function loadColorPalettes(element) {
             newElement.find('input[type="radio"] + label').css('background-color', color.hex);
             $(this).append(newElement);
         }
+    });
+}
+
+function loadClothesTab(tab, clothesData, male) {
+    // tops
+    let topsoverlist = tab.find('select#topover.clotheslist');
+    let noover = male ? 0 : 16;
+    topsoverlist.empty();
+    topsoverlist.append($('<option data-component="11" data-drawable="15" data-texture="' + noover + '">None</option>')) // "None" option
+    clothesData.topsover.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        topsoverlist.append(option);
+    });
+
+    let topsunderlist = tab.find('select#topunder.clotheslist');
+    let nounder = male ? 15 : -1;
+    topsunderlist.empty();
+    topsunderlist.append($('<option data-component="8" data-drawable="' + nounder + '" data-texture="0">None</option>')) // "None" option
+    clothesData.topsunder.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        topsunderlist.append(option);
+    });
+
+    // pants
+    let pantslist = tab.find('select#pants.clotheslist');
+    pantslist.empty();
+    clothesData.pants.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        pantslist.append(option);
+    });
+
+    // shoes
+    let shoeslist = tab.find('select#shoes.clotheslist');
+    let noshoes = male ? 34 : 35;
+    shoeslist.empty();
+    shoeslist.append($('<option data-component="6" data-drawable="' + noshoes + '" data-texture="0">None</option>')) // "None" option
+    clothesData.shoes.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        shoeslist.append(option);
+    });
+
+    // hat
+    let hatslist = tab.find('select#hat.clotheslist');
+    hatslist.empty();
+    hatslist.append($('<option data-prop="0" data-drawable="-1" data-texture="0">None</option>')) // "None" option
+    clothesData.hats.forEach(function (item) {
+        let option = $('<option data-prop="' + item.prop + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        hatslist.append(option);
+    });
+
+    // ear accessory
+    let earslist = tab.find('select#ears.clotheslist');
+    earslist.empty();
+    earslist.append($('<option data-prop="2" data-drawable="-1" data-texture="0">None</option>')) // "None" option
+    clothesData.ears.forEach(function (item) {
+        let option = $('<option data-prop="' + item.prop + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        earslist.append(option);
+    });
+
+    // glasses
+    let glasseslist = tab.find('select#glasses.clotheslist');
+    glasseslist.empty();
+    glasseslist.append($('<option data-prop="1" data-drawable="-1" data-texture="0">None</option>')) // "None" option
+    clothesData.glasses.forEach(function (item) {
+        let option = $('<option data-prop="' + item.prop + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        glasseslist.append(option);
+    });
+
+    // left hand accessory
+    let lefthandlist = tab.find('select#lefthand.clotheslist');
+    lefthandlist.empty();
+    lefthandlist.append($('<option data-prop="6" data-drawable="-1" data-texture="0">None</option>')) // "None" option
+    clothesData.lefthands.forEach(function (item) {
+        let option = $('<option data-prop="' + item.prop + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        lefthandlist.append(option);
+    });
+
+    // right hand accessory
+    let righthandlist = tab.find('select#righthand.clotheslist');
+    righthandlist.empty();
+    righthandlist.append($('<option data-prop="7" data-drawable="-1" data-texture="0">None</option>')) // "None" option
+    clothesData.righthands.forEach(function (item) {
+        let option = $('<option data-prop="' + item.prop + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        righthandlist.append(option);
     });
 }
 
@@ -420,6 +527,28 @@ function updateComponent(drawable, dvalue, texture, tvalue, index) {
         texture: texture,
         tvalue: tvalue,
         index: index,
+    }));
+}
+
+// NOTE: This one calls different function than the above,
+//       as it needs to check for 'forced components' (torso parts etc.)
+function updateApparelComponent(drwkey, drwval, texkey, texval, cmpid) {
+    $.post('https://cui_character/updateApparelComponent', JSON.stringify({
+        drwkey: drwkey,
+        drwval: drwval,
+        texkey: texkey,
+        texval: texval,
+        cmpid: cmpid,
+    }));
+}
+
+function updateApparelProp(drwkey, drwval, texkey, texval, propid) {
+    $.post('https://cui_character/updateApparelProp', JSON.stringify({
+        drwkey: drwkey,
+        drwval: drwval,
+        texkey: texkey,
+        texval: texval,
+        propid: propid,
     }));
 }
 
@@ -664,6 +793,28 @@ $(document).on('change', 'select.makeuptype', function(evt) {
     $.post('https://cui_character/updateMakeupType', JSON.stringify({type:value}));
 });
 
+// clothing components
+$(document).on('change', 'select.clotheslist.component', function(evt) {
+    let selected = $(this).find('option:selected');
+    let drwkey = $(this).data('drwkey');
+    let drwval = selected.data('drawable');
+    let texkey = $(this).data('texkey');
+    let texval = selected.data('texture');
+    let cmpid = selected.data('component');
+    updateApparelComponent(drwkey, drwval, texkey, texval, cmpid);
+});
+
+// clothing props
+$(document).on('change', 'select.clotheslist.prop', function(evt) {
+    let selected = $(this).find('option:selected');
+    let drwkey = $(this).data('drwkey');
+    let drwval = selected.data('drawable');
+    let texkey = $(this).data('texkey');
+    let texval = selected.data('texture');
+    let propid = selected.data('prop');
+    updateApparelProp(drwkey, drwval, texkey, texval, propid);
+});
+
 function refreshMakeupUI(charData, setDefaultMakeup) {
     let makeupcontrol = $(document).find('#makeup .list').first()
     let makeuppage = 'pages/optional/makeup_'
@@ -711,6 +862,22 @@ function refreshMakeupUI(charData, setDefaultMakeup) {
 }
 
 /*  interface and current character synchronization     */
+function refreshComponentList(parent, id, component, drawable, texture) {
+    let list = parent.find(id);
+    list.find('option').each(function() {
+        $(this).prop('selected', false);
+    });
+    list.find('option[data-component="' + component + '"][data-drawable="' + drawable + '"][data-texture="' + texture + '"]').first().prop('selected', true);
+}
+
+function refreshPropList(parent, id, prop, drawable, texture) {
+    let list = parent.find(id);
+    list.find('option').each(function() {
+        $(this).prop('selected', false);
+    });
+    list.find('option[data-prop="' + prop + '"][data-drawable="' + drawable + '"][data-texture="' + texture + '"]').first().prop('selected', true);
+}
+
 function refreshContentData(element, data) {
     let facepaintcolorable = false;
     if (element.hasClass('facepaint')) {
@@ -728,36 +895,66 @@ function refreshContentData(element, data) {
             setupFacepaintColors(facepaintcontrols.eq(0).parents().eq(2), facepaintcolorable, false);
         }
     }
-    for (const [key, value] of Object.entries(data)) {
-        let keyId = '#' + key;
-        let control = element.find(keyId);
-        if (control.length) {
-            let controltype = control.prop('nodeName');
-            if (controltype == 'SELECT') { // arrow lists
-                control.val(value);
 
-                /* NOTE: For facepaint list we need an extra check since it has multiple
-                         options with duplicated values.
+    /*
+        Special loading path for clothing tab   
+        Clothing data is not just simple key-value pairs.
+    */
+    if (element.is('#apparel')) {
+        // components
+        refreshComponentList(element, '#topover', 11, data.torso_1, data.torso_2);
+        refreshComponentList(element, '#topunder', 8, data.tshirt_1, data.tshirt_2);
+        refreshComponentList(element, '#pants', 4, data.pants_1, data.pants_2);
+        refreshComponentList(element, '#shoes', 6, data.shoes_1, data.shoes_2);
 
-                         This part of the code needs to be revised if Rockstar ever adds
-                         more colorable facepaint variants.
-                */
-                if ((control.hasClass('facepaintoverlay') && facepaintcolorable)) {
-                    if ((value >= 26) && (value < 33)) {
-                        let duplicateoptions = control.find('option[value="' + value + '"]');
-                        duplicateoptions.eq(0).prop('selected', false); // incorrect
-                        duplicateoptions.eq(1).prop('selected', true);  // correct
+        // props
+        refreshPropList(element, '#hat', 0, data.helmet_1, data.helmet_2);
+        refreshPropList(element, '#ears', 2, data.ears_1, data.ears_2);
+        refreshPropList(element, '#glasses', 1, data.glasses_1, data.glasses_2);
+        refreshPropList(element, '#lefthand', 6, data.lefthand_1, data.lefthand_2);
+        refreshPropList(element, '#righthand', 7, data.righthand_1, data.righthand_2);
+    }
+    else
+    /*  Loading path for any other tab  */
+    {
+        for (const [key, value] of Object.entries(data)) {
+            let keyId = '#' + key;
+            let control = element.find(keyId);
+            if (control.length) {
+                let controltype = control.prop('nodeName');
+                if (controltype == 'SELECT') { // arrow lists
+                    if (!(control.hasClass('clotheslist'))) {
+                        control.val(value);
+                    }
+                    else {
+                        let i = 5;
+                        let j = 6;
+                    }
+    
+    
+                    /* NOTE: For facepaint list we need an extra check since it has multiple
+                             options with duplicated values.
+    
+                             This part of the code needs to be revised if Rockstar ever adds
+                             more colorable facepaint variants.
+                    */
+                    if ((control.hasClass('facepaintoverlay') && facepaintcolorable)) {
+                        if ((value >= 26) && (value < 33)) {
+                            let duplicateoptions = control.find('option[value="' + value + '"]');
+                            duplicateoptions.eq(0).prop('selected', false); // incorrect
+                            duplicateoptions.eq(1).prop('selected', true);  // correct
+                        }
                     }
                 }
-            }
-            else if (controltype == 'INPUT') { // range sliders
-                // NOTE: Check out property 'type' (ex. range) if this isn't unique enough
-                control.val(value)
-                control.trigger('refresh')
-            }
-            else if (controltype == 'DIV') { // radio button groups
-                let radio = control.find(':radio[value=' + value + ']');
-                radio.prop('checked', true);
+                else if (controltype == 'INPUT') { // range sliders
+                    // NOTE: Check out property 'type' (ex. range) if this isn't unique enough
+                    control.val(value)
+                    control.trigger('refresh')
+                }
+                else if (controltype == 'DIV') { // radio button groups
+                    let radio = control.find(':radio[value=' + value + ']');
+                    radio.prop('checked', true);
+                }
             }
         }
     }
