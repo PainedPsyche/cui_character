@@ -66,7 +66,9 @@ Camera.SetView = function(view)
     Camera.angleY = Camera.angleYMin
     Camera.position = Camera.CalculatePosition(false)
     SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
-    PointCamAtPedBone(Camera.entity, PlayerPedId(), boneIndex, 0.0, 0.0, 0.0, 0)
+
+    targetPos = GetPedBoneCoords(PlayerPedId(), boneIndex, 0.0, 0.0, 0.0)
+    PointCamAtCoord(Camera.entity, targetPos.x, targetPos.y, targetPos.z)
 
     Camera.currentView = view
 end
