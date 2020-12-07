@@ -1019,14 +1019,24 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
     
+        --  TODO: make nearby players invisible while using these,
+        --  use https://runtime.fivem.net/doc/natives/?_0xE135A9FF3F5D05D8
         if Config.EnableClothingShops then
             local dstCloth = GetDistanceToLocation(Config.ClothingShops)
             if (dstCloth < 1.0) and (not isVisible) then
                 DisplayTooltip('use clothing store.')
-                -- TODO: make nearby players invisible, 
-                --       use https://runtime.fivem.net/doc/natives/?_0xE135A9FF3F5D05D8
                 if IsControlJustPressed(1, 38) then
                     TriggerEvent('cui_character:open', { 'apparel' })
+                end
+            end
+        end
+
+        if Config.EnableBarberShops then
+            local dstCloth = GetDistanceToLocation(Config.BarberShops)
+            if (dstCloth < 1.0) and (not isVisible) then
+                DisplayTooltip('use barber shop.')
+                if IsControlJustPressed(1, 38) then
+                    TriggerEvent('cui_character:open', { 'style' })
                 end
             end
         end
@@ -1044,6 +1054,21 @@ if Config.EnableClothingShops then
 
             BeginTextCommandSetBlipName('STRING')
             AddTextComponentString('Clothing Store')
+            EndTextCommandSetBlipName(blip)
+        end
+    end)
+end
+
+if Config.EnableBarberShops then
+    Citizen.CreateThread(function()
+        for k, v in ipairs(Config.BarberShops) do
+            local blip = AddBlipForCoord(v)
+            SetBlipSprite(blip, 71)
+            SetBlipColour(blip, 84)
+            SetBlipAsShortRange(blip, true)
+
+            BeginTextCommandSetBlipName('STRING')
+            AddTextComponentString('Barber Shop')
             EndTextCommandSetBlipName(blip)
         end
     end)
