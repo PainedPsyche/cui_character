@@ -204,6 +204,7 @@ h2, h3 {
     width: 10vw;
     text-align: center;
     text-transform: uppercase;
+    font-size: 1.5vh;
     color: white;
     outline: none;
     border: none;
@@ -221,6 +222,7 @@ h2, h3 {
 .popup {
     display: none;
     position: absolute;
+    font-size: 1.5vh;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -464,6 +466,7 @@ h3 {
 }
 
 .slider > .valuelabel {
+    font-size: 1.5vh;
     position: absolute;
     top: 35%;
     color: rgba(255, 255, 255, 0.5);
