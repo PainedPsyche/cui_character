@@ -456,7 +456,7 @@ $('.popup #yes').on('click', function(evt) {
 /*  option/value ui controls   */
 $(document).on('click', '.controls button', function(evt) {
     $.post('https://cui_character/playSound', JSON.stringify({
-        sound: 'listbuttonclick'
+        sound: 'optionchange'
     }));
 });
 
@@ -635,6 +635,9 @@ $(document).on('click', 'input:radio[name=sex]', function(evt) {
         openPopup(popupData, function(target) {
             target.prop('checked', true);
             updateGender(target.val());
+            $.post('https://cui_character/playSound', JSON.stringify({
+                sound:'optionchange'
+            }));
         }, $(this));
     }
     return false;
@@ -645,6 +648,9 @@ $(document).on('click', '.palette input:radio + label', function(evt) {
     if (radio.is(':not(:checked)')) {
         radio.prop('checked', true);
         radio.trigger('change');
+        $.post('https://cui_character/playSound', JSON.stringify({
+            sound:'optionchange'
+        }));
     }
 });
 
