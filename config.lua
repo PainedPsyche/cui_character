@@ -34,12 +34,24 @@ Config.BarberShops = {
     vector3(-278.1, 6228.5, 30.7)
 }
 
+--[[ 
+    Hospital coordinates are all outside, because hospitals 
+    don't have interiors by default. They should be replaced
+    with proper interior coordinates.
+--]]
 Config.EnablePlasticSurgeryUnits = true
 Config.PlasticSurgeryUnits = {
-
+    vector3(338.8, -1394.5, 31.5),      -- Central Los Santos Medical Center
+    -- vector3(240.2, -1380.0, 33.7),   -- Los Santos General Hospital (Coroner)
+    -- vector3(1152.2, -1528.0, 34.8),  -- St Fiacre Hospital for East Los Santos
+    vector3(-874.7, -307.5, 38.5),      -- Portola Trinity Medical Center
+    vector3(-676.7, 311.5, 82.5),       -- Eclipse Medical Tower
+    vector3(-449.8, -341.0, 33.7),      -- Mount Zonah Medical Center
+    vector3(298.7, -584.6, 42.2),       -- Pillbox Hill Medical Center
+    -- vector3(1839.5, 3672.5, 33.2),   -- Sandy Shores Medical Center
+    -- vector3(-246.9, 6330.5, 31.4)    -- The Bay Care Center (Paleto)
 }
 
 Config.EnableNewIdentityProviders = true
 Config.NewIdentityProviders = {
-
 }

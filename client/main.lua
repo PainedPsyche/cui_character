@@ -1032,11 +1032,21 @@ Citizen.CreateThread(function()
         end
 
         if Config.EnableBarberShops then
-            local dstCloth = GetDistanceToLocation(Config.BarberShops)
-            if (dstCloth < 1.0) and (not isVisible) then
+            local dstBarber = GetDistanceToLocation(Config.BarberShops)
+            if (dstBarber < 1.0) and (not isVisible) then
                 DisplayTooltip('use barber shop.')
                 if IsControlJustPressed(1, 38) then
                     TriggerEvent('cui_character:open', { 'style' })
+                end
+            end
+        end
+
+        if Config.EnablePlasticSurgeryUnits then
+            local dstSurgery = GetDistanceToLocation(Config.PlasticSurgeryUnits)
+            if (dstSurgery < 1.0) and (not isVisible) then
+                DisplayTooltip('use platic surgery unit.')
+                if IsControlJustPressed(1, 38) then
+                    TriggerEvent('cui_character:open', { 'features' })
                 end
             end
         end
@@ -1069,6 +1079,21 @@ if Config.EnableBarberShops then
 
             BeginTextCommandSetBlipName('STRING')
             AddTextComponentString('Barber Shop')
+            EndTextCommandSetBlipName(blip)
+        end
+    end)
+end
+
+if Config.EnablePlasticSurgeryUnits then
+    Citizen.CreateThread(function()
+        for k, v in ipairs(Config.PlasticSurgeryUnits) do
+            local blip = AddBlipForCoord(v)
+            SetBlipSprite(blip, 102)
+            SetBlipColour(blip, 84)
+            SetBlipAsShortRange(blip, true)
+
+            BeginTextCommandSetBlipName('STRING')
+            AddTextComponentString('Platic Surgery Unit')
             EndTextCommandSetBlipName(blip)
         end
     end)
