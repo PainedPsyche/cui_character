@@ -417,7 +417,7 @@ function openTab(evt, tab) {
 
 $('.panelbottom button').on('click', function(evt) {
     evt.preventDefault();
-    $.post('https://cui_character/playSound', JSON.stringify({sound:'buttonclick'}));
+    $.post('https://cui_character/playSound', JSON.stringify({sound:'panelbuttonclick'}));
 });
 
 $('#main .menuclose').on('click', function(evt) {
@@ -454,6 +454,12 @@ $('.popup #yes').on('click', function(evt) {
 });
 
 /*  option/value ui controls   */
+$(document).on('click', '.controls button', function(evt) {
+    $.post('https://cui_character/playSound', JSON.stringify({
+        sound: 'listbuttonclick'
+    }));
+});
+
 $(document).on('click', '.list .controls button', function(evt) {
     let list = $(this).siblings('select').first();
     let numOpt = list.children('option').length

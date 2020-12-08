@@ -393,6 +393,10 @@ h3 {
     outline: none;
 }
 
+.controls button:hover {
+    background-size: 120% auto;
+}
+
 .list, .slider {
     position: relative;
     width: 20vw;

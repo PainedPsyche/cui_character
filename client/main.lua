@@ -236,8 +236,10 @@ RegisterNUICallback('playSound', function(data, cb)
         PlaySoundFrontend(-1, 'Continue_Appears', 'DLC_HEIST_PLANNING_BOARD_SOUNDS', 1)
     elseif sound == 'mouseover' then
         PlaySoundFrontend(-1, 'Faster_Click', 'RESPAWN_ONLINE_SOUNDSET', 1)
-    elseif sound == 'buttonclick' then
+    elseif sound == 'panelbuttonclick' then
         PlaySoundFrontend(-1, 'Reset_Prop_Position', 'DLC_Dmod_Prop_Editor_Sounds', 0)
+    elseif sound == 'listbuttonclick' then
+        PlaySoundFrontend(-1, 'HACKING_MOVE_CURSOR', 0, 1)
     end
 end)
 
