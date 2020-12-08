@@ -487,6 +487,26 @@ $(document).on('click', '.list .controls button', function(evt) {
     newVal.trigger('change')
 });
 
+$(document).on('click', '.slider .controls button', function(evt) {
+    let slider = $(this).siblings('input[type=range]').first();
+    let min = parseInt(slider.prop('min'));
+    let max = parseInt(slider.prop('max'));
+    let val = parseInt(slider.val());
+
+    if ($(this).hasClass('left')) {
+        if (val > min) {
+            slider.val(val - 1);
+        }
+    }
+    else if ($(this).hasClass('right')) {
+        if (val < max) {
+            slider.val(val + 1);
+        }
+    }
+
+    slider.trigger('input');
+});
+
 /*  option/value change effects     */
 function updateGender(value) {
     $.post('https://cui_character/updateGender', JSON.stringify({
