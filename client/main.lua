@@ -1021,6 +1021,8 @@ Citizen.CreateThread(function()
     
         --  TODO: make nearby players invisible while using these,
         --  use https://runtime.fivem.net/doc/natives/?_0xE135A9FF3F5D05D8
+        --  TODO: possibly charge money for use
+
         if Config.EnableClothingShops then
             local dstCloth = GetDistanceToLocation(Config.ClothingShops)
             if (dstCloth < 1.0) and (not isVisible) then
@@ -1047,6 +1049,16 @@ Citizen.CreateThread(function()
                 DisplayTooltip('use platic surgery unit.')
                 if IsControlJustPressed(1, 38) then
                     TriggerEvent('cui_character:open', { 'features' })
+                end
+            end
+        end
+
+        if Config.EnableNewIdentityProviders then
+            local dstIdentity = GetDistanceToLocation(Config.NewIdentityProviders)
+            if (dstIdentity < 1.0) and (not isVisible) then
+                DisplayTooltip('change your identity.')
+                if IsControlJustPressed(1, 38) then
+                    TriggerEvent('cui_character:open', { 'identity' })
                 end
             end
         end
@@ -1094,6 +1106,21 @@ if Config.EnablePlasticSurgeryUnits then
 
             BeginTextCommandSetBlipName('STRING')
             AddTextComponentString('Platic Surgery Unit')
+            EndTextCommandSetBlipName(blip)
+        end
+    end)
+end
+
+if Config.EnableNewIdentityProviders then
+    Citizen.CreateThread(function()
+        for k, v in ipairs(Config.NewIdentityProviders) do
+            local blip = AddBlipForCoord(v)
+            SetBlipSprite(blip, 498)
+            SetBlipColour(blip, 84)
+            SetBlipAsShortRange(blip, true)
+
+            BeginTextCommandSetBlipName('STRING')
+            AddTextComponentString('Municipal Building')
             EndTextCommandSetBlipName(blip)
         end
     end)

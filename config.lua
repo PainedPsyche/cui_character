@@ -35,9 +35,9 @@ Config.BarberShops = {
 }
 
 --[[ 
-    Hospital coordinates are all outside, because hospitals 
-    don't have interiors by default. They should be replaced
-    with proper interior coordinates.
+    Hospital and City Hall coordinates are all outside, 
+    because those buildings don't have interiors by default. 
+    They should be replaced with proper interior coordinates.
 --]]
 Config.EnablePlasticSurgeryUnits = true
 Config.PlasticSurgeryUnits = {
@@ -54,4 +54,8 @@ Config.PlasticSurgeryUnits = {
 
 Config.EnableNewIdentityProviders = true
 Config.NewIdentityProviders = {
+    -- vector3(233.2, -410.1, 47.3),    -- Los Santos City Hall
+    vector3(-544.9, -204.4, 37.5),      -- Rockford Hills City Hall
+    -- vector3(328.5, -1581.8, 31.9),   -- Davis City Hall
+    -- vector3(-1283.4, -565.1, 31.0)   -- Del Perro City Hall
 }
