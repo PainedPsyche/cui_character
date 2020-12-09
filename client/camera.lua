@@ -23,6 +23,9 @@ Camera.Activate = function()
     end
 
     local playerPed = PlayerPedId()
+    FreezePedCameraRotation(playerPed, true)
+    FreezeEntityPosition(playerPed, true)
+
     local pedCoords = GetEntityCoords(playerPed)
 
     Camera.SetView(Camera.currentView)
@@ -34,9 +37,13 @@ Camera.Activate = function()
 end
 
 Camera.Deactivate = function()
+    local playerPed = PlayerPedId()
+
     SetCamActive(Camera.entity, false)
     RenderScriptCams(false, true, 500, true, true)
 
+    FreezePedCameraRotation(playerPed, false)
+    FreezeEntityPosition(playerPed, false)
     Camera.active = false
 end
 
