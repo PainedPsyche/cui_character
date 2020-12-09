@@ -55,6 +55,7 @@ function setVisible(visible)
         show = visible
     })
     isVisible = visible
+    DisplayRadar(not visible)
 end
 
 function ResetAllTabs()
