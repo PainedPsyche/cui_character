@@ -64,21 +64,12 @@ function ResetAllTabs()
             clothes = GetClothesData()
         end
     end
-        
-    SendNUIMessage({
-        action = 'clearAllTabs'
-    })
 
     SendNUIMessage({
         action = 'enableTabs',
         tabs = openTabs,
         character = currentChar,
         clothes = clothes
-    })
-
-    SendNUIMessage({
-        action = 'activateTab',
-        tab = currentTab
     })
 end
 
