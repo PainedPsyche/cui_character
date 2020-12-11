@@ -179,11 +179,9 @@ AddEventHandler('esx:onPlayerSpawn', function()
         if firstSpawn then
             ESX.TriggerServerCallback('cui_character:getPlayerSkin', function(skin)
                 if skin ~= nil then
-                    print('character found, loading...')
                     oldChar = skin
                     LoadCharacter(skin)
                 else
-                    print('character not found, loading default...')
                     oldChar = GetDefaultCharacter(true)
                     LoadCharacter(oldChar)
                 end
@@ -299,7 +297,8 @@ end)
 
 RegisterNUICallback('updateGender', function(data, cb)
     local value = tonumber(data['value'])
-    LoadCharacter(GetDefaultCharacter(value == 0))
+    ClearAllAnimations()
+    LoadCharacter(GetDefaultCharacter(value == 0), true)
     ResetAllTabs()
 end)
 
@@ -837,7 +836,7 @@ function GetDefaultCharacter(isMale)
     return result
 end
 
-function LoadModel(isMale)
+function LoadModel(isMale, playIdleWhenLoaded)
     local playerPed = PlayerPedId()
     local characterModel = GetHashKey('mp_f_freemode_01')
     if isMale then
@@ -855,10 +854,47 @@ function LoadModel(isMale)
         FreezePedCameraRotation(playerPed, true)
     end
     SetEntityInvincible(playerPed, false)
+
+    if playIdleWhenLoaded then
+        PlayIdleAnimation(isMale)
+    end
+end
+
+function PlayIdleAnimation(isMale)
+    if isMale == nil then
+        isMale = (currentChar.sex == 0)
+    end
+
+    local animDict = 'anim@heists@heist_corona@team_idles@female_a'
+
+    if isMale then
+        animDict = 'anim@heists@heist_corona@team_idles@male_c'
+    end
+
+    while not HasAnimDictLoaded(animDict) do
+        RequestAnimDict(animDict)
+        Wait(100)
+    end
+
+    local playerPed = PlayerPedId()
+    ClearPedTasksImmediately(playerPed)
+    TaskPlayAnim(playerPed, animDict, 'idle', 1.0, 1.0, -1, 1, 1, 0, 0, 0)
+end
+
+function ClearAllAnimations()
+    ClearPedTasksImmediately(PlayerPedId())
+
+    if HasAnimDictLoaded('anim@heists@heist_corona@team_idles@female_a') then
+        RemoveAnimDict('anim@heists@heist_corona@team_idles@female_a')
+    end
+
+    if HasAnimDictLoaded('anim@heists@heist_corona@team_idles@male_c') then
+        RemoveAnimDict('anim@heists@heist_corona@team_idles@male_c')
+    end
 end
 
 -- Loading character data
-function LoadCharacter(data)
+function LoadCharacter(data, playIdleWhenLoaded)
     for k, v in pairs(data) do
         currentChar[k] = v
     end
@@ -867,7 +903,7 @@ function LoadCharacter(data)
     if data.sex ~= 1 then
         isMale = true
     end
-    LoadModel(isMale)
+    LoadModel(isMale, playIdleWhenLoaded)
 
     --TODO: Possibly pull these out to separate functions
     local playerPed = PlayerPedId()
@@ -1012,8 +1048,6 @@ end
 
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(1)
-    
         --  TODO: make nearby players invisible while using these,
         --  use https://runtime.fivem.net/doc/natives/?_0xE135A9FF3F5D05D8
         --  TODO: possibly charge money for use
@@ -1057,6 +1091,8 @@ Citizen.CreateThread(function()
                 end
             end
         end
+
+        Citizen.Wait(0)
     end
 end)
 

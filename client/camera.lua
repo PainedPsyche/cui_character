@@ -26,7 +26,7 @@ Camera.Activate = function()
     FreezePedCameraRotation(playerPed, true)
     FreezeEntityPosition(playerPed, true)
 
-    local pedCoords = GetEntityCoords(playerPed)
+    PlayIdleAnimation()
 
     Camera.SetView(Camera.currentView)
 
@@ -38,6 +38,8 @@ end
 
 Camera.Deactivate = function()
     local playerPed = PlayerPedId()
+
+    ClearAllAnimations()
 
     SetCamActive(Camera.entity, false)
     RenderScriptCams(false, true, 500, true, true)
@@ -132,13 +134,19 @@ end
 
 Citizen.CreateThread(function() 
     while true do
-        Citizen.Wait(1)
-
         if Camera.active then
-            local playerPed = PlayerPedId()
-            local pedCoords = GetEntityCoords(playerPed)
-
             DisableFirstPersonCamThisFrame()
+
+            DisableControlAction(2, 30, true)
+            DisableControlAction(2, 31, true)
+            DisableControlAction(2, 32, true)
+            DisableControlAction(2, 33, true)
+            DisableControlAction(2, 34, true)
+            DisableControlAction(2, 35, true)
+            DisableControlAction(0, 25, true)
+            DisableControlAction(0, 24, true)
+
+            local playerPed = PlayerPedId()
 
             if Camera.updateRot then
                 SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
@@ -151,5 +159,7 @@ Citizen.CreateThread(function()
                 Camera.updateZoom = false
             end
         end
+
+        Citizen.Wait(0)
     end
 end)
