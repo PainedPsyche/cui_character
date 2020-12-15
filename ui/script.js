@@ -1,3 +1,8 @@
+var esxIdentity = false
+var identityLimits = null
+
+var editedTabs = null
+
 var hairColors = {}
 var lipstickColors = {}
 var facepaintColors = {}
@@ -18,16 +23,22 @@ $(document).ready(function() {
             $('.tablinks').removeClass('active');
             $('.tabcontent').hide()
             $('.tabcontent').empty()
+            editedTabs = null
         }
         else if (event.data.action == 'enableTabs') {
+            editedTabs = [];
             for (const value of Object.values(event.data.tabs)) {
                 $('button' + '#tab-' + value + '.tablinks').show()
+                let clothesdata = null;
+                let identitydata = null;
                 if (event.data.clothes) {
-                    loadTabContent(value, event.data.character, event.data.clothes)
+                    clothesdata = event.data.clothes;
                 }
-                else {
-                    loadTabContent(value, event.data.character, null)
+                if (event.data.identity) {
+                    identitydata = event.data.identity;
                 }
+                loadTabContent(value, event.data.character, clothesdata, identitydata)
+                editedTabs.push(value);
             }
         }
         else if (event.data.action == 'activateTab') {
@@ -38,6 +49,7 @@ $(document).ready(function() {
             }));
         }
         else if (event.data.action == 'reloadTab') {
+            // TODO: Update this message handler with identitydata if it's ever used or remove it.
             $('div#' + event.data.tab + '.tabcontent').empty();
             if (event.data.clothes) {
                 loadTabContent(event.data.tab, event.data.character, event.data.clothes)
@@ -70,11 +82,16 @@ $(document).ready(function() {
                 }
             }
         }
-        else if (event.data.action == 'loadColorData') {
+        else if (event.data.action == 'loadInitData') {
+            esxIdentity = event.data.esxidentity
             hairColors = event.data.hair
             lipstickColors = event.data.lipstick
             facepaintColors = event.data.facepaint
             blusherColors = event.data.blusher
+
+            if (esxIdentity) {
+                identityLimits = event.data.identitylimits;
+            }
         }
     });
 });
@@ -140,14 +157,17 @@ $('#cameracontrol').on('wheel', function(event) {
 });
 
 /*  content loading     */
-function loadTabContent(tabName, charData, clothesData) {
+function loadTabContent(tabName, charData, clothesData, identityData) {
     $.get('pages/' + tabName + '.html', function(data) {
         let tab =  $('div#' + tabName + '.tabcontent');
         tab.html(data);
         if (tabName == 'style') {
-            loadOptionalContent(tab, charData);
-            refreshMakeupUI(charData, false)
-            loadColorPalettes(tab)
+            loadOptionalStyle(tab, charData);
+            refreshMakeupUI(charData, false);
+            loadColorPalettes(tab);
+        }
+        else if (esxIdentity && (tabName == 'identity')) {
+            loadOptionalIdentity(tab, identityData);
         }
         else if ((tabName == 'apparel') && clothesData) {
             let male = (charData.sex == 0)
@@ -161,7 +181,7 @@ function loadTabContent(tabName, charData, clothesData) {
     });
 }
 
-function loadOptionalContent(element, charData) {
+function loadOptionalStyle(element, charData) {
     let hair = element.find('#hair');
     let facialhair = element.find('#facialhair');
     let chesthair = element.find('#chesthair');
@@ -219,6 +239,23 @@ function loadOptionalContent(element, charData) {
         hair.html(data);
         loadColorPalettes(hair);
         refreshContentData(hair, charData);
+    });
+}
+
+function loadOptionalIdentity(element, identityData) {
+    let pdata = element.find('#pdata');
+    $.get('pages/optional/esxidentity.html', function(data) {
+        pdata.html(data);
+
+        // set the limits (config)
+        pdata.find('.name').each(function() {
+            $(this).prop('placeholder', 'max. ' + identityLimits.namemax + ' characters');
+        });
+        let sliderheight = pdata.find('input[type="range"]').first();
+        sliderheight.prop('min', identityLimits.heightmin);
+        sliderheight.prop('max', identityLimits.heightmax);
+
+        refreshIdentityData(pdata, identityData);
     });
 }
 
@@ -393,7 +430,36 @@ function closePopup() {
 }
 
 function closeWindow(save) {
-    $.post('https://cui_character/close', JSON.stringify({save:save}));
+    if ((esxIdentity) && save && editedTabs.includes('identity')) {
+        let date = $("#dateofbirth").val();
+        let dateCheck = new Date($("#dateofbirth").val());
+
+        if (dateCheck == "Invalid Date") {
+            date == "invalid";
+        }
+        else {
+            const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(dateCheck)
+            const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(dateCheck)
+            const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(dateCheck)
+
+            let formattedDate = `${mo}/${da}/${ye}`;
+            let formattedSex = ($("input[type='radio'][name='sex']:checked").val()) == 0 ? 'm' : 'f';
+
+            $.post('https://esx_identity/register', JSON.stringify({
+                firstname: $("#firstname").val(),
+                lastname: $("#lastname").val(),
+                dateofbirth: formattedDate,
+                sex: formattedSex,
+                height: $("#height").val()
+            }));
+        }
+
+        return;
+    }
+
+    $.post('https://cui_character/close', JSON.stringify({
+        save: save
+    }));
 }
 
 function openTab(evt, tab) {
@@ -922,6 +988,25 @@ function refreshMakeupUI(charData, setDefaultMakeup) {
     });
 }
 
+// esx_identity integration
+$(document).on('refresh', 'input[type=range]#height', function(evt) {
+    let inches = $(this).val();
+    let feet = Math.floor(inches / 12);
+    let inchesLeft = inches % 12;
+    if (inchesLeft.toString().length == 1) {
+        inchesLeft = '0' + inchesLeft;
+    }
+
+    let valueCenter = $(this).parent().siblings('.valuelabel.center');
+    valueCenter.text(feet + '\' - ' + inchesLeft + '"');
+
+    // TODO: Display metric if that is selected in game's measurement system options.
+});
+
+$(document).on('input', 'input[type=range]#height', function(evt) {
+    $(this).trigger('refresh');
+});
+
 /*  interface and current character synchronization     */
 function refreshComponentList(parent, id, component, drawable, texture) {
     let list = parent.find(id);
@@ -989,12 +1074,7 @@ function refreshContentData(element, data) {
                     if (!(control.hasClass('clotheslist'))) {
                         control.val(value);
                     }
-                    else {
-                        let i = 5;
-                        let j = 6;
-                    }
-    
-    
+
                     /* NOTE: For facepaint list we need an extra check since it has multiple
                              options with duplicated values.
     
@@ -1020,6 +1100,37 @@ function refreshContentData(element, data) {
                 }
             }
         }
+    }
+}
+
+function refreshIdentityData(element, data) {
+    if (data) {
+        let firstnamefield = element.find('#firstname');
+        firstnamefield.val(data.firstname);
+        let lastnamefield = element.find('#lastname');
+        lastnamefield.val(data.lastname);
+
+        let date = new Date(data.dateofbirth);
+        day = date.getDate();
+        month = date.getMonth() + 1;
+        year = date.getFullYear();
+
+        let datefield = element.find('#dateofbirth');
+        datefield.val(year + '-' + month + '-' + day);
+
+        $.each([firstnamefield, lastnamefield, datefield], function(index, value) {
+            value.focus();
+            value.blur();
+        });
+
+        // these are defined in esxidentity.html <script> tag.
+        checkName('firstname');
+        checkName('lastname');
+        checkDOB();
+
+        let heightfield = element.find('#height');
+        heightfield.val(data.height);
+        heightfield.trigger('refresh');
     }
 }
 

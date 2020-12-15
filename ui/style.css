@@ -399,7 +399,7 @@ h3 {
     background-size: 120% auto;
 }
 
-.list, .slider {
+.list, .slider, .datainput {
     position: relative;
     width: 20vw;
     height: 7vh;
@@ -423,9 +423,9 @@ h3 {
     transform: scaleX(-1);
 }
 
-.list .controls select {
+.list .controls select, .datainput .controls input {
     -webkit-appearance: none;
-    pointer-events: none;
+    outline: none;
     width: 85%;
     height: 80%;
     font: inherit;
@@ -435,6 +435,23 @@ h3 {
     color: #f0f0f0;
     font-size: 1.8vh;
     font-weight: normal;
+}
+
+.list .controls select {
+    pointer-events: none;
+}
+
+.datainput .controls input::-webkit-calendar-picker-indicator { 
+    filter: invert(); 
+}
+
+.datainput .controls input::selection {
+    color: #f0f0f0;
+    background: #2d6eb9;
+}
+
+.datainput .controls input[type=text] {
+    text-align: center
 }
 
 .slider input[type=range] {

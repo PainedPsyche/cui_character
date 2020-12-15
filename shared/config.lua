@@ -1,6 +1,6 @@
 Config = {}
 
--- Setting this to false will enable all colors available in the game.
+-- Setting these to false will enable all colors available in the game.
 Config.UseNaturalHairColors = true
 Config.UseNaturalEyeColors = true
 
@@ -59,3 +59,51 @@ Config.NewIdentityProviders = {
     -- vector3(328.5, -1581.8, 31.9),   -- Davis City Hall
     -- vector3(-1283.4, -565.1, 31.0)   -- Del Perro City Hall
 }
+
+--[[    ESX identity integration
+
+        Follow these instructions if you plan to set Config.EnableESXIdentityIntegration to true:
+        1) Uncomment '@esx_identity/server/main.lua', in this resource's fxmanifest.lua
+
+        2) Edit esx_identity/client/main.lua:
+
+            Replace (around line 50):
+                EnableGui(true) 
+            with
+                TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' })
+
+            Replace (start around line 54):
+                RegisterNUICallback('register', function(data, cb)
+                    ESX.TriggerServerCallback('esx_identity:registerIdentity', function(callback)
+                        if callback then
+                            ESX.ShowNotification(_U('thank_you_for_registering'))
+                            EnableGui(false)
+                            TriggerEvent('esx_skin:playerRegistered')
+                        else
+                            ESX.ShowNotification(_U('registration_error'))
+                        end
+                    end, data)
+                end)
+            with
+                RegisterNUICallback('register', function(data, cb)
+                    ESX.TriggerServerCallback('cui_character:updateIdentity', function(callback)
+                        if callback then
+                            ESX.ShowNotification(_U('thank_you_for_registering'))
+                            TriggerEvent('cui_character:setCurrentIdentity', data)
+                            TriggerEvent('cui_character:close', true)
+                        else
+                            ESX.ShowNotification(_U('registration_error'))
+                        end
+                    end, data)
+                end)
+]]--
+Config.EnableESXIdentityIntegration = false
+
+if Config.EnableESXIdentityIntegration then
+    -- To avoid errors, make sure these equal the respective values in your in esx_identity config
+    Config.MaxNameLength    = 16
+    Config.MinHeight        = 48
+    Config.MaxHeight        = 96
+    Config.LowestYear       = 1900
+    Config.HighestYear      = 2020
+end

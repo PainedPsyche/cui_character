@@ -28,6 +28,31 @@ end
 --------------------------------------
 
 ESX = nil
+isInterfaceOpening = false
+isModelLoaded = false
+
+isPlayerReady = false
+--[[    NOTE: (on player initialization)
+
+        The way es_extended spawns player causes the ped to start a little above ground
+        and 'fall down'. Since our camera position is based off of ped position, 
+        if we open the ui too early during player's first login the camera will be pointing 'too high'.
+
+        Unfortunately, I did not find a way to detect when that fall is finished, so I decided
+        to black out the screen and wait a few seconds.
+
+        This ensures the player will not see that fall or the model being changed from es_extended default.
+]]--
+AddEventHandler('esx:loadingScreenOff', function()
+    if isInterfaceOpening then
+        --TODO: Possibly use a more refined first login detection (event from server) if this does not cut it.
+        DoScreenFadeOut(0)
+        Citizen.Wait(1500)
+        DoScreenFadeIn(500)
+    end
+    isPlayerReady = true
+end)
+
 local initialized = false
 
 local openTabs = {}
@@ -40,6 +65,8 @@ local identityLoaded = false
 
 local currentChar = {}
 local oldChar = {}
+
+local currentIdentity = nil
 
 Citizen.CreateThread(function()
     while ESX == nil do
@@ -70,7 +97,8 @@ function ResetAllTabs()
         action = 'enableTabs',
         tabs = openTabs,
         character = currentChar,
-        clothes = clothes
+        clothes = clothes,
+        identity = currentIdentity
     })
 end
 
@@ -104,6 +132,16 @@ end)
 
 RegisterNetEvent('cui_character:open')
 AddEventHandler('cui_character:open', function(tabs)
+    if isInterfaceOpening then
+        return
+    end
+
+    isInterfaceOpening = true
+
+    while (not initialized) or (not isModelLoaded) or (not isPlayerReady) do
+        Citizen.Wait(100)
+    end
+
     -- Request textures
     RequestStreamedTextureDict('mparrow')
     RequestStreamedTextureDict('mpleaderboard')
@@ -147,7 +185,8 @@ AddEventHandler('cui_character:open', function(tabs)
         action = 'enableTabs',
         tabs = tabs,
         character = currentChar,
-        clothes = clothes
+        clothes = clothes,
+        identity = currentIdentity
     })
 
     SendNUIMessage({
@@ -163,6 +202,7 @@ AddEventHandler('cui_character:open', function(tabs)
     })
 
     setVisible(true)
+    isInterfaceOpening = false
 end)
 
 RegisterNetEvent('esx:playerLoaded')
@@ -184,8 +224,20 @@ AddEventHandler('esx:onPlayerSpawn', function()
                 else
                     oldChar = GetDefaultCharacter(true)
                     LoadCharacter(oldChar)
+
+                    if not Config.EnableESXIdentityIntegration then
+                        TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' })
+                    end
                 end
             end)
+
+            if Config.EnableESXIdentityIntegration then
+                ESX.TriggerServerCallback('cui_character:getIdentity', function(identity)
+                    if identity ~= nil then
+                        LoadIdentity(identity)
+                    end
+                end)
+            end
             firstSpawn = false
         end
     end)
@@ -193,12 +245,23 @@ AddEventHandler('esx:onPlayerSpawn', function()
     Citizen.CreateThread(function()
         while not initialized do
             SendNUIMessage({
-                action = 'loadColorData',
+                action = 'loadInitData',
                 hair = GetColorData(GetHairColors(), true),
                 lipstick = GetColorData(GetLipstickColors(), false),
                 facepaint = GetColorData(GetFacepaintColors(), false),
-                blusher = GetColorData(GetBlusherColors(), false)
+                blusher = GetColorData(GetBlusherColors(), false),
+
+                -- esx identity integration
+                esxidentity = Config.EnableESXIdentityIntegration,
+                identitylimits = {
+                    namemax = Config.MaxNameLength,
+                    heightmin = Config.MinHeight,
+                    heightmax = Config.MaxHeight,
+                    yearmin = Config.LowestYear,
+                    yearmax = Config.HighestYear
+                },
             })
+
             initialized = true
             Citizen.Wait(100)
         end
@@ -837,6 +900,8 @@ function GetDefaultCharacter(isMale)
 end
 
 function LoadModel(isMale, playIdleWhenLoaded)
+    isModelLoaded = false
+
     local playerPed = PlayerPedId()
     local characterModel = GetHashKey('mp_f_freemode_01')
     if isMale then
@@ -858,6 +923,8 @@ function LoadModel(isMale, playIdleWhenLoaded)
     if playIdleWhenLoaded then
         PlayIdleAnimation(isMale)
     end
+
+    isModelLoaded = true
 end
 
 function PlayIdleAnimation(isMale)
@@ -1154,5 +1221,23 @@ if Config.EnableNewIdentityProviders then
             AddTextComponentString('Municipal Building')
             EndTextCommandSetBlipName(blip)
         end
+    end)
+end
+
+-- ESX Identity Integration
+if Config.EnableESXIdentityIntegration then
+    function LoadIdentity(data)
+        currentIdentity = {}
+        for k, v in pairs(data) do
+            currentIdentity[k] = v
+        end
+    end
+
+    AddEventHandler('esx_skin:resetFirstSpawn', function()
+        firstSpawn = true
+    end)
+
+    AddEventHandler('cui_character:setCurrentIdentity', function(data)
+        currentIdentity = data
     end)
 end

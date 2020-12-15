@@ -3,7 +3,7 @@ games { 'gta5' }
 
 client_scripts {
     '@es_extended/locale.lua',
-    'config.lua',
+    'shared/config.lua',
     'locales/en.lua',
     'client/camera.lua',
     'client/main.lua'
@@ -11,6 +11,8 @@ client_scripts {
 
 server_scripts {
     '@mysql-async/lib/MySQL.lua',
+    'shared/config.lua',
+    --'@esx_identity/server/main.lua',
     'server/main.lua'
 }
 
@@ -37,6 +39,7 @@ files {
     'ui/pages/style.html',
     'ui/pages/optional/blusher.html',
     'ui/pages/optional/chesthair.html',
+    'ui/pages/optional/esxidentity.html',
     'ui/pages/optional/facialhair.html',
     'ui/pages/optional/hair_female.html',
     'ui/pages/optional/hair_male.html',

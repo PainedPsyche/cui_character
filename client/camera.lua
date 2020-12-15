@@ -17,7 +17,11 @@ Camera.radiusMax    = 2.25
 Camera.angleYMin    = -30.0
 Camera.angleYMax    = 80.0
 
-Camera.Activate = function()
+Camera.Activate = function(delay)
+    if delay then
+        Citizen.Wait(delay)
+    end
+
     if not DoesCamExist(Camera.entity) then
         Camera.entity = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
     end
@@ -134,7 +138,7 @@ end
 
 Citizen.CreateThread(function() 
     while true do
-        if Camera.active then
+        if Camera.active or isInterfaceOpening then
             DisableFirstPersonCamThisFrame()
 
             DisableControlAction(2, 30, true)
@@ -143,20 +147,39 @@ Citizen.CreateThread(function()
             DisableControlAction(2, 33, true)
             DisableControlAction(2, 34, true)
             DisableControlAction(2, 35, true)
-            DisableControlAction(0, 25, true)
-            DisableControlAction(0, 24, true)
 
-            local playerPed = PlayerPedId()
+            DisableControlAction(0, 25,  true)
+            DisableControlAction(0, 24,  true)
+            DisableControlAction(0, 1,   true)
+            DisableControlAction(0, 2,   true)
+            DisableControlAction(0, 106, true)
+            DisableControlAction(0, 142, true)
+            DisableControlAction(0, 30,  true)
+            DisableControlAction(0, 31,  true)
+            DisableControlAction(0, 21,  true)
+            DisableControlAction(0, 47,  true)
+            DisableControlAction(0, 58,  true)
+            DisableControlAction(0, 263, true)
+            DisableControlAction(0, 264, true)
+            DisableControlAction(0, 257, true)
+            DisableControlAction(0, 140, true)
+            DisableControlAction(0, 141, true)
+            DisableControlAction(0, 143, true)
+            DisableControlAction(0, 75,  true)
 
-            if Camera.updateRot then
-                SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
-                Camera.position = Camera.CalculatePosition(true)
-                Camera.updateRot = false
-            end
-            if Camera.updateZoom then
-                local pos = Camera.CalculatePosition(false)
-                SetCamCoord(Camera.entity, pos.x, pos.y, pos.z)
-                Camera.updateZoom = false
+            DisableControlAction(27, 75, true)
+
+            if isModelLoaded then
+                if Camera.updateRot then
+                    SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
+                    Camera.position = Camera.CalculatePosition(true)
+                    Camera.updateRot = false
+                end
+                if Camera.updateZoom then
+                    local pos = Camera.CalculatePosition(false)
+                    SetCamCoord(Camera.entity, pos.x, pos.y, pos.z)
+                    Camera.updateZoom = false
+                end
             end
         end
 
