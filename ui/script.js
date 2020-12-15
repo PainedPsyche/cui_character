@@ -12,10 +12,18 @@ $(document).ready(function() {
     window.addEventListener('message', function(event) {
         if (event.data.action == 'setVisible') {
             if (event.data.show) {
-                $('body').fadeIn(100)
+                $('body').fadeIn(100);
             }
             else {
-                $('body').fadeOut(100)
+                $('body').fadeOut(100);
+            }
+        }
+        else if (event.data.action == 'setCancelable') {
+            if (event.data.value) {
+                $('#cancel').show();
+            }
+            else {
+                $('#cancel').hide();
             }
         }
         else if (event.data.action == 'clearAllTabs') {

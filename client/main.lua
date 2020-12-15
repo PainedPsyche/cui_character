@@ -59,6 +59,8 @@ local openTabs = {}
 local currentTab = nil
 
 local isVisible = false
+local isCancelable = true
+
 local playerLoaded = false
 local firstSpawn = true
 local identityLoaded = false
@@ -103,6 +105,10 @@ function ResetAllTabs()
 end
 
 AddEventHandler('cui_character:close', function(save)
+    if (not save) and (not isCancelable) then
+        return
+    end
+
     -- Saving and discarding changes
     if save then
         for k, v in pairs(oldChar) do
@@ -123,6 +129,8 @@ AddEventHandler('cui_character:close', function(save)
     end
 
     Camera.Deactivate()
+
+    isCancelable = true
     setVisible(false)
 
     for i = 0, #openTabs do
@@ -131,12 +139,16 @@ AddEventHandler('cui_character:close', function(save)
 end)
 
 RegisterNetEvent('cui_character:open')
-AddEventHandler('cui_character:open', function(tabs)
+AddEventHandler('cui_character:open', function(tabs, cancelable)
     if isInterfaceOpening then
         return
     end
 
     isInterfaceOpening = true
+
+    if cancelable ~= nil then
+        isCancelable = cancelable
+    end
 
     while (not initialized) or (not isModelLoaded) or (not isPlayerReady) do
         Citizen.Wait(100)
@@ -201,6 +213,11 @@ AddEventHandler('cui_character:open', function(tabs)
         view = Camera.currentView
     })
 
+    SendNUIMessage({
+        action = 'setCancelable',
+        value = isCancelable
+    })
+
     setVisible(true)
     isInterfaceOpening = false
 end)
@@ -226,7 +243,7 @@ AddEventHandler('esx:onPlayerSpawn', function()
                     LoadCharacter(oldChar)
 
                     if not Config.EnableESXIdentityIntegration then
-                        TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' })
+                        TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' }, false)
                     end
                 end
             end)

@@ -70,7 +70,7 @@ Config.NewIdentityProviders = {
             Replace (around line 50):
                 EnableGui(true) 
             with
-                TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' })
+                TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' }, false)
 
             Replace (start around line 54):
                 RegisterNUICallback('register', function(data, cb)
