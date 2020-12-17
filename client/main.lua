@@ -267,6 +267,7 @@ AddEventHandler('esx:onPlayerSpawn', function()
                 lipstick = GetColorData(GetLipstickColors(), false),
                 facepaint = GetColorData(GetFacepaintColors(), false),
                 blusher = GetColorData(GetBlusherColors(), false),
+                naturaleyecolors = Config.UseNaturalEyeColors,
 
                 -- esx identity integration
                 esxidentity = Config.EnableESXIdentityIntegration,

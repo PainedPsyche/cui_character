@@ -7,6 +7,7 @@ var hairColors = {}
 var lipstickColors = {}
 var facepaintColors = {}
 var blusherColors = {}
+var naturalEyeColors = null
 
 $(document).ready(function() {
     window.addEventListener('message', function(event) {
@@ -96,6 +97,7 @@ $(document).ready(function() {
             lipstickColors = event.data.lipstick
             facepaintColors = event.data.facepaint
             blusherColors = event.data.blusher
+            naturalEyeColors = event.data.naturaleyecolors
 
             if (esxIdentity) {
                 identityLimits = event.data.identitylimits;
@@ -173,6 +175,51 @@ function loadTabContent(tabName, charData, clothesData, identityData) {
             loadOptionalStyle(tab, charData);
             refreshMakeupUI(charData, false);
             loadColorPalettes(tab);
+        }
+        else if (tabName == 'features') {
+            let eyecolor = tab.find('#eye_color');
+            let commoncolors = `
+            <option value="0" selected="selected">Green</option>
+            <option value="1">Emerald</option>
+            <option value="2">Light Blue</option>
+            <option value="3">Ocean Blue</option>
+            <option value="4">Light Brown</option>
+            <option value="5">Dark Brown</option>
+            <option value="6">Hazel</option>
+            <option value="7">Dark Gray</option>
+            <option value="8">Light Gray</option>
+            `
+            let extracolors = `
+            <option value="9">Pink</option>
+            <option value="10">Yellow</option>
+            <option value="11">Purple</option>
+            <option value="12">Blackout</option>
+            <option value="13">Shades of Gray</option>
+            <option value="14">Tequila Sunrise</option>
+            <option value="15">Atomic</option>
+            <option value="16">Warp</option>
+            <option value="17">ECola</option>
+            <option value="18">Space Ranger</option>
+            <option value="19">Ying Yang</option>
+            <option value="20">Bullseye</option>
+            <option value="21">Lizard</option>
+            <option value="22">Dragon</option>
+            <option value="23">Extra Terrestrial</option>
+            <option value="24">Goat</option>
+            <option value="25">Smiley</option>
+            <option value="26">Possessed</option>
+            <option value="27">Demon</option>
+            <option value="28">Infected</option>
+            <option value="29">Alien</option>
+            <option value="30">Undead</option>
+            <option value="31">Zombie</option>
+            `
+            eyecolor.empty();
+            eyecolor.append(commoncolors);
+
+            if (naturalEyeColors == false) {
+                eyecolor.append(extracolors);
+            }
         }
         else if (esxIdentity && (tabName == 'identity')) {
             loadOptionalIdentity(tab, identityData);
