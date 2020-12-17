@@ -76,6 +76,10 @@ AddEventHandler('esx:loadingScreenOff', function()
     isPlayerReady = true
 end)
 
+function IsPlayerFullyLoaded()
+    return isPlayerReady
+end
+
 local initialized = false
 
 local openTabs = {}

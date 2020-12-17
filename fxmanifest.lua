@@ -50,3 +50,7 @@ files {
 dependencies {
     'es_extended'
 }
+
+exports {
+    'IsPlayerFullyLoaded'
+}
