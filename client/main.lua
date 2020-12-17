@@ -36,20 +36,43 @@ isPlayerReady = false
 
         The way es_extended spawns player causes the ped to start a little above ground
         and 'fall down'. Since our camera position is based off of ped position, 
-        if we open the ui too early during player's first login the camera will be pointing 'too high'.
+        if we open the ui too early during player's first login, the camera will be pointing 'too high'.
 
         Unfortunately, I did not find a way to detect when that fall is finished, so I decided
-        to black out the screen and wait a few seconds.
+        to black out the screen and wait a few seconds (if the special animation is disabled).
 
         This ensures the player will not see that fall or the model being changed from es_extended default.
 ]]--
 AddEventHandler('esx:loadingScreenOff', function()
-    if isInterfaceOpening then
-        --TODO: Possibly use a more refined first login detection (event from server) if this does not cut it.
+    if Config.EnterCityAnimation then
+        playerPed = PlayerPedId()
+
         DoScreenFadeOut(0)
-        Citizen.Wait(1500)
+        SwitchOutPlayer(playerPed, 0, 1)
+
+        while GetPlayerSwitchState() ~= 5 do
+            Citizen.Wait(0)
+        end
+
         DoScreenFadeIn(500)
+        while not IsScreenFadedIn() do
+            Citizen.Wait(0)
+        end
+
+        SwitchInPlayer(playerPed)
+
+        while GetPlayerSwitchState() ~= 12 do
+            Citizen.Wait(0)
+        end
+    else
+        if isInterfaceOpening then
+            --TODO: Possibly use a more refined first login detection (event from server) if this does not cut it.
+            DoScreenFadeOut(0)
+            Citizen.Wait(1500)
+            DoScreenFadeIn(500)
+        end
     end
+
     isPlayerReady = true
 end)
 

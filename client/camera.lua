@@ -138,7 +138,7 @@ end
 
 Citizen.CreateThread(function() 
     while true do
-        if Camera.active or isInterfaceOpening then
+        if Camera.active or isInterfaceOpening or (not isPlayerReady) then
             DisableFirstPersonCamThisFrame()
 
             DisableControlAction(2, 30, true)
@@ -169,7 +169,7 @@ Citizen.CreateThread(function()
 
             DisableControlAction(27, 75, true)
 
-            if isModelLoaded then
+            if isModelLoaded and isPlayerReady then
                 if Camera.updateRot then
                     SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
                     Camera.position = Camera.CalculatePosition(true)
