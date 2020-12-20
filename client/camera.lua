@@ -77,6 +77,8 @@ Camera.SetView = function(view)
 
     Camera.radius = Camera.radiusMin
     Camera.angleY = Camera.angleYMin
+    Camera.angleX = GetEntityHeading(PlayerPedId()) + 90.0
+
     Camera.position = Camera.CalculatePosition(false)
     SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
 
