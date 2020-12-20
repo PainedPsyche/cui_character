@@ -113,7 +113,10 @@ function setView(event, view) {
 
     if (!wasActive) {
         $.post('https://cui_character/setCameraView', JSON.stringify({
-            view: view,
+            view: view
+        }));
+        $.post('https://cui_character/playSound', JSON.stringify({
+            sound: 'panelbuttonclick'
         }));
     }
 

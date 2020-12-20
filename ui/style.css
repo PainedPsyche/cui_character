@@ -62,13 +62,10 @@ h2, h3 {
 }
 
 .cameraview > img {
-    max-height: 50%;
-    max-width: 50%;
+    max-height: 80%;
+    max-width: 80%;
+    object-fit: contain;
     pointer-events: none;
-}
-
-.cameraview#viewbody > img {
-    max-width: auto;
 }
 
 .cameraview:hover:not(.active) {
