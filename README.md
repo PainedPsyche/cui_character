@@ -39,8 +39,9 @@ If you are able to install and configure esx, you should have no problem using t
 1. Click the `Code` button on the github page and select `Download Zip`.
 2. Save the file to your disk, extract it and rename `cui_character-master` folder to `cui_character`.
 3. Put that folder in your server's resources.
+4. Make sure you have `skin` column in your database's `users` table. If you don't, run the included `esx_skin.sql` file.
 5. Open your server.cfg and add `start cui_character` somewhere under `start es_extended`.
-6. If you wish to use esx_identity integration, make sure that is started as well and before this resource (it's not in dependencies, so won't be auto-started).
+6. If you wish to use esx_identity integration, make sure that is installed, configured and started as well and before this resource (it's not in dependencies, so won't be auto-started).
 
 ## Known Issues
 
