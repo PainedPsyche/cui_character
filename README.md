@@ -23,8 +23,14 @@ I have made improvements in places where I thought Rockstar's creator didn't do 
 ## Requirements and usage notes
 **I intended this to be fully functional resource with minimal configuration. Editing and saving characters to the database *should* work out-of-the-box.**
 
-In order to use this resource, legacy version of [es_extended](https://github.com/esx-framework/es_extended/tree/v1-final) is required. In addition, the `skin data column` that esx_skin uses is required (SQL file included).
+In order to use this resource, you need either is required:
 
+legacy version of [es_extended](https://github.com/esx-framework/es_extended/tree/v1-final) **OR**
+[extendedmode](https://github.com/extendedmode/extendedmode)
+
+Usage with `extendedmode` requires additional configuration (explained in shared/config.lua)
+
+In addition, the `skin data column` that esx_skin uses is required (SQL file included).
 It will most likely conflict with esx_skin as it labels and uses some data in exact same way.
 
 Optional integration with [esx_identity](https://github.com/esx-framework/esx_identity) is possible.
