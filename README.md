@@ -23,7 +23,7 @@ I have made improvements in places where I thought Rockstar's creator didn't do 
 ## Requirements and usage notes
 **I intended this to be fully functional resource with minimal configuration. Editing and saving characters to the database *should* work out-of-the-box.**
 
-In order to use this resource, you need either is required:
+In order to use this resource, you need:
 
 legacy version of [es_extended](https://github.com/esx-framework/es_extended/tree/v1-final) **OR**
 [extendedmode](https://github.com/extendedmode/extendedmode)
