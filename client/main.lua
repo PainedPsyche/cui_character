@@ -14,11 +14,17 @@ isPlayerReady = false
 
         This ensures the player will not see that fall or the model being changed from es_extended default.
 ]]--
-AddEventHandler('esx:loadingScreenOff', function()
+function PreparePlayer()
     if Config.EnterCityAnimation then
-        playerPed = PlayerPedId()
+        if not IsScreenFadedOut() then
+            DoScreenFadeOut(0)
+        end
 
-        DoScreenFadeOut(0)
+        while not isModelLoaded do
+            Citizen.Wait(0)
+        end
+
+        playerPed = PlayerPedId()
         SwitchOutPlayer(playerPed, 0, 1)
 
         while GetPlayerSwitchState() ~= 5 do
@@ -36,16 +42,39 @@ AddEventHandler('esx:loadingScreenOff', function()
             Citizen.Wait(0)
         end
     else
-        if isInterfaceOpening then
-            --TODO: Possibly use a more refined first login detection (event from server) if this does not cut it.
+        --TODO: Possibly use a more refined first login detection (event from server) if this does not cut it.
+        if not IsScreenFadedOut() then
             DoScreenFadeOut(0)
-            Citizen.Wait(1500)
-            DoScreenFadeIn(500)
         end
+        Citizen.Wait(7500)
+        DoScreenFadeIn(500)
     end
 
     isPlayerReady = true
-end)
+end
+
+if not Config.ExtendedMode then
+    AddEventHandler('esx:loadingScreenOff', function()
+        PreparePlayer()
+    end)
+else
+    --[[ TODO: Bring this back if spawnmanager ever gets changed
+
+    AddEventHandler('playerSpawned', function()
+        if not isPlayerReady then
+            DoScreenFadeOut(0)
+        end
+    end)
+
+    --]]
+
+    Citizen.CreateThread(function()
+        while GetIsLoadingScreenActive() do
+            Citizen.Wait(100)
+        end
+        PreparePlayer()
+    end)
+end
 
 function IsPlayerFullyLoaded()
     return isPlayerReady
@@ -220,6 +249,12 @@ AddEventHandler('cui_character:open', function(tabs, cancelable)
     isInterfaceOpening = false
 end)
 
+AddEventHandler('cui_character:playerPrepared', function(newplayer)
+    if newplayer and (not Config.EnableESXIdentityIntegration) then
+        TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' }, false)
+    end
+end)
+
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
     playerLoaded = true
@@ -232,6 +267,9 @@ AddEventHandler('esx:onPlayerSpawn', function()
         end
 
         if firstSpawn then
+            local preparingSkin = true
+            local isPlayerNew = false
+
             ESX.TriggerServerCallback('cui_character:getPlayerSkin', function(skin)
                 if skin ~= nil then
                     oldChar = skin
@@ -239,20 +277,29 @@ AddEventHandler('esx:onPlayerSpawn', function()
                 else
                     oldChar = GetDefaultCharacter(true)
                     LoadCharacter(oldChar)
-
-                    if not Config.EnableESXIdentityIntegration then
-                        TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' }, false)
-                    end
+                    isPlayerNew = true
                 end
+                preparingSkin = false
             end)
 
             if Config.EnableESXIdentityIntegration then
+                local preparingIndentity = true
                 ESX.TriggerServerCallback('cui_character:getIdentity', function(identity)
                     if identity ~= nil then
                         LoadIdentity(identity)
                     end
+                    preparingIndentity = false
                 end)
+                while preparingSkin or preparingIdentity do
+                    Citizen.Wait(100)
+                end
+            else
+                while preparingSkin do
+                    Citizen.Wait(100)
+                end
             end
+
+            TriggerEvent('cui_character:playerPrepared', isPlayerNew)
             firstSpawn = false
         end
     end)

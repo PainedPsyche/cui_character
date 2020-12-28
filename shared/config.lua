@@ -113,3 +113,23 @@ if Config.EnableESXIdentityIntegration then
     Config.LowestYear       = 1900
     Config.HighestYear      = 2020
 end
+
+--[[
+    This is extendedmode compatibility, if you use esx v1 final, IGNORE THIS PART.
+
+    If you wish to use extended mode, enable this and MAKE SURE YOU MODIFY SPAWNMANAGER in:
+    resources/[managers]/spawnmanager/spawnmanager.lua
+
+    Delete this part (around line 309):
+
+        if IsScreenFadedOut() then
+            DoScreenFadeIn(500)
+
+            while not IsScreenFadedIn() do
+                Citizen.Wait(0)
+            end
+        end
+
+    If you don't do it, you will experience a really weird glitch on character spawn after loading screen.
+--]]
+Config.ExtendedMode = false
