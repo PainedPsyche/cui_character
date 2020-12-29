@@ -39,7 +39,12 @@ AddEventHandler('cui_character:save', function(data)
     })
 end)
 
-ESX.RegisterServerCallback('cui_character:getPlayerSkin', function(source, cb)
+RegisterServerEvent('esx_skin:save')
+AddEventHandler('esx_skin:save', function(data)
+    TriggerEvent('cui_character:save', data)
+end)
+
+ESX.RegisterServerCallback('esx_skin:getPlayerSkin', function(source, cb)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     MySQL.Async.fetchAll('SELECT skin FROM users WHERE identifier = @identifier', {
@@ -47,6 +52,11 @@ ESX.RegisterServerCallback('cui_character:getPlayerSkin', function(source, cb)
     }, function(users)
         local user = users[1]
         local skin = nil
+
+        local jobSkin = {
+            skin_male   = xPlayer.job.skin_male,
+            skin_female = xPlayer.job.skin_female
+        }
 
         if user.skin ~= nil then
             skin = json.decode(user.skin)

@@ -54,3 +54,8 @@ dependencies {
 exports {
     'IsPlayerFullyLoaded'
 }
+
+provide {
+    'skinchanger',
+    'esx_skin'
+}

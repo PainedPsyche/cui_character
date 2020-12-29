@@ -131,6 +131,155 @@ function ResetAllTabs()
     })
 end
 
+-- skinchanger/esx_skin replacements
+--[[ 
+    Unlike skinchanger, this loads only clothes and does not 
+    re-load other parts of your character (that did not change)
+--]]
+RegisterNetEvent('skinchanger:loadClothes')
+AddEventHandler('skinchanger:loadClothes', function(playerSkin, clothesSkin)
+    local playerPed = PlayerPedId()
+
+    currentChar.tshirt_1 = clothesSkin.tshirt_1
+    currentChar.tshirt_2 = clothesSkin.tshirt_2
+    currentChar.torso_1 = clothesSkin.torso_1
+    currentChar.torso_2 = clothesSkin.torso_2
+    currentChar.decals_1 = clothesSkin.decals_1
+    currentChar.decals_2 = clothesSkin.decals_2
+    currentChar.arms = clothesSkin.arms
+    currentChar.arms_2 = clothesSkin.arms_2
+    currentChar.pants_1 = clothesSkin.pants_1
+    currentChar.pants_2 = clothesSkin.pants_2
+    currentChar.shoes_1 = clothesSkin.shoes_1
+    currentChar.shoes_2 = clothesSkin.shoes_2
+    currentChar.mask_1 = clothesSkin.mask_1
+    currentChar.mask_2 = clothesSkin.mask_2
+    currentChar.bproof_1 = clothesSkin.bproof_1
+    currentChar.bproof_2 = clothesSkin.bproof_2
+    currentChar.neckarm_1 = clothesSkin.chain_1 or clothesSkin.neckarm_1
+    currentChar.neckarm_2 = clothesSkin.chain_2 or clothesSkin.neckarm_2
+    currentChar.helmet_1 = clothesSkin.helmet_1
+    currentChar.helmet_2 = clothesSkin.helmet_2
+    currentChar.glasses_1 = clothesSkin.glasses_1
+    currentChar.glasses_2 = clothesSkin.glasses_2
+    currentChar.lefthand_1 = clothesSkin.watches_1 or clothesSkin.lefthand_1
+    currentChar.lefthand_2 = clothesSkin.watches_2 or clothesSkin.lefthand_2
+    currentChar.righthand_1 = clothesSkin.bracelets_1 or clothesSkin.righthand_1
+    currentChar.righthand_2 = clothesSkin.bracelets_2 or clothesSkin.righthand_2
+    currentChar.bags_1 = clothesSkin.bags_1
+    currentChar.bags_2 = clothesSkin.bags_2
+    currentChar.ears_1 = clothesSkin.ears_1
+    currentChar.ears_2 = clothesSkin.ears_2
+
+    SetPedComponentVariation(playerPed, 8,  currentChar.tshirt_1,   currentChar.tshirt_2,   2)
+    SetPedComponentVariation(playerPed, 11, currentChar.torso_1,    currentChar.torso_2,    2)
+    SetPedComponentVariation(playerPed, 10, currentChar.decals_1,   currentChar.decals_2,   2)
+    SetPedComponentVariation(playerPed, 3,  currentChar.arms,       currentChar.arms_2,     2)
+    SetPedComponentVariation(playerPed, 4,  currentChar.pants_1,    currentChar.pants_2,    2)
+    SetPedComponentVariation(playerPed, 6,  currentChar.shoes_1,    currentChar.shoes_2,    2)
+    SetPedComponentVariation(playerPed, 1,  currentChar.mask_1,     currentChar.mask_2,     2)
+    SetPedComponentVariation(playerPed, 9,  currentChar.bproof_1,   currentChar.bproof_2,   2)
+    SetPedComponentVariation(playerPed, 7,  currentChar.neckarm_1,  currentChar.neckarm_2,  2)
+    SetPedComponentVariation(playerPed, 5,  currentChar.bags_1,     currentChar.bags_2,     2)
+
+    if currentChar.helmet_1 == -1 then
+        ClearPedProp(playerPed, 0)
+    else
+        SetPedPropIndex(playerPed, 0, currentChar.helmet_1, currentChar.helmet_2, 2)
+    end
+
+    if currentChar.glasses_1 == -1 then
+        ClearPedProp(playerPed, 1)
+    else
+        SetPedPropIndex(playerPed, 1, currentChar.glasses_1, currentChar.glasses_2, 2)
+    end
+
+    if currentChar.lefthand_1 == -1 then
+        ClearPedProp(playerPed, 6)
+    else
+        SetPedPropIndex(playerPed, 6, currentChar.lefthand_1, currentChar.lefthand_2, 2)
+    end
+
+    if currentChar.righthand_1 == -1 then
+        ClearPedProp(playerPed,	7)
+    else
+        SetPedPropIndex(playerPed, 7, currentChar.righthand_1, currentChar.righthand_2, 2)
+    end
+
+    if currentChar.ears_1 == -1 then
+        ClearPedProp(playerPed, 2)
+    else
+        SetPedPropIndex(playerPed, 2, currentChar.ears_1, currentChar.ears_2, 2)
+    end
+end)
+
+RegisterNetEvent('skinchanger:loadSkin')
+AddEventHandler('skinchanger:loadSkin', function(skin, cb)
+    local newChar = GetDefaultCharacter(skin['sex'] == 0)
+
+    -- corrections for changed data format and names
+    local changed = {}
+    changed.chain_1 = 'neckarm_1'
+    changed.chain_2 = 'neckarm_2'
+    changed.watches_1 = 'lefthand_1'
+    changed.watches_2 = 'lefthand_2'
+    changed.bracelets_1 = 'righthand_1'
+    changed.bracelets_2 = 'righthand_2'
+
+    for k, v in pairs(skin) do
+        if k ~= 'face' and k ~= 'skin' then
+            if changed[k] == nil then
+                newChar[k] = v
+            else
+                newChar[changed[k]] = v
+            end
+        end
+    end
+
+    LoadCharacter(newChar, false, cb)
+end)
+
+AddEventHandler('skinchanger:loadDefaultModel', function(loadMale, cb)
+    local defaultChar = GetDefaultCharacter(loadMale)
+    LoadCharacter(defaultChar, false, cb)
+end)
+
+AddEventHandler('skinchanger:change', function(key, val)
+    --[[
+            IMPORTANT: This is provided only for compatibility reasons.
+            It's VERY inefficient as it reloads entire character for a single change.
+
+            DON'T USE IT.
+    ]]
+    
+    local changed = {}
+    changed.chain_1 = 'neckarm_1'
+    changed.chain_2 = 'neckarm_2'
+    changed.watches_1 = 'lefthand_1'
+    changed.watches_2 = 'lefthand_2'
+    changed.bracelets_1 = 'righthand_1'
+    changed.bracelets_2 = 'righthand_2'
+
+    if key ~= 'face' and key ~= 'skin' then
+        if changed[k] == nil then
+            currentChar[k] = v
+        else
+            currentChar[changed[k]] = v
+        end
+
+        -- TODO: (!) Rewrite this to only load changed part.
+        LoadCharacter(currentChar, false, cb)
+    end
+end)
+
+AddEventHandler('skinchanger:getSkin', function(cb)
+    cb(currentChar)
+end)
+
+AddEventHandler('skinchanger:modelLoaded', function()
+    -- empty for now, no idea what it's purpose really is
+end)
+
 AddEventHandler('cui_character:close', function(save)
     if (not save) and (not isCancelable) then
         return
@@ -270,7 +419,7 @@ AddEventHandler('esx:onPlayerSpawn', function()
             local preparingSkin = true
             local isPlayerNew = false
 
-            ESX.TriggerServerCallback('cui_character:getPlayerSkin', function(skin)
+            ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
                 if skin ~= nil then
                     oldChar = skin
                     LoadCharacter(skin)
@@ -1024,7 +1173,7 @@ function ClearAllAnimations()
 end
 
 -- Loading character data
-function LoadCharacter(data, playIdleWhenLoaded)
+function LoadCharacter(data, playIdleWhenLoaded, callback)
     for k, v in pairs(data) do
         currentChar[k] = v
     end
@@ -1132,6 +1281,10 @@ function LoadCharacter(data, playIdleWhenLoaded)
         ClearPedProp(playerPed, 2)
     else
         SetPedPropIndex (playerPed, 2, data.ears_1, data.ears_2, 2)             -- Ear Accessory
+    end
+
+    if callback ~= nil then
+        callback()
     end
 end
 
