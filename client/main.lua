@@ -261,10 +261,10 @@ AddEventHandler('skinchanger:change', function(key, val)
     changed.bracelets_2 = 'righthand_2'
 
     if key ~= 'face' and key ~= 'skin' then
-        if changed[k] == nil then
-            currentChar[k] = v
+        if changed[key] == nil then
+            currentChar[key] = val
         else
-            currentChar[changed[k]] = v
+            currentChar[changed[key]] = val
         end
 
         -- TODO: (!) Rewrite this to only load changed part.
