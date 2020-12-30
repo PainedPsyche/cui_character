@@ -969,6 +969,7 @@ function GetClothesData()
         pants = {},
         shoes = {},
         bags = {},
+        masks = {},
         neckarms = {},
         hats = {},
         ears = {},
@@ -982,6 +983,7 @@ function GetClothesData()
     result.pants = GetComponentsData(4)
     result.shoes = GetComponentsData(6)
     -- result.bags = GetComponentsData(5)   -- there seems to be no named components in this category
+    result.masks = GetComponentsData(1)
     result.neckarms = GetComponentsData(7)  -- chains/ties/suspenders/bangles
 
     result.hats = GetPropsData(0)

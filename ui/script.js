@@ -397,6 +397,17 @@ function loadClothesTab(tab, clothesData, male) {
     });
     */
 
+    // masks
+    let maskslist = tab.find('select#mask.clotheslist');
+    let nomask = 0;
+    maskslist.empty();
+    maskslist.append($('<option data-component="1" data-drawable="' + nomask + '" data-texture="0">None</option>')) // "None" option
+    clothesData.masks.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        maskslist.append(option);
+    });
+
     // neck or arm accessory
     let neckarmslist = tab.find('select#neckarm.clotheslist');
     neckarmslist.empty();
@@ -1111,6 +1122,7 @@ function refreshContentData(element, data) {
         refreshComponentList(element, '#pants', 4, data.pants_1, data.pants_2);
         refreshComponentList(element, '#shoes', 6, data.shoes_1, data.shoes_2);
         // refreshComponentList(element, '#bag', 5, data.bags_1, data.bags_2); NOTE: there seems to be no named components in this category, commenting it out
+        refreshComponentList(element, '#mask', 1, data.mask_1, data.mask_2);
         refreshComponentList(element, '#neckarm', 7, data.neckarm_1, data.neckarm_2);
 
         // props
