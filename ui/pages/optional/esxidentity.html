@@ -15,7 +15,7 @@
     <div class="datainput">
         <h3 class="header">Date of birth</h3>
         <div class="controls">
-            <input id="dateofbirth" type="text" name="dateofbirth" placeholder="mm/dd/yyyy" dateformat="M d y" min="01/01/1900" max="12/31/2020" onfocus="(this.type='date')" onkeypress="if ( isNaN(String.fromCharCode(event.keyCode) )) return false;" onchange="checkDOB()" onKeyUp="checkDOB()" onmouseup="checkDOB()">
+            <input id="dateofbirth" type="date" name="dateofbirth" placeholder="mm/dd/yyyy" dateformat="M d y" min="01/01/1900" max="12/31/2020" onkeypress="if ( isNaN(String.fromCharCode(event.keyCode) )) return false;" onchange="checkDOB()" onKeyUp="checkDOB()" onmouseup="checkDOB()">
         </div>
     </div>
     <div class="slider">

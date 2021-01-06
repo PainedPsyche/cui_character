@@ -1181,17 +1181,12 @@ function refreshIdentityData(element, data) {
         lastnamefield.val(data.lastname);
 
         let date = new Date(data.dateofbirth);
-        day = date.getDate();
-        month = date.getMonth() + 1;
-        year = date.getFullYear();
+        let day = ('0' + date.getDate()).slice(-2);
+        let month = ('0' + (date.getMonth() + 1)).slice(-2);
+        let year = date.getFullYear();
 
         let datefield = element.find('#dateofbirth');
         datefield.val(year + '-' + month + '-' + day);
-
-        $.each([firstnamefield, lastnamefield, datefield], function(index, value) {
-            value.focus();
-            value.blur();
-        });
 
         // these are defined in esxidentity.html <script> tag.
         checkName('firstname');

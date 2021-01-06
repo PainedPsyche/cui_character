@@ -438,8 +438,16 @@ h3 {
     pointer-events: none;
 }
 
-.datainput .controls input::-webkit-calendar-picker-indicator { 
-    filter: invert(); 
+.datainput .controls input::-webkit-calendar-picker-indicator {
+    filter: invert();
+}
+
+.datainput .controls input::-webkit-datetime-edit-day-field:focus,
+.datainput .controls input::-webkit-datetime-edit-month-field:focus,
+.datainput .controls input::-webkit-datetime-edit-year-field:focus {
+    background: #2d6eb9;
+    color: #f0f0f0;
+    outline: none;
 }
 
 .datainput .controls input::selection {
