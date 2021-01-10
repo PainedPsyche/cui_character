@@ -133,3 +133,4 @@ end
     If you don't do it, you will experience a really weird glitch on character spawn after loading screen.
 --]]
 Config.ExtendedMode = false
+Config.UseSteamID = false
