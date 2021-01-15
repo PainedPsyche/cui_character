@@ -136,40 +136,72 @@ end
     Unlike skinchanger, this loads only clothes and does not 
     re-load other parts of your character (that did not change)
 --]]
-RegisterNetEvent('skinchanger:loadClothes')
-AddEventHandler('skinchanger:loadClothes', function(playerSkin, clothesSkin)
+function UpdateClothes(data, updateOld)
     local playerPed = PlayerPedId()
 
-    currentChar.tshirt_1 = clothesSkin.tshirt_1
-    currentChar.tshirt_2 = clothesSkin.tshirt_2
-    currentChar.torso_1 = clothesSkin.torso_1
-    currentChar.torso_2 = clothesSkin.torso_2
-    currentChar.decals_1 = clothesSkin.decals_1
-    currentChar.decals_2 = clothesSkin.decals_2
-    currentChar.arms = clothesSkin.arms
-    currentChar.arms_2 = clothesSkin.arms_2
-    currentChar.pants_1 = clothesSkin.pants_1
-    currentChar.pants_2 = clothesSkin.pants_2
-    currentChar.shoes_1 = clothesSkin.shoes_1
-    currentChar.shoes_2 = clothesSkin.shoes_2
-    currentChar.mask_1 = clothesSkin.mask_1
-    currentChar.mask_2 = clothesSkin.mask_2
-    currentChar.bproof_1 = clothesSkin.bproof_1
-    currentChar.bproof_2 = clothesSkin.bproof_2
-    currentChar.neckarm_1 = clothesSkin.chain_1 or clothesSkin.neckarm_1
-    currentChar.neckarm_2 = clothesSkin.chain_2 or clothesSkin.neckarm_2
-    currentChar.helmet_1 = clothesSkin.helmet_1
-    currentChar.helmet_2 = clothesSkin.helmet_2
-    currentChar.glasses_1 = clothesSkin.glasses_1
-    currentChar.glasses_2 = clothesSkin.glasses_2
-    currentChar.lefthand_1 = clothesSkin.watches_1 or clothesSkin.lefthand_1
-    currentChar.lefthand_2 = clothesSkin.watches_2 or clothesSkin.lefthand_2
-    currentChar.righthand_1 = clothesSkin.bracelets_1 or clothesSkin.righthand_1
-    currentChar.righthand_2 = clothesSkin.bracelets_2 or clothesSkin.righthand_2
-    currentChar.bags_1 = clothesSkin.bags_1
-    currentChar.bags_2 = clothesSkin.bags_2
-    currentChar.ears_1 = clothesSkin.ears_1
-    currentChar.ears_2 = clothesSkin.ears_2
+    currentChar.tshirt_1 = data.tshirt_1
+    currentChar.tshirt_2 = data.tshirt_2
+    currentChar.torso_1 = data.torso_1
+    currentChar.torso_2 = data.torso_2
+    currentChar.decals_1 = data.decals_1
+    currentChar.decals_2 = data.decals_2
+    currentChar.arms = data.arms
+    currentChar.arms_2 = data.arms_2
+    currentChar.pants_1 = data.pants_1
+    currentChar.pants_2 = data.pants_2
+    currentChar.shoes_1 = data.shoes_1
+    currentChar.shoes_2 = data.shoes_2
+    currentChar.mask_1 = data.mask_1
+    currentChar.mask_2 = data.mask_2
+    currentChar.bproof_1 = data.bproof_1
+    currentChar.bproof_2 = data.bproof_2
+    currentChar.neckarm_1 = data.chain_1 or data.neckarm_1
+    currentChar.neckarm_2 = data.chain_2 or data.neckarm_2
+    currentChar.helmet_1 = data.helmet_1
+    currentChar.helmet_2 = data.helmet_2
+    currentChar.glasses_1 = data.glasses_1
+    currentChar.glasses_2 = data.glasses_2
+    currentChar.lefthand_1 = data.watches_1 or data.lefthand_1
+    currentChar.lefthand_2 = data.watches_2 or data.lefthand_2
+    currentChar.righthand_1 = data.bracelets_1 or data.righthand_1
+    currentChar.righthand_2 = data.bracelets_2 or data.righthand_2
+    currentChar.bags_1 = data.bags_1
+    currentChar.bags_2 = data.bags_2
+    currentChar.ears_1 = data.ears_1
+    currentChar.ears_2 = data.ears_2
+
+    if updateOld then
+        oldChar.tshirt_1 = data.tshirt_1
+        oldChar.tshirt_2 = data.tshirt_2
+        oldChar.torso_1 = data.torso_1
+        oldChar.torso_2 = data.torso_2
+        oldChar.decals_1 = data.decals_1
+        oldChar.decals_2 = data.decals_2
+        oldChar.arms = data.arms
+        oldChar.arms_2 = data.arms_2
+        oldChar.pants_1 = data.pants_1
+        oldChar.pants_2 = data.pants_2
+        oldChar.shoes_1 = data.shoes_1
+        oldChar.shoes_2 = data.shoes_2
+        oldChar.mask_1 = data.mask_1
+        oldChar.mask_2 = data.mask_2
+        oldChar.bproof_1 = data.bproof_1
+        oldChar.bproof_2 = data.bproof_2
+        oldChar.neckarm_1 = data.chain_1 or data.neckarm_1
+        oldChar.neckarm_2 = data.chain_2 or data.neckarm_2
+        oldChar.helmet_1 = data.helmet_1
+        oldChar.helmet_2 = data.helmet_2
+        oldChar.glasses_1 = data.glasses_1
+        oldChar.glasses_2 = data.glasses_2
+        oldChar.lefthand_1 = data.watches_1 or data.lefthand_1
+        oldChar.lefthand_2 = data.watches_2 or data.lefthand_2
+        oldChar.righthand_1 = data.bracelets_1 or data.righthand_1
+        oldChar.righthand_2 = data.bracelets_2 or data.righthand_2
+        oldChar.bags_1 = data.bags_1
+        oldChar.bags_2 = data.bags_2
+        oldChar.ears_1 = data.ears_1
+        oldChar.ears_2 = data.ears_2
+    end
 
     SetPedComponentVariation(playerPed, 8,  currentChar.tshirt_1,   currentChar.tshirt_2,   2)
     SetPedComponentVariation(playerPed, 11, currentChar.torso_1,    currentChar.torso_2,    2)
@@ -211,6 +243,11 @@ AddEventHandler('skinchanger:loadClothes', function(playerSkin, clothesSkin)
     else
         SetPedPropIndex(playerPed, 2, currentChar.ears_1, currentChar.ears_2, 2)
     end
+end
+
+RegisterNetEvent('skinchanger:loadClothes')
+AddEventHandler('skinchanger:loadClothes', function(playerSkin, clothesSkin)
+    UpdateClothes(clothesSkin, false)
 end)
 
 RegisterNetEvent('skinchanger:loadSkin')
@@ -401,6 +438,53 @@ end)
 AddEventHandler('cui_character:playerPrepared', function(newplayer)
     if newplayer and (not Config.EnableESXIdentityIntegration) then
         TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' }, false)
+    end
+end)
+
+AddEventHandler('cui_character:getCurrentClothes', function(cb)
+    local result = {}
+
+    result.tshirt_1 = currentChar.tshirt_1
+    result.tshirt_2 = currentChar.tshirt_2
+    result.torso_1 = currentChar.torso_1
+    result.torso_2 = currentChar.torso_2
+    result.decals_1 = currentChar.decals_1
+    result.decals_2 = currentChar.decals_2
+    result.arms = currentChar.arms
+    result.arms_2 = currentChar.arms_2
+    result.pants_1 = currentChar.pants_1
+    result.pants_2 = currentChar.pants_2
+    result.shoes_1 = currentChar.shoes_1
+    result.shoes_2 = currentChar.shoes_2
+    result.mask_1 = currentChar.mask_1
+    result.mask_2 = currentChar.mask_2
+    result.bproof_1 = currentChar.bproof_1
+    result.bproof_2 = currentChar.bproof_2
+    result.neckarm_1 = currentChar.chain_1 or currentChar.neckarm_1
+    result.neckarm_2 = currentChar.chain_2 or currentChar.neckarm_2
+    result.helmet_1 = currentChar.helmet_1
+    result.helmet_2 = currentChar.helmet_2
+    result.glasses_1 = currentChar.glasses_1
+    result.glasses_2 = currentChar.glasses_2
+    result.lefthand_1 = currentChar.watches_1 or currentChar.lefthand_1
+    result.lefthand_2 = currentChar.watches_2 or currentChar.lefthand_2
+    result.righthand_1 = currentChar.bracelets_1 or currentChar.righthand_1
+    result.righthand_2 = currentChar.bracelets_2 or currentChar.righthand_2
+    result.bags_1 = currentChar.bags_1
+    result.bags_2 = currentChar.bags_2
+    result.ears_1 = currentChar.ears_1
+    result.ears_2 = currentChar.ears_2
+
+    cb(result)
+end)
+
+AddEventHandler('cui_character:updateClothes', function(data, save, updateOld, callback)
+    UpdateClothes(data, updateOld)
+    if save then
+        TriggerServerEvent('cui_character:save', currentChar)
+    end
+    if callback then
+        callback()
     end
 end)
 
