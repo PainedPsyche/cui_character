@@ -982,6 +982,16 @@ function GetComponentsData(id)
     local result = {}
 
     local playerPed = PlayerPedId()
+    local componentBlacklist = nil
+
+    if blacklist ~= nil then
+        if GetEntityModel(playerPed) == GetHashKey('mp_m_freemode_01') then
+            componentBlacklist = blacklist.components.male
+        elseif GetEntityModel(playerPed) == GetHashKey('mp_f_freemode_01') then
+            componentBlacklist = blacklist.components.female
+        end
+    end
+
     local drawableCount = GetNumberOfPedDrawableVariations(playerPed, id) - 1
 
     for drawable = 0, drawableCount do
@@ -992,17 +1002,30 @@ function GetComponentsData(id)
 
             if hash ~= 0 then
                 local component, drawable, texture, gxt = GetComponentDataFromHash(hash)
-
                 -- only named components
                 if gxt ~= '' then
                     label = GetLabelText(gxt)
                     if label ~= 'NULL' then
-                        table.insert(result, {
-                            name = label,
-                            component = component,
-                            drawable = drawable,
-                            texture = texture
-                        })
+                        local blacklisted = false
+
+                        if componentBlacklist ~= nil then
+                            if componentBlacklist[component] ~= nil then
+                                if componentBlacklist[component][drawable] ~= nil then
+                                    if componentBlacklist[component][drawable][texture] ~= nil then
+                                        blacklisted = true
+                                    end
+                                end
+                            end
+                        end
+    
+                        if not blacklisted then
+                            table.insert(result, {
+                                name = label,
+                                component = component,
+                                drawable = drawable,
+                                texture = texture
+                            })
+                        end
                     end
                 end
             end
@@ -1016,6 +1039,16 @@ function GetPropsData(id)
     local result = {}
 
     local playerPed = PlayerPedId()
+    local propBlacklist = nil
+
+    if blacklist ~= nil then
+        if GetEntityModel(playerPed) == GetHashKey('mp_m_freemode_01') then
+            propBlacklist = blacklist.props.male
+        elseif GetEntityModel(playerPed) == GetHashKey('mp_f_freemode_01') then
+            propBlacklist = blacklist.props.female
+        end
+    end
+
     local drawableCount = GetNumberOfPedPropDrawableVariations(playerPed, id) - 1
 
     for drawable = 0, drawableCount do
@@ -1031,12 +1064,26 @@ function GetPropsData(id)
                 if gxt ~= '' then
                     label = GetLabelText(gxt)
                     if label ~= 'NULL' then
-                        table.insert(result, {
-                            name = label,
-                            prop = prop,
-                            drawable = drawable,
-                            texture = texture
-                        })
+                        local blacklisted = false
+
+                        if propBlacklist ~= nil then
+                            if propBlacklist[prop] ~= nil then
+                                if propBlacklist[prop][drawable] ~= nil then
+                                    if propBlacklist[prop][drawable][texture] ~= nil then
+                                        blacklisted = true
+                                    end
+                                end
+                            end
+                        end
+
+                        if not blacklisted then
+                            table.insert(result, {
+                                name = label,
+                                prop = prop,
+                                drawable = drawable,
+                                texture = texture
+                            })
+                        end
                     end
                 end
             end

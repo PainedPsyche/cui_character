@@ -5,6 +5,7 @@ client_scripts {
     '@es_extended/locale.lua',
     'shared/config.lua',
     'locales/en.lua',
+    'client/blacklist.lua',
     'client/camera.lua',
     'client/main.lua'
 }
