@@ -19,6 +19,7 @@ I have made improvements in places where I thought Rockstar's creator didn't do 
 * Native, in-game sound effects
 * Optional (configurable) map locations where characters can be customzied after creation (barber shops, hospital plastic surgery units, clothes shops)
 * Optional esx_identity integration (disabled by default, check instructions in config.lua to enable)
+* Optional clothes component/prop blacklisting (uncomment `client/blacklist.lua` in fxmanifest client_scripts, then edit the file)
 
 ## Requirements and usage notes
 **I intended this to be fully functional resource with minimal configuration. Editing and saving characters to the database *should* work out-of-the-box.**
