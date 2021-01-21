@@ -1422,22 +1422,67 @@ function LoadCharacter(data, playIdleWhenLoaded, callback)
 end
 
 -- Map Locations
-function GetDistanceToLocation(locations)
-    local result = 1000
-    local pedPosition = GetEntityCoords(PlayerPedId())
+local closestCoords = nil
+local closestType = nil
+local distToClosest = nil
+local inMarkerRange = false
 
+function DisplayTooltip(suffix)
+    SetTextComponentFormat('STRING')
+    AddTextComponentString('Press ~INPUT_PICKUP~ to ' .. suffix)
+    DisplayHelpTextFromStringLabel(0, 0, 1, -1)
+end
+
+function UpdateClosestLocation(locations, type)
+    local pedPosition = GetEntityCoords(PlayerPedId())
     for i = 1, #locations do
         local loc = locations[i]
         local distance = GetDistanceBetweenCoords(pedPosition.x, pedPosition.y, pedPosition.z, loc[1], loc[2], loc[3], false)
-
-        if distance < result then
-            result = distance
+        if (distToClosest == nil) or (distance < distToClosest) or (closestCoords == loc) then
+            distToClosest = distance
+            closestType = type
+            closestCoords = vector3(loc[1], loc[2], loc[3])
         end
 
-        if (distance < 20.0) and (distance > 1.0) then
+        if (distToClosest < 20.0) and (distToClosest > 1.0) then
+            inMarkerRange = true
+        else
+            inMarkerRange = false
+        end
+    end
+end
+
+Citizen.CreateThread(function()
+    while true do
+        if Config.EnableClothingShops then
+            UpdateClosestLocation(Config.ClothingShops, 'clothing')
+        end
+
+        if Config.EnableBarberShops then
+            UpdateClosestLocation(Config.BarberShops, 'barber')
+        end
+
+        if Config.EnablePlasticSurgeryUnits then
+            UpdateClosestLocation(Config.PlasticSurgeryUnits, 'surgery')
+        end
+
+        if Config.EnableNewIdentityProviders then
+            UpdateClosestLocation(Config.NewIdentityProviders, 'identity')
+        end
+        Citizen.Wait(500)
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        --  TODO: make nearby players invisible while using these,
+        --  use https://runtime.fivem.net/doc/natives/?_0xE135A9FF3F5D05D8
+        --  TODO: possibly charge money for use
+
+        if inMarkerRange then
             DrawMarker(
                 20,
-                loc[1], loc[2], loc[3] + 1.0,
+                closestCoords.x, closestCoords.y, closestCoords.z + 1.0,
                 0.0, 0.0, 0.0,
                 0.0, 0.0, 0.0,
                 1.0, 1.0, 1.0,
@@ -1451,63 +1496,30 @@ function GetDistanceToLocation(locations)
                 false
             )
         end
-    end
 
-    return result
-end
-
-function DisplayTooltip(suffix)
-    SetTextComponentFormat('STRING')
-    AddTextComponentString('Press ~INPUT_PICKUP~ to ' .. suffix)
-    DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-end
-
-Citizen.CreateThread(function()
-    while true do
-        --  TODO: make nearby players invisible while using these,
-        --  use https://runtime.fivem.net/doc/natives/?_0xE135A9FF3F5D05D8
-        --  TODO: possibly charge money for use
-
-        if Config.EnableClothingShops then
-            local dstCloth = GetDistanceToLocation(Config.ClothingShops)
-            if (dstCloth < 1.0) and (not isVisible) then
+        if distToClosest < 1.0 and (not isVisible) then
+            if closestType == 'clothing' then
                 DisplayTooltip('use clothing store.')
                 if IsControlJustPressed(1, 38) then
                     TriggerEvent('cui_character:open', { 'apparel' })
                 end
-            end
-        end
-
-        if Config.EnableBarberShops then
-            local dstBarber = GetDistanceToLocation(Config.BarberShops)
-            if (dstBarber < 1.0) and (not isVisible) then
+            elseif closestType == 'barber' then
                 DisplayTooltip('use barber shop.')
                 if IsControlJustPressed(1, 38) then
                     TriggerEvent('cui_character:open', { 'style' })
                 end
-            end
-        end
-
-        if Config.EnablePlasticSurgeryUnits then
-            local dstSurgery = GetDistanceToLocation(Config.PlasticSurgeryUnits)
-            if (dstSurgery < 1.0) and (not isVisible) then
+            elseif closestType == 'surgery' then
                 DisplayTooltip('use platic surgery unit.')
                 if IsControlJustPressed(1, 38) then
                     TriggerEvent('cui_character:open', { 'features' })
                 end
-            end
-        end
-
-        if Config.EnableNewIdentityProviders then
-            local dstIdentity = GetDistanceToLocation(Config.NewIdentityProviders)
-            if (dstIdentity < 1.0) and (not isVisible) then
+            elseif closestType == 'identity' then
                 DisplayTooltip('change your identity.')
                 if IsControlJustPressed(1, 38) then
                     TriggerEvent('cui_character:open', { 'identity' })
                 end
             end
         end
-
         Citizen.Wait(0)
     end
 end)
