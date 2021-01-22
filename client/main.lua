@@ -1423,8 +1423,8 @@ end
 
 -- Map Locations
 local closestCoords = nil
-local closestType = nil
-local distToClosest = nil
+local closestType = ''
+local distToClosest = 1000.0
 local inMarkerRange = false
 
 function DisplayTooltip(suffix)
@@ -1438,7 +1438,7 @@ function UpdateClosestLocation(locations, type)
     for i = 1, #locations do
         local loc = locations[i]
         local distance = GetDistanceBetweenCoords(pedPosition.x, pedPosition.y, pedPosition.z, loc[1], loc[2], loc[3], false)
-        if (distToClosest == nil) or (distance < distToClosest) or (closestCoords == loc) then
+        if (distToClosest == nil or closestCoords == nil) or (distance < distToClosest) or (closestCoords == loc) then
             distToClosest = distance
             closestType = type
             closestCoords = vector3(loc[1], loc[2], loc[3])
