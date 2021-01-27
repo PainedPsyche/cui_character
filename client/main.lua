@@ -139,6 +139,7 @@ end
 function UpdateClothes(data, updateOld)
     local playerPed = PlayerPedId()
 
+    currentChar.sex = data.sex
     currentChar.tshirt_1 = data.tshirt_1
     currentChar.tshirt_2 = data.tshirt_2
     currentChar.torso_1 = data.torso_1
@@ -171,6 +172,7 @@ function UpdateClothes(data, updateOld)
     currentChar.ears_2 = data.ears_2
 
     if updateOld then
+        oldChar.sex = data.sex
         oldChar.tshirt_1 = data.tshirt_1
         oldChar.tshirt_2 = data.tshirt_2
         oldChar.torso_1 = data.torso_1
@@ -444,6 +446,7 @@ end)
 AddEventHandler('cui_character:getCurrentClothes', function(cb)
     local result = {}
 
+    result.sex = currentChar.sex
     result.tshirt_1 = currentChar.tshirt_1
     result.tshirt_2 = currentChar.tshirt_2
     result.torso_1 = currentChar.torso_1
