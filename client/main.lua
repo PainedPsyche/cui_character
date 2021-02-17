@@ -53,7 +53,7 @@ function PreparePlayer()
     isPlayerReady = true
 end
 
-if not Config.ExtendedMode then
+if not Config.ExtendedMode and not Config.StandAlone then
     AddEventHandler('esx:loadingScreenOff', function()
         PreparePlayer()
     end)
@@ -91,18 +91,22 @@ local isCancelable = true
 local playerLoaded = false
 local firstSpawn = true
 local identityLoaded = false
+local preparingSkin = true
+local isPlayerNew = false
 
 local currentChar = {}
 local oldChar = {}
 
 local currentIdentity = nil
 
-Citizen.CreateThread(function()
-    while ESX == nil do
-        TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-        Citizen.Wait(0)
-    end
-end)
+if not Config.StandAlone then
+    Citizen.CreateThread(function()
+        while ESX == nil do
+            TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+            Citizen.Wait(0)
+        end
+    end)
+end
 
 function setVisible(visible)
     SetNuiFocus(visible, visible)
@@ -491,80 +495,106 @@ AddEventHandler('cui_character:updateClothes', function(data, save, updateOld, c
     end
 end)
 
-RegisterNetEvent('esx:playerLoaded')
-AddEventHandler('esx:playerLoaded', function(xPlayer)
-    playerLoaded = true
-end)
+if not Config.StandAlone then
+    RegisterNetEvent('esx:playerLoaded')
+    AddEventHandler('esx:playerLoaded', function(xPlayer)
+        playerLoaded = true
+    end)
 
-AddEventHandler('esx:onPlayerSpawn', function()
-    Citizen.CreateThread(function()
-        while not playerLoaded do
-            Citizen.Wait(100)
-        end
-
-        if firstSpawn then
-            local preparingSkin = true
-            local isPlayerNew = false
-
-            ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
-                if skin ~= nil then
-                    oldChar = skin
-                    LoadCharacter(skin)
-                else
-                    oldChar = GetDefaultCharacter(true)
-                    LoadCharacter(oldChar)
-                    isPlayerNew = true
-                end
-                preparingSkin = false
-            end)
-
-            if Config.EnableESXIdentityIntegration then
-                local preparingIndentity = true
-                ESX.TriggerServerCallback('cui_character:getIdentity', function(identity)
-                    if identity ~= nil then
-                        LoadIdentity(identity)
-                    end
-                    preparingIndentity = false
-                end)
-                while preparingSkin or preparingIdentity do
-                    Citizen.Wait(100)
-                end
-            else
-                while preparingSkin do
-                    Citizen.Wait(100)
-                end
+    AddEventHandler('esx:onPlayerSpawn', function()
+        Citizen.CreateThread(function()
+            while not playerLoaded do
+                Citizen.Wait(100)
             end
 
-            TriggerEvent('cui_character:playerPrepared', isPlayerNew)
-            firstSpawn = false
+            if firstSpawn then
+                ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
+                    if skin ~= nil then
+                        oldChar = skin
+                        LoadCharacter(skin)
+                    else
+                        oldChar = GetDefaultCharacter(true)
+                        LoadCharacter(oldChar)
+                        isPlayerNew = true
+                    end
+                    preparingSkin = false
+                end)
+
+                if Config.EnableESXIdentityIntegration then
+                    local preparingIndentity = true
+                    ESX.TriggerServerCallback('cui_character:getIdentity', function(identity)
+                        if identity ~= nil then
+                            LoadIdentity(identity)
+                        end
+                        preparingIndentity = false
+                    end)
+                    while preparingIdentity do
+                        Citizen.Wait(100)
+                    end
+                end
+            end
+        end)
+    end)
+
+-- StandAlone Deployment
+else
+    AddEventHandler('onClientResourceStart', function(resource)
+        if resource == GetCurrentResourceName() then
+            Citizen.CreateThread(function()
+                Citizen.Wait(250)
+                TriggerServerEvent('cui_character:requestPlayerData')
+                print("Requested player data")
+            end)
         end
     end)
 
-    Citizen.CreateThread(function()
-        while not initialized do
-            SendNUIMessage({
-                action = 'loadInitData',
-                hair = GetColorData(GetHairColors(), true),
-                lipstick = GetColorData(GetLipstickColors(), false),
-                facepaint = GetColorData(GetFacepaintColors(), false),
-                blusher = GetColorData(GetBlusherColors(), false),
-                naturaleyecolors = Config.UseNaturalEyeColors,
-
-                -- esx identity integration
-                esxidentity = Config.EnableESXIdentityIntegration,
-                identitylimits = {
-                    namemax = Config.MaxNameLength,
-                    heightmin = Config.MinHeight,
-                    heightmax = Config.MaxHeight,
-                    yearmin = Config.LowestYear,
-                    yearmax = Config.HighestYear
-                },
-            })
-
-            initialized = true
-            Citizen.Wait(100)
+    RegisterNetEvent('cui_character:recievePlayerData')
+    AddEventHandler('cui_character:recievePlayerData', function(playerData)
+        isPlayerNew = playerData.newPlayer
+        if not isPlayerNew then
+            oldChar = playerData.skin
+            LoadCharacter(playerData.skin)
+        else
+            oldChar = GetDefaultCharacter(true)
+            LoadCharacter(oldChar)
         end
+        preparingSkin = false
+        playerLoaded = true
+        ShutdownLoadingScreen()
+        ShutdownLoadingScreenNui()
     end)
+end
+
+Citizen.CreateThread(function()
+    while preparingSkin do
+        Citizen.Wait(100)
+    end
+    TriggerEvent('cui_character:playerPrepared', isPlayerNew)
+    firstSpawn = false
+
+    while not initialized do
+        SendNUIMessage({
+            action = 'loadInitData',
+            hair = GetColorData(GetHairColors(), true),
+            lipstick = GetColorData(GetLipstickColors(), false),
+            facepaint = GetColorData(GetFacepaintColors(), false),
+            blusher = GetColorData(GetBlusherColors(), false),
+            naturaleyecolors = Config.UseNaturalEyeColors,
+
+            -- esx identity integration
+            esxidentity = Config.EnableESXIdentityIntegration,
+            identitylimits = {
+                namemax = Config.MaxNameLength,
+                heightmin = Config.MinHeight,
+                heightmax = Config.MaxHeight,
+                yearmin = Config.LowestYear,
+                yearmax = Config.HighestYear
+            },
+        })
+
+        initialized = true
+        Citizen.Wait(100)
+    end
 end)
 
 RegisterNUICallback('setCameraView', function(data, cb)

@@ -133,4 +133,27 @@ end
     If you don't do it, you will experience a really weird glitch on character spawn after loading screen.
 --]]
 Config.ExtendedMode = false
-Config.UseSteamID = false
+
+--[[
+    This is servers withoout the ESX framework. 
+
+    If you wish to use this for a stand alone server, enable this and MAKE SURE YOU MODIFY fxmanifest.lua:
+
+    Delete this part (around line 5):
+    '@es_extended/locale.lua'
+
+    And delete this part (around line 51):
+
+        dependencies {
+            'es_extended'
+        }
+
+    If you don't do it, you will receive an error when launching your server.
+--]]
+Config.StandAlone = false
+
+if Config.StandAlone then
+    Config.ExtendedMode = false
+    Config.EnableESXIdentityIntegration = false
+    Config.EnableNewIdentityProviders = false
+end
