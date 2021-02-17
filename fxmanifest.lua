@@ -2,7 +2,7 @@ fx_version 'cerulean'
 games { 'gta5' }
 
 client_scripts {
-    --'@es_extended/locale.lua',
+    '@es_extended/locale.lua',
     'shared/config.lua',
     'locales/en.lua',
     --'client/blacklist.lua',
@@ -49,7 +49,7 @@ files {
 }
 
 dependencies {
-    -- 'es_extended'
+    'es_extended'
 }
 
 exports {
