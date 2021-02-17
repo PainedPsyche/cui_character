@@ -1,5 +1,5 @@
 # CleanUI (cui) character
-An advanced character and clothes editor for esx framework that aims to be comfortable to use, hide complexity and blend in with original GTA V interface elements.
+An advanced character and clothes editor that aims to be comfortable to use, hide complexity and blend in with original GTA V interface elements.
 
 ## Character Customization Features
 I tried to cover every feature that GTA Online character creator offers, notably:
@@ -24,8 +24,9 @@ I have made improvements in places where I thought Rockstar's creator didn't do 
 ## Requirements and usage notes
 **I intended this to be fully functional resource with minimal configuration. Editing and saving characters to the database *should* work out-of-the-box.**
 
-In order to use this resource, you need:
+Thanks to [SaltyGrandpa](https://github.com/SaltyGrandpa) you can now use this resource standalone, without esx framework. To do so, follow his instructions in `shared/config.lua`.
 
+In order to use this resource with esx, you need:
 legacy version of [es_extended](https://github.com/esx-framework/es_extended/tree/v1-final) **OR**
 [extendedmode](https://github.com/extendedmode/extendedmode)
 
