@@ -96,6 +96,7 @@ local isPlayerNew = false
 
 local currentChar = {}
 local oldChar = {}
+local oldLoadout = {}
 
 local currentIdentity = nil
 
@@ -133,6 +134,25 @@ function ResetAllTabs()
         clothes = clothes,
         identity = currentIdentity
     })
+end
+
+function GetLoadout()
+    local result = {}
+    if not Config.StandAlone then
+        local dataLoaded = false
+        ESX.TriggerServerCallback('esx:getPlayerData', function(data)
+            if data ~= nil then
+                result = data.loadout
+            end
+            dataLoaded = true
+        end)
+
+        while not dataLoaded do
+            Citizen.Wait(100)
+        end
+    end
+
+    return result
 end
 
 -- skinchanger/esx_skin replacements
@@ -373,6 +393,10 @@ AddEventHandler('cui_character:open', function(tabs, cancelable)
         Citizen.Wait(100)
     end
 
+    if not Config.StandAlone then
+        oldLoadout = GetLoadout()
+    end
+
     -- Request textures
     RequestStreamedTextureDict('mparrow')
     RequestStreamedTextureDict('mpleaderboard')
@@ -508,6 +532,7 @@ if not Config.StandAlone then
             end
 
             if firstSpawn then
+                oldLoadout = GetLoadout()
                 ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
                     if skin ~= nil then
                         oldChar = skin
@@ -1450,6 +1475,7 @@ function LoadCharacter(data, playIdleWhenLoaded, callback)
     end
 
     if not Config.StandAlone then
+        ESX.SetPlayerData('loadout', oldLoadout)
         TriggerEvent('esx:restoreLoadout')
     end
 
