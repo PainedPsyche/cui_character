@@ -1449,6 +1449,10 @@ function LoadCharacter(data, playIdleWhenLoaded, callback)
         SetPedPropIndex (playerPed, 2, data.ears_1, data.ears_2, 2)             -- Ear Accessory
     end
 
+    if not Config.StandAlone then
+        TriggerEvent('esx:restoreLoadout')
+    end
+
     if callback ~= nil then
         callback()
     end
