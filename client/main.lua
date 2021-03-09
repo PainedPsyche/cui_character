@@ -299,11 +299,13 @@ AddEventHandler('skinchanger:loadSkin', function(skin, cb)
         end
     end
 
+    oldLoadout = GetLoadout()
     LoadCharacter(newChar, false, cb)
 end)
 
 AddEventHandler('skinchanger:loadDefaultModel', function(loadMale, cb)
     local defaultChar = GetDefaultCharacter(loadMale)
+    oldLoadout = GetLoadout()
     LoadCharacter(defaultChar, false, cb)
 end)
 
@@ -331,6 +333,7 @@ AddEventHandler('skinchanger:change', function(key, val)
         end
 
         -- TODO: (!) Rewrite this to only load changed part.
+        oldLoadout = GetLoadout()
         LoadCharacter(currentChar, false, cb)
     end
 end)
