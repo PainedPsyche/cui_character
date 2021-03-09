@@ -30,8 +30,6 @@ Camera.Activate = function(delay)
     FreezePedCameraRotation(playerPed, true)
     FreezeEntityPosition(playerPed, true)
 
-    PlayIdleAnimation()
-
     Camera.SetView(Camera.currentView)
 
     SetCamActive(Camera.entity, true)
@@ -77,12 +75,12 @@ Camera.SetView = function(view)
 
     Camera.radius = Camera.radiusMin
     Camera.angleY = Camera.angleYMin
-    Camera.angleX = GetEntityHeading(PlayerPedId()) + 90.0
+    Camera.angleX = GetEntityHeading(previewPed) + 90.0
 
     Camera.position = Camera.CalculatePosition(false)
     SetCamCoord(Camera.entity, Camera.position.x, Camera.position.y, Camera.position.z)
 
-    targetPos = GetPedBoneCoords(PlayerPedId(), boneIndex, 0.0, 0.0, 0.0)
+    targetPos = GetPedBoneCoords(previewPed, boneIndex, 0.0, 0.0, 0.0)
     PointCamAtCoord(Camera.entity, targetPos.x, targetPos.y, targetPos.z)
 
     Camera.currentView = view
@@ -98,7 +96,7 @@ Camera.CalculateMaxRadius = function()
     local result = Camera.radius
 
     local playerPed = PlayerPedId()
-    local pedCoords = GetEntityCoords(playerPed)
+    local pedCoords = GetEntityCoords(previewPed)
 
     local behindX = pedCoords.x + ((Cos(Camera.angleX) * Cos(Camera.angleY)) + (Cos(Camera.angleY) * Cos(Camera.angleX))) / 2 * (Camera.radius + 0.5)
     local behindY = pedCoords.x + ((Sin(Camera.angleX) * Cos(Camera.angleY)) + (Cos(Camera.angleY) * Sin(Camera.angleX))) / 2 * (Camera.radius + 0.5)
@@ -133,7 +131,7 @@ Camera.CalculatePosition = function(adjustedAngle)
     local offsetY = ((Sin(Camera.angleX) * Cos(Camera.angleY)) + (Cos(Camera.angleY) * Sin(Camera.angleX))) / 2 * radiusMax
     local offsetZ = ((Sin(Camera.angleY))) * radiusMax
 
-    local pedCoords = GetEntityCoords(PlayerPedId())
+    local pedCoords = GetEntityCoords(previewPed)
 
     return vector3(pedCoords.x + offsetX, pedCoords.y + offsetY, pedCoords.z + offsetZ)
 end
@@ -142,6 +140,8 @@ Citizen.CreateThread(function()
     while true do
         if Camera.active or isInterfaceOpening or (not isPlayerReady) then
             DisableFirstPersonCamThisFrame()
+
+            SetEntityLocallyInvisible(PlayerPedId())
 
             DisableControlAction(2, 30, true)
             DisableControlAction(2, 31, true)
