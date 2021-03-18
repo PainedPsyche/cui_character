@@ -100,6 +100,11 @@ local oldLoadout = {}
 
 local currentIdentity = nil
 
+local isOnDuty = false
+function SetOnDutyStatus(value)
+    isOnDuty = value
+end
+
 if not Config.StandAlone then
     Citizen.CreateThread(function()
         while ESX == nil do
@@ -1564,25 +1569,31 @@ Citizen.CreateThread(function()
         end
 
         if distToClosest < 1.0 and (not isVisible) then
-            if closestType == 'clothing' then
-                DisplayTooltip('use clothing store.')
-                if IsControlJustPressed(1, 38) then
-                    TriggerEvent('cui_character:open', { 'apparel' })
-                end
-            elseif closestType == 'barber' then
-                DisplayTooltip('use barber shop.')
-                if IsControlJustPressed(1, 38) then
-                    TriggerEvent('cui_character:open', { 'style' })
-                end
-            elseif closestType == 'surgery' then
-                DisplayTooltip('use platic surgery unit.')
-                if IsControlJustPressed(1, 38) then
-                    TriggerEvent('cui_character:open', { 'features' })
-                end
-            elseif closestType == 'identity' then
-                DisplayTooltip('change your identity.')
-                if IsControlJustPressed(1, 38) then
-                    TriggerEvent('cui_character:open', { 'identity' })
+            if isOnDuty then
+                SetTextComponentFormat('STRING')
+                AddTextComponentString('You cannot access this while ~r~on duty~s~.')
+                DisplayHelpTextFromStringLabel(0, 0, 1, -1)
+            else
+                if closestType == 'clothing' then
+                    DisplayTooltip('use clothing store.')
+                    if IsControlJustPressed(1, 38) then
+                        TriggerEvent('cui_character:open', { 'apparel' })
+                    end
+                elseif closestType == 'barber' then
+                    DisplayTooltip('use barber shop.')
+                    if IsControlJustPressed(1, 38) then
+                        TriggerEvent('cui_character:open', { 'style' })
+                    end
+                elseif closestType == 'surgery' then
+                    DisplayTooltip('use platic surgery unit.')
+                    if IsControlJustPressed(1, 38) then
+                        TriggerEvent('cui_character:open', { 'features' })
+                    end
+                elseif closestType == 'identity' then
+                    DisplayTooltip('change your identity.')
+                    if IsControlJustPressed(1, 38) then
+                        TriggerEvent('cui_character:open', { 'identity' })
+                    end
                 end
             end
         end

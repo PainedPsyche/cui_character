@@ -53,7 +53,8 @@ dependencies {
 }
 
 exports {
-    'IsPlayerFullyLoaded'
+    'IsPlayerFullyLoaded',
+    'SetOnDutyStatus'
 }
 
 provide {
