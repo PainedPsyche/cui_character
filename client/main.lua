@@ -387,6 +387,15 @@ end)
 
 RegisterNetEvent('cui_character:open')
 AddEventHandler('cui_character:open', function(tabs, cancelable)
+    if isOnDuty then
+        AddTextEntry('notifyOnDuty', 'You cannot access this command while ~r~on duty~s~.')
+        BeginTextCommandThefeedPost('notifyOnDuty')
+        ThefeedNextPostBackgroundColor(140)
+        EndTextCommandThefeedPostTicker(false, false)
+        isInterfaceOpening = false
+        return
+    end
+
     if isInterfaceOpening then
         return
     end
