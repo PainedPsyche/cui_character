@@ -24,8 +24,7 @@ function PreparePlayer()
             Citizen.Wait(0)
         end
 
-        playerPed = PlayerPedId()
-        SwitchOutPlayer(playerPed, 0, 1)
+        SwitchOutPlayer(PlayerPedId(), 0, 1)
 
         while GetPlayerSwitchState() ~= 5 do
             Citizen.Wait(0)
@@ -36,7 +35,7 @@ function PreparePlayer()
             Citizen.Wait(0)
         end
 
-        SwitchInPlayer(playerPed)
+        SwitchInPlayer(PlayerPedId())
 
         while GetPlayerSwitchState() ~= 12 do
             Citizen.Wait(0)
