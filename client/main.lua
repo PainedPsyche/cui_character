@@ -348,7 +348,7 @@ AddEventHandler('skinchanger:getSkin', function(cb)
 end)
 
 AddEventHandler('skinchanger:modelLoaded', function()
-    -- empty for now, no idea what it's purpose really is
+	-- only for compatibility issue, unnecessary to do anythink here. this event handler is for other script that trigger on it when changing model addon (li tattoos)
 end)
 
 AddEventHandler('cui_character:close', function(save)
@@ -1345,6 +1345,7 @@ function LoadModel(isMale, playIdleWhenLoaded)
     end
 
     isModelLoaded = true
+	TriggerEvent('skinchanger:modelLoaded')
 end
 
 function PlayIdleAnimation(isMale)
