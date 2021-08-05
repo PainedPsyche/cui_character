@@ -1,6 +1,7 @@
 var esxIdentity = false
 var identityLimits = null
 
+var cancelable = false
 var editedTabs = null
 
 var hairColors = {}
@@ -22,9 +23,11 @@ $(document).ready(function() {
         else if (event.data.action == 'setCancelable') {
             if (event.data.value) {
                 $('#cancel').show();
+                cancelable = true;
             }
             else {
                 $('#cancel').hide();
+                cancelable = false;
             }
         }
         else if (event.data.action == 'clearAllTabs') {
@@ -514,7 +517,12 @@ function closeWindow(save) {
             let formattedDate = `${mo}/${da}/${ye}`;
             let formattedSex = ($("input[type='radio'][name='sex']:checked").val()) == 0 ? 'm' : 'f';
 
-            $.post('https://esx_identity/register', JSON.stringify({
+            let callbackstring = 'https://cui_character/identityupdate';
+            if(!cancelable)
+            {
+                callbackstring = 'https://cui_character/identityregister';
+            }
+            $.post(callbackstring, JSON.stringify({
                 firstname: $("#firstname").val(),
                 lastname: $("#lastname").val(),
                 dateofbirth: formattedDate,

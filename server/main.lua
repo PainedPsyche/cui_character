@@ -7,11 +7,14 @@ local function getPlayerLicense(source)
     return false
 end
 
-if not Config.StandAlone then  
-    if not Config.EnableESXIdentityIntegration then
-        ESX = nil
-        TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+if not Config.StandAlone then
+    local charSkins = {}
 
+    if not ESX then
+        SetTimeout(3000, print('[^3WARNING^7] Unable to start cui_character - your version of ESX is not compatible '))
+    end
+
+    if not Config.EnableESXIdentityIntegration then
         RegisterNetEvent('esx:onPlayerJoined')
         AddEventHandler('esx:onPlayerJoined', function()
             if not ESX.Players[source] then
@@ -37,12 +40,33 @@ if not Config.StandAlone then
     RegisterServerEvent('cui_character:save')
     AddEventHandler('cui_character:save', function(data)
         local xPlayer = ESX.GetPlayerFromId(source)
+
+        if ESX.GetConfig().Multichar and xPlayer == nil then
+            charSkins[source] = data
+            return
+        else
+            charSkins[source] = nil
+        end
+
         MySQL.ready(function()
             MySQL.Async.execute('UPDATE users SET skin = @data WHERE identifier = @identifier', {
                 ['@data'] = json.encode(data),
                 ['@identifier'] = xPlayer.identifier
             })
         end)
+    end)
+
+    RegisterServerEvent('esx:playerLoaded')
+    AddEventHandler('esx:playerLoaded', function(source, xPlayer, isNew, skin)
+        local data = charSkins[source]
+        if isNew and ESX.GetConfig().Multichar and data then
+            MySQL.ready(function()
+                MySQL.Async.execute('UPDATE users SET skin = @data WHERE identifier = @identifier', {
+                    ['@data'] = json.encode(data),
+                    ['@identifier'] = xPlayer.identifier
+                })
+            end)
+        end
     end)
 
     RegisterServerEvent('esx_skin:save')
@@ -74,33 +98,152 @@ if not Config.StandAlone then
     end)
 
     if Config.EnableESXIdentityIntegration then
+        -- start of copied identity functions
+        function checkAlphanumeric(str)
+            return (string.match(str, "%W"))
+        end
+
+        function checkForNumbers(str)
+            return (string.match(str,"%d"))
+        end
+
+        function checkDate(str)
+            if string.match(str, '(%d%d)/(%d%d)/(%d%d%d%d)') ~= nil then
+                local m, d, y = string.match(str, '(%d+)/(%d+)/(%d+)')
+                m = tonumber(m)
+                d = tonumber(d)
+                y = tonumber(y)
+                if ((d <= 0) or (d > 31)) or ((m <= 0) or (m > 12)) or ((y <= Config.LowestYear) or (y > Config.HighestYear)) then
+                    return false
+                elseif m == 4 or m == 6 or m == 9 or m == 11 then
+                    if d > 30 then
+                        return false
+                    else
+                        return true
+                    end
+                elseif m == 2 then
+                    if y%400 == 0 or (y%100 ~= 0 and y%4 == 0) then
+                        if d > 29 then
+                            return false
+                        else
+                            return true
+                        end
+                    else
+                        if d > 28 then
+                            return false
+                        else
+                            return true
+                        end
+                    end
+                else
+                    if d > 31 then
+                        return false
+                    else
+                        return true
+                    end
+                end
+            else
+                return false
+            end
+        end
+
+        function checkNameFormat(name)
+            if not checkAlphanumeric(name) then
+                if not checkForNumbers(name) then
+                    local stringLength = string.len(name)
+                    if stringLength > 0 and stringLength < Config.MaxNameLength then
+                        return true
+                    else
+                        return false
+                    end
+                else
+                    return false
+                end
+            else
+                return false
+            end
+        end
+
+        function checkDOBFormat(dob)
+            local date = tostring(dob)
+            if checkDate(date) then
+                return true
+            else
+                return false
+            end
+        end
+
+        function checkSexFormat(sex)
+            if sex == "m" or sex == "M" or sex == "f" or sex == "F" then
+                return true
+            else
+                return false
+            end
+        end
+
+        function checkHeightFormat(height)
+            local numHeight = tonumber(height)
+            if numHeight < Config.MinHeight and numHeight > Config.MaxHeight then
+                return false
+            else
+                return true
+            end
+        end
+
+        function formatName(name)
+            local loweredName = convertToLowerCase(name)
+            local formattedName = convertFirstLetterToUpper(loweredName)
+            return formattedName
+        end
+        
+        function convertToLowerCase(str)
+            return string.lower(str)
+        end
+        
+        function convertFirstLetterToUpper(str)
+            return str:gsub("^%l", string.upper)
+        end
+
+        function saveIdentityToDatabase(identifier, identity)
+            MySQL.Sync.execute('UPDATE users SET firstname = @firstname, lastname = @lastname, dateofbirth = @dateofbirth, sex = @sex, height = @height WHERE identifier = @identifier', {
+                ['@identifier']  = identifier,
+                ['@firstname'] = identity.firstName,
+                ['@lastname'] = identity.lastName,
+                ['@dateofbirth'] = identity.dateOfBirth,
+                ['@sex'] = identity.sex,
+                ['@height'] = identity.height
+            })
+        end
+        -- end of copied identity functions
+
         ESX.RegisterServerCallback('cui_character:updateIdentity', function(source, cb, data)
             local xPlayer = ESX.GetPlayerFromId(source)
             
             if xPlayer then
                 if checkNameFormat(data.firstname) and checkNameFormat(data.lastname) and checkSexFormat(data.sex) and checkDOBFormat(data.dateofbirth) and checkHeightFormat(data.height) then
-                    local playerIdentity = {}
-                    playerIdentity[xPlayer.identifier] = {
+                    local currentIdentity = {
                         firstName = formatName(data.firstname),
                         lastName = formatName(data.lastname),
                         dateOfBirth = data.dateofbirth,
                         sex = data.sex,
                         height = data.height
                     }
-
-                    local currentIdentity = playerIdentity[xPlayer.identifier]
-
+    
                     xPlayer.setName(('%s %s'):format(currentIdentity.firstName, currentIdentity.lastName))
                     xPlayer.set('firstName', currentIdentity.firstName)
                     xPlayer.set('lastName', currentIdentity.lastName)
                     xPlayer.set('dateofbirth', currentIdentity.dateOfBirth)
                     xPlayer.set('sex', currentIdentity.sex)
                     xPlayer.set('height', currentIdentity.height)
-
+    
                     saveIdentityToDatabase(xPlayer.identifier, currentIdentity)
                     cb(true)
                 else
                     cb(false)
+                end
+            else
+                if ESX.GetConfig().Multichar and checkNameFormat(data.firstname) and checkNameFormat(data.lastname) and checkSexFormat(data.sex) and checkDOBFormat(data.dateofbirth) and checkHeightFormat(data.height) then
+                    cb(true)
                 end
             end
         end)

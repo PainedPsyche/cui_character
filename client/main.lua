@@ -1,4 +1,9 @@
-ESX = nil
+if not Config.StandAlone then
+    ESX = exports['es_extended']:getSharedObject()
+else
+    ESX = nil
+end
+
 previewPed = nil
 isInterfaceOpening = false
 isModelLoaded = false
@@ -16,6 +21,11 @@ isPlayerReady = false
         This ensures the player will not see that fall or the model being changed from es_extended default.
 ]]--
 function PreparePlayer()
+    if ESX.GetConfig().Multichar then
+        isPlayerReady = true
+        return
+    end
+
     if Config.EnterCityAnimation then
         if not IsScreenFadedOut() then
             DoScreenFadeOut(0)
@@ -58,16 +68,6 @@ if not Config.ExtendedMode and not Config.StandAlone then
         PreparePlayer()
     end)
 else
-    --[[ TODO: Bring this back if spawnmanager ever gets changed
-
-    AddEventHandler('playerSpawned', function()
-        if not isPlayerReady then
-            DoScreenFadeOut(0)
-        end
-    end)
-
-    --]]
-
     Citizen.CreateThread(function()
         while GetIsLoadingScreenActive() do
             Citizen.Wait(100)
@@ -94,6 +94,9 @@ local identityLoaded = false
 local preparingSkin = true
 local isPlayerNew = false
 
+local firstCharacter = false
+local newCharacter = false
+
 local currentChar = {}
 local oldChar = {}
 local oldLoadout = {}
@@ -103,15 +106,6 @@ local currentIdentity = nil
 local isOnDuty = false
 function SetOnDutyStatus(value)
     isOnDuty = value
-end
-
-if not Config.StandAlone then
-    Citizen.CreateThread(function()
-        while ESX == nil do
-            TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-            Citizen.Wait(0)
-        end
-    end)
 end
 
 function BeginCharacterPreview()
@@ -154,6 +148,7 @@ function EndCharacterPreview(save)
 
         ClearAllAnimations(previewPed)
         DeleteEntity(previewPed)
+        previewPed = nil
     end
 end
 
@@ -186,18 +181,9 @@ end
 
 function GetLoadout()
     local result = {}
-    if not Config.StandAlone then
-        local dataLoaded = false
-        ESX.TriggerServerCallback('esx:getPlayerData', function(data)
-            if data ~= nil then
-                result = data.loadout
-            end
-            dataLoaded = true
-        end)
 
-        while not dataLoaded do
-            Citizen.Wait(100)
-        end
+    if not Config.StandAlone then
+        result = ESX.GetPlayerData().loadout or {}
     end
 
     return result
@@ -285,6 +271,17 @@ function UpdateClothes(data)
     end
 end
 
+if ESX.GetConfig().Multichar then
+    RegisterNetEvent('esx_multicharacter:SetupUI')
+    AddEventHandler('esx_multicharacter:SetupUI', function(data)
+        if next(data) == nil or (data.current and data.current.new) then
+            firstCharacter = true
+        else
+            firstCharacter = false
+        end
+    end)
+end
+
 RegisterNetEvent('skinchanger:loadClothes')
 AddEventHandler('skinchanger:loadClothes', function(playerSkin, clothesSkin)
     UpdateClothes(clothesSkin, false)
@@ -357,7 +354,22 @@ AddEventHandler('skinchanger:getSkin', function(cb)
 end)
 
 AddEventHandler('skinchanger:modelLoaded', function()
-    -- empty for now, no idea what it's purpose really is
+    if not Config.StandAlone then
+        ESX.SetPlayerData('loadout', oldLoadout)
+        TriggerEvent('esx:restoreLoadout')
+    end
+end)
+
+RegisterNetEvent('esx_skin:openSaveableMenu')
+AddEventHandler('esx_skin:openSaveableMenu', function(submitCb, cancelCb)
+    if ESX.GetConfig().Multichar then
+        ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
+            if skin ~= nil then
+                oldChar = skin
+                LoadCharacter(skin, submitCb)
+            end
+        end)
+    end
 end)
 
 AddEventHandler('cui_character:close', function(save)
@@ -418,7 +430,7 @@ AddEventHandler('cui_character:open', function(tabs, cancelable)
         Citizen.Wait(100)
     end
 
-    if not Config.StandAlone then
+    if not Config.StandAlone and not newCharacter then
         oldLoadout = GetLoadout()
     end
 
@@ -483,7 +495,11 @@ AddEventHandler('cui_character:open', function(tabs, cancelable)
         tab = firstTabName
     })
 
-    Camera.Activate()
+    if newCharacter then
+        Camera.Activate(500)
+    else
+        Camera.Activate()
+    end
 
     SendNUIMessage({
         action = 'refreshViewButtons',
@@ -556,7 +572,43 @@ end)
 if not Config.StandAlone then
     RegisterNetEvent('esx:playerLoaded')
     AddEventHandler('esx:playerLoaded', function(xPlayer)
+        ESX.PlayerData = xPlayer
+        ESX.PlayerLoaded = true
+
+        if Config.EnterCityAnimation and ESX.GetConfig().Multichar then
+            if not IsScreenFadedOut() then
+                DoScreenFadeOut(0)
+            end
+    
+            while not isModelLoaded do
+                Citizen.Wait(0)
+            end
+    
+            SwitchOutPlayer(PlayerPedId(), 0, 1)
+    
+            while GetPlayerSwitchState() ~= 5 do
+                Citizen.Wait(0)
+            end
+    
+            DoScreenFadeIn(500)
+            while not IsScreenFadedIn() do
+                Citizen.Wait(0)
+            end
+    
+            SwitchInPlayer(PlayerPedId())
+    
+            while GetPlayerSwitchState() ~= 12 do
+                Citizen.Wait(0)
+            end
+        end
+
         playerLoaded = true
+    end)
+
+    RegisterNetEvent('esx:onPlayerLogout')
+    AddEventHandler('esx:onPlayerLogout', function()
+        ESX.PlayerLoaded = false
+        ESX.PlayerData = {}
     end)
 
     AddEventHandler('esx:onPlayerSpawn', function()
@@ -1355,9 +1407,9 @@ end
 
 function LoadModel(hash)
     isModelLoaded = false
-
     local playerPed = PlayerPedId()
     SetEntityInvincible(playerPed, true)
+
     if IsModelInCdimage(hash) and IsModelValid(hash) then
         RequestModel(hash)
         while not HasModelLoaded(hash) do
@@ -1369,6 +1421,9 @@ function LoadModel(hash)
     SetEntityInvincible(playerPed, false)
 
     isModelLoaded = true
+    if not Config.StandAlone then
+        TriggerEvent('skinchanger:modelLoaded')
+    end
 end
 
 function PlayIdleAnimation(ped)
@@ -1518,11 +1573,6 @@ function LoadCharacter(data, callback)
 
     local playerPed = PlayerPedId()
     ApplySkinToPed(playerPed, data)
-
-    if not Config.StandAlone then
-        ESX.SetPlayerData('loadout', oldLoadout)
-        TriggerEvent('esx:restoreLoadout')
-    end
 
     if callback ~= nil then
         callback()
@@ -1701,18 +1751,92 @@ end
 
 -- ESX Identity Integration
 if Config.EnableESXIdentityIntegration then
+    local isDead = false
+
     function LoadIdentity(data)
-        currentIdentity = {}
+        currentIdentity = {
+            firstName = nil,
+            lastName = nil,
+            dateOfBirth = nil,
+            sex = 'm',
+            height = 67
+        }
         for k, v in pairs(data) do
             currentIdentity[k] = v
         end
     end
 
+    AddEventHandler('esx:onPlayerDeath', function(data)
+        isDead = true
+    end)
+
+    AddEventHandler('esx:onPlayerSpawn', function(spawn)
+        isDead = false
+    end)
+
     AddEventHandler('esx_skin:resetFirstSpawn', function()
         firstSpawn = true
     end)
 
+    RegisterNetEvent('esx_identity:showRegisterIdentity')
+    AddEventHandler('esx_identity:showRegisterIdentity', function()
+        TriggerEvent('esx_skin:resetFirstSpawn')
+        if ESX.GetConfig().Multichar then
+            newCharacter = true
+
+            oldChar = GetDefaultCharacter(true)
+            LoadCharacter(oldChar, function()
+                local playerPed = PlayerPedId()
+                SetPedAoBlobRendering(playerPed, true)
+                SetEntityAlpha(playerPed, 255)
+            end)
+            currentIdentity = {
+                firstName = nil,
+                lastName = nil,
+                dateOfBirth = nil,
+                sex = 'm',
+                height = 67
+            }
+
+            preparingSkin = false
+        end
+        if not isDead then
+            TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' }, false)
+        end
+    end)
+
     AddEventHandler('cui_character:setCurrentIdentity', function(data)
         currentIdentity = data
+    end)
+
+    RegisterNUICallback('identityregister', function(data, cb)
+        ESX.TriggerServerCallback('esx_identity:registerIdentity', function(callback)
+            if callback then
+                -- ESX.ShowNotification(_U('thank_you_for_registering')) TODO: Notification (or sound effect)
+                TriggerEvent('cui_character:setCurrentIdentity', data)
+                TriggerEvent('cui_character:close', true)
+                if not ESX.GetConfig().Multichar then 
+                    TriggerEvent('esx_skin:playerRegistered')
+                else
+                    firstCharacter = false
+                    newCharacter = false
+                end
+            else
+                -- ESX.ShowNotification(_U('registration_error')) TODO: Notification (or sound effect)
+            end
+        end, data)
+    end)
+    RegisterNUICallback('identityupdate', function(data, cb)
+        ESX.TriggerServerCallback('cui_character:updateIdentity', function(callback)
+            if callback then
+                TriggerEvent('cui_character:setCurrentIdentity', data)
+                TriggerEvent('cui_character:close', true)
+                if not ESX.GetConfig().Multichar then 
+                    TriggerEvent('esx_skin:playerRegistered')
+                end
+            else
+                --TODO: Notification (or sound effect)
+            end
+        end, data)
     end)
 end

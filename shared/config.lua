@@ -1,3 +1,29 @@
+--[[
+    If you use extendedmode or esx legacy WITHOUT multicharacter enabled,
+    make sure you modify spawnmanager in:
+    resources/[managers]/spawnmanager/spawnmanager.lua
+
+    Delete this part (around line 309):
+
+        if IsScreenFadedOut() then
+            DoScreenFadeIn(500)
+
+            while not IsScreenFadedIn() do
+                Citizen.Wait(0)
+            end
+        end
+
+
+    If you use esx legacy WITH multicharacter enabled and want to use EnterCityAnimation below,
+    make sure you modify esx_multicharacter/client/main.lua
+
+    Delete this part, in  (around line 272):
+
+        DoScreenFadeIn(400)
+
+    If you don't do it, you will experience a screen flicker glitch on character spawn after loading screen.
+--]]
+
 Config = {}
 
 --[[ 
@@ -66,44 +92,19 @@ Config.NewIdentityProviders = {
     -- vector3(-1283.4, -565.1, 31.0)   -- Del Perro City Hall
 }
 
---[[    ESX identity integration
+--[[    To setup esx_identity integration, edit esx_identity/client/main.lua:
 
-        Follow these instructions if you plan to set Config.EnableESXIdentityIntegration to true:
-        1) Uncomment '@esx_identity/server/main.lua', in this resource's fxmanifest.lua
+        Delete or comment out this block of code (around line 38):
 
-        2) Edit esx_identity/client/main.lua:
-
-            Replace (around line 50):
-                EnableGui(true) 
-            with
-                TriggerEvent('cui_character:open', { 'identity', 'features', 'style', 'apparel' }, false)
-
-            Replace (start around line 54):
-                RegisterNUICallback('register', function(data, cb)
-                    ESX.TriggerServerCallback('esx_identity:registerIdentity', function(callback)
-                        if callback then
-                            ESX.ShowNotification(_U('thank_you_for_registering'))
-                            EnableGui(false)
-                            TriggerEvent('esx_skin:playerRegistered')
-                        else
-                            ESX.ShowNotification(_U('registration_error'))
-                        end
-                    end, data)
-                end)
-            with
-                RegisterNUICallback('register', function(data, cb)
-                    ESX.TriggerServerCallback('cui_character:updateIdentity', function(callback)
-                        if callback then
-                            ESX.ShowNotification(_U('thank_you_for_registering'))
-                            TriggerEvent('cui_character:setCurrentIdentity', data)
-                            TriggerEvent('cui_character:close', true)
-                        else
-                            ESX.ShowNotification(_U('registration_error'))
-                        end
-                    end, data)
-                end)
+            RegisterNetEvent('esx_identity:showRegisterIdentity')
+            AddEventHandler('esx_identity:showRegisterIdentity', function()
+                TriggerEvent('esx_skin:resetFirstSpawn')
+                if not isDead then
+                    EnableGui(true)
+                end
+            end)
 ]]--
-Config.EnableESXIdentityIntegration = false
+Config.EnableESXIdentityIntegration = true
 
 if Config.EnableESXIdentityIntegration then
     -- To avoid errors, make sure these equal the respective values in your in esx_identity config
@@ -114,24 +115,6 @@ if Config.EnableESXIdentityIntegration then
     Config.HighestYear      = 2020
 end
 
---[[
-    This is extendedmode compatibility, if you use esx v1 final, IGNORE THIS PART.
-
-    If you wish to use extended mode, enable this and MAKE SURE YOU MODIFY SPAWNMANAGER in:
-    resources/[managers]/spawnmanager/spawnmanager.lua
-
-    Delete this part (around line 309):
-
-        if IsScreenFadedOut() then
-            DoScreenFadeIn(500)
-
-            while not IsScreenFadedIn() do
-                Citizen.Wait(0)
-            end
-        end
-
-    If you don't do it, you will experience a really weird glitch on character spawn after loading screen.
---]]
 Config.ExtendedMode = false
 Config.UseSteamID = false
 
