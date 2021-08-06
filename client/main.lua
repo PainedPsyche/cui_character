@@ -817,11 +817,12 @@ RegisterNUICallback('updateGender', function(data, cb)
 
     ResetAllTabs()
 
-    for height = 1, 1000, 50 do
+    for height = 1, 1000 do
         SetPedCoordsKeepVehicle(previewPed, previewCoords.x, previewCoords.y, height + 0.0)
-        local foundGround, zPos = GetGroundZFor_3dCoord(previewCoords.x, previewCoords.y, 2500.0)
+        local foundGround, zPos = GetGroundZFor_3dCoord(previewCoords.x, previewCoords.y, height + 0.0)
         if foundGround then
             SetPedCoordsKeepVehicle(previewPed, previewCoords.x, previewCoords.y, zPos)
+            break
         end
     end
 
