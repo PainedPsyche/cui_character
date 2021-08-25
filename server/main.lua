@@ -1,3 +1,5 @@
+ESX = nil
+
 local function getPlayerLicense(source)
     for k,v in ipairs(GetPlayerIdentifiers(source)) do
         if string.match(v, 'license:') then
@@ -8,11 +10,17 @@ local function getPlayerLicense(source)
 end
 
 if not Config.StandAlone then
-    local charSkins = {}
+    if Config.ExtendedMode then
+        TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+    else
+        ESX = exports['es_extended']:getSharedObject()
+    end
 
     if not ESX then
         SetTimeout(3000, print('[^3WARNING^7] Unable to start cui_character - your version of ESX is not compatible '))
     end
+
+    local charSkins = {}
 
     if not Config.EnableESXIdentityIntegration then
         RegisterNetEvent('esx:onPlayerJoined')

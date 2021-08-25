@@ -1,5 +1,16 @@
 if not Config.StandAlone then
-    ESX = exports['es_extended']:getSharedObject()
+    if Config.ExtendedMode then
+        TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+    else
+        ESX = exports['es_extended']:getSharedObject()
+    end
+
+    AddEventHandler('esx:setPlayerData', function(key, val, last)
+        if GetInvokingResource() == 'es_extended' then
+            ESX.PlayerData[key] = val
+            if OnPlayerData ~= nil then OnPlayerData(key, val, last) end
+        end
+    end)
 else
     ESX = nil
 end
@@ -817,11 +828,13 @@ RegisterNUICallback('updateGender', function(data, cb)
 
     ResetAllTabs()
 
-    for height = 1, 1000 do
+    local playerCoords = GetEntityCoords(PlayerPedId())
+    for height = playerCoords.z, 1000 do
         SetPedCoordsKeepVehicle(previewPed, previewCoords.x, previewCoords.y, height + 0.0)
         local foundGround, zPos = GetGroundZFor_3dCoord(previewCoords.x, previewCoords.y, height + 0.0)
         if foundGround then
             SetPedCoordsKeepVehicle(previewPed, previewCoords.x, previewCoords.y, zPos)
+            break
         end
     end
 
