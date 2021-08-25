@@ -597,19 +597,13 @@ $('.popup #yes').on('click', function(evt) {
 });
 
 /*  option/value ui controls   */
-$(document).on('click', '.controls button', function(evt) {
-    $.post('https://cui_character/playSound', JSON.stringify({
-        sound: 'optionchange'
-    }));
-});
-
-$(document).on('click', '.list .controls button', function(evt) {
-    let list = $(this).siblings('select').first();
+function handleListButton(button) {
+    let list = button.siblings('select').first();
     let numOpt = list.children('option').length
     let oldVal = list.find('option:selected');
     let newVal = null;
 
-    if ($(this).hasClass('left')) {
+    if (button.hasClass('left')) {
         if (list.prop('selectedIndex') == 0) {
             newVal = list.prop('selectedIndex', numOpt - 1);
         }
@@ -617,7 +611,7 @@ $(document).on('click', '.list .controls button', function(evt) {
             newVal = oldVal.prev();
         }
     }
-    else if ($(this).hasClass('right')) {
+    else if (button.hasClass('right')) {
         if (list.prop('selectedIndex') == numOpt - 1) {
             newVal = list.prop('selectedIndex', 0);
         }
@@ -625,29 +619,64 @@ $(document).on('click', '.list .controls button', function(evt) {
             newVal = oldVal.next();
         }
     }
-    oldVal.prop('selected', false)
-    newVal.prop('selected', true)
-    newVal.trigger('change')
+    oldVal.prop('selected', false);
+    newVal.prop('selected', true);
+    newVal.trigger('change');
+
+    $.post('https://cui_character/playSound', JSON.stringify({
+        sound: 'optionchange'
+    }));
+}
+
+var listButtonTimeout = 0;
+$(document).on('mousedown', '.list .controls button', function(evt) {
+    listButtonTimeout = setInterval(handleListButton, 300, $(this));
 });
 
-$(document).on('click', '.slider .controls button', function(evt) {
-    let slider = $(this).siblings('input[type=range]').first();
+$(document).on('mouseup mouseleave', '.list .controls button', function(evt) {
+    clearInterval(listButtonTimeout);
+});
+
+$(document).on('click', '.list .controls button', function(evt) {
+    handleListButton($(this));
+});
+
+function handleSliderButton(button)
+{
+    let slider = button.siblings('input[type=range]').first();
     let min = parseInt(slider.prop('min'));
     let max = parseInt(slider.prop('max'));
     let val = parseInt(slider.val());
 
-    if ($(this).hasClass('left')) {
+    if (button.hasClass('left')) {
         if (val > min) {
             slider.val(val - 1);
         }
     }
-    else if ($(this).hasClass('right')) {
+    else if (button.hasClass('right')) {
         if (val < max) {
             slider.val(val + 1);
         }
     }
 
     slider.trigger('input');
+
+    $.post('https://cui_character/playSound', JSON.stringify({
+        sound: 'optionchange'
+    }));
+}
+
+var sliderButtonTimeout = 0;
+$(document).on('mousedown', '.slider .controls button', function(evt) {
+    sliderButtonTimeout = setInterval(handleSliderButton, 300, $(this));
+});
+
+$(document).on('mouseup mouseleave', '.slider .controls button', function(evt) {
+    clearInterval(sliderButtonTimeout);
+});
+
+$(document).on('click', '.slider .controls button', function(evt) {
+    handleSliderButton($(this));
 });
 
 /*  option/value change effects     */
