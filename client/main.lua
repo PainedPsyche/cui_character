@@ -125,9 +125,8 @@ function BeginCharacterPreview()
         oldChar[k] = v
     end
 
-    local playerPed = PlayerPedId()
-    local playerHeading = GetEntityHeading(playerPed)
-    previewPed = ClonePed(playerPed, playerHeading, false, true)
+    local playerHeading = GetEntityHeading(PlayerPedId())
+    previewPed = ClonePed(PlayerPedId(), false, false, true)
 
     SetEntityInvincible(previewPed, true)
     FreezePedCameraRotation(previewPed, true)
