@@ -23,7 +23,7 @@ isPlayerReady = false
 --[[    NOTE: (on player initialization)
 
         The way es_extended spawns player causes the ped to start a little above ground
-        and 'fall down'. Since our camera position is based off of ped position, 
+        and 'fall down'. Since our camera position is based off of ped position,
         if we open the ui too early during player's first login, the camera will be pointing 'too high'.
 
         Unfortunately, I did not find a way to detect when that fall is finished, so I decided
@@ -200,8 +200,8 @@ function GetLoadout()
 end
 
 -- skinchanger/esx_skin replacements
---[[ 
-    Unlike skinchanger, this loads only clothes and does not 
+--[[
+    Unlike skinchanger, this loads only clothes and does not
     re-load other parts of your character (that did not change)
 --]]
 function UpdateClothes(data)
@@ -337,7 +337,7 @@ AddEventHandler('skinchanger:change', function(key, val)
 
             DON'T USE IT.
     ]]
-    
+
     local changed = {}
     changed.chain_1 = 'neckarm_1'
     changed.chain_2 = 'neckarm_2'
@@ -451,8 +451,8 @@ AddEventHandler('cui_character:open', function(tabs, cancelable)
     RequestModel(femaleModelHash)
     RequestStreamedTextureDict('mparrow')
     RequestStreamedTextureDict('mpleaderboard')
-    while not HasStreamedTextureDictLoaded('mparrow') or 
-          not HasStreamedTextureDictLoaded('mpleaderboard') or 
+    while not HasStreamedTextureDictLoaded('mparrow') or
+          not HasStreamedTextureDictLoaded('mpleaderboard') or
           not HasModelLoaded(maleModelHash) or
           not HasModelLoaded(femaleModelHash) do
         Wait(100)
@@ -589,24 +589,24 @@ if not Config.StandAlone then
             if not IsScreenFadedOut() then
                 DoScreenFadeOut(0)
             end
-    
+
             while not isModelLoaded do
                 Citizen.Wait(0)
             end
-    
+
             SwitchOutPlayer(PlayerPedId(), 0, 1)
-    
+
             while GetPlayerSwitchState() ~= 5 do
                 Citizen.Wait(0)
             end
-    
+
             DoScreenFadeIn(500)
             while not IsScreenFadedIn() do
                 Citizen.Wait(0)
             end
-    
+
             SwitchInPlayer(PlayerPedId())
-    
+
             while GetPlayerSwitchState() ~= 12 do
                 Citizen.Wait(0)
             end
@@ -1184,7 +1184,7 @@ function GetComponentsData(id)
                                 end
                             end
                         end
-    
+
                         if not blacklisted then
                             table.insert(result, {
                                 name = label,
@@ -1289,11 +1289,11 @@ function GetClothesData()
     result.lefthands = GetPropsData(6)
     result.righthands = GetPropsData(7)
     --[[
-            unused components:   
+            unused components:
             face (0), torso/arms (3), parachute/bag (5), bulletproof vest (9), badges (10)
 
             unused props:
-            mouth (3), left hand (4), righ thand (5), left wrist (6), right wrist (7), hip (8), 
+            mouth (3), left hand (4), righ thand (5), left wrist (6), right wrist (7), hip (8),
             left foot(9), right foot (10)
     ]]
     return result
@@ -1419,7 +1419,19 @@ end
 
 function LoadModel(hash)
     isModelLoaded = false
-    local playerPed = PlayerPedId()
+
+	local playerPed = PlayerPedId()
+
+	--If entity has already same model we dont need to set it again (it prevent flashing ped)
+	if GetEntityModel(playerPed) == characterModel then
+		isModelLoaded = true
+
+		if not Config.StandAlone then
+			TriggerEvent('skinchanger:modelLoaded')
+		end
+		return
+	end
+
     SetEntityInvincible(playerPed, true)
 
     if IsModelInCdimage(hash) and IsModelValid(hash) then
@@ -1827,7 +1839,7 @@ if Config.EnableESXIdentityIntegration then
                 -- ESX.ShowNotification(_U('thank_you_for_registering')) TODO: Notification (or sound effect)
                 TriggerEvent('cui_character:setCurrentIdentity', data)
                 TriggerEvent('cui_character:close', true)
-                if not ESX.GetConfig().Multichar then 
+                if not ESX.GetConfig().Multichar then
                     TriggerEvent('esx_skin:playerRegistered')
                 else
                     firstCharacter = false
@@ -1843,7 +1855,7 @@ if Config.EnableESXIdentityIntegration then
             if callback then
                 TriggerEvent('cui_character:setCurrentIdentity', data)
                 TriggerEvent('cui_character:close', true)
-                if not ESX.GetConfig().Multichar then 
+                if not ESX.GetConfig().Multichar then
                     TriggerEvent('esx_skin:playerRegistered')
                 end
             else
