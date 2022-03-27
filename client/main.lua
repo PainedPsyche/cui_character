@@ -242,7 +242,7 @@ function UpdateClothes(data)
     SetPedComponentVariation(playerPed, 8,  currentChar.tshirt_1,   currentChar.tshirt_2,   2)
     SetPedComponentVariation(playerPed, 11, currentChar.torso_1,    currentChar.torso_2,    2)
     SetPedComponentVariation(playerPed, 10, currentChar.decals_1,   currentChar.decals_2,   2)
-    SetPedComponentVariation(playerPed, 3,  currentChar.arms,       currentChar.arms_2,     2)
+    SetPedComponentVariation(playerPed, 3,  currentChar.arms,     currentChar.arms_2,     2)
     SetPedComponentVariation(playerPed, 4,  currentChar.pants_1,    currentChar.pants_2,    2)
     SetPedComponentVariation(playerPed, 6,  currentChar.shoes_1,    currentChar.shoes_2,    2)
     SetPedComponentVariation(playerPed, 1,  currentChar.mask_1,     currentChar.mask_2,     2)
@@ -1271,6 +1271,7 @@ function GetClothesData()
         hats = {},
         ears = {},
         glasses = {},
+        arms = {},
         lefthands = {},
         righthands = {},
     }
@@ -1282,6 +1283,7 @@ function GetClothesData()
     -- result.bags = GetComponentsData(5)   -- there seems to be no named components in this category
     result.masks = GetComponentsData(1)
     result.neckarms = GetComponentsData(7)  -- chains/ties/suspenders/bangles
+    result.arms = GetComponentsData(3)
 
     result.hats = GetPropsData(0)
     result.ears = GetPropsData(2)
@@ -1529,7 +1531,7 @@ function ApplySkinToPed(ped, skin)
     -- Clothing and Accessories
     SetPedComponentVariation(ped, 8,  skin.tshirt_1, skin.tshirt_2, 2)        -- Undershirts
     SetPedComponentVariation(ped, 11, skin.torso_1,  skin.torso_2,  2)        -- Jackets
-    SetPedComponentVariation(ped, 3,  skin.arms,     skin.arms_2,   2)        -- Torsos
+    SetPedComponentVariation(ped, 3,  skin.arms,   skin.arms_2,   2)        -- Torsos
     SetPedComponentVariation(ped, 10, skin.decals_1, skin.decals_2, 2)        -- Decals
     SetPedComponentVariation(ped, 4,  skin.pants_1,  skin.pants_2,  2)        -- Legs
     SetPedComponentVariation(ped, 6,  skin.shoes_1,  skin.shoes_2,  2)        -- Shoes
@@ -1706,7 +1708,7 @@ if Config.EnableClothingShops then
         for k, v in ipairs(Config.ClothingShops) do
             local blip = AddBlipForCoord(v)
             SetBlipSprite(blip, 73)
-            SetBlipColour(blip, 84)
+            SetBlipColour(blip, 47)
             SetBlipAsShortRange(blip, true)
 
             BeginTextCommandSetBlipName('STRING')
@@ -1800,7 +1802,7 @@ if Config.EnableESXIdentityIntegration then
             LoadCharacter(oldChar, function()
                 local playerPed = PlayerPedId()
                 SetPedAoBlobRendering(playerPed, true)
-                SetEntityAlpha(playerPed, 255)
+                SetEntityAlpha(playerPed, 0)
             end)
             currentIdentity = {
                 firstName = nil,
