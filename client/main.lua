@@ -1708,7 +1708,7 @@ if Config.EnableClothingShops then
         for k, v in ipairs(Config.ClothingShops) do
             local blip = AddBlipForCoord(v)
             SetBlipSprite(blip, 73)
-            SetBlipColour(blip, 47)
+            SetBlipColour(blip, 84)
             SetBlipAsShortRange(blip, true)
 
             BeginTextCommandSetBlipName('STRING')
@@ -1802,7 +1802,7 @@ if Config.EnableESXIdentityIntegration then
             LoadCharacter(oldChar, function()
                 local playerPed = PlayerPedId()
                 SetPedAoBlobRendering(playerPed, true)
-                SetEntityAlpha(playerPed, 0)
+                SetEntityAlpha(playerPed, 255)
             end)
             currentIdentity = {
                 firstName = nil,
