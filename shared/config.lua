@@ -140,3 +140,41 @@ if Config.StandAlone then
     Config.EnableESXIdentityIntegration = false
     Config.EnableNewIdentityProviders = false
 end
+
+
+Config.DefaultClothing = {
+    components = {
+        male = {
+            [11]    = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/male_tops.json', -- 11
+            [8]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/male_undershirts.json', -- 8
+            [4]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/male_legs.json', -- 4
+            [6]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/male_shoes.json', -- 6
+            [1]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/masks.json', -- 1
+            [7]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/male_accessories.json', -- 7
+        },
+        female = {
+            [11]    = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_tops.json', -- 11
+            [8]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_undershirts.json', -- 8
+            [4]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_legs.json', -- 4
+            [6]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_shoes.json', -- 6
+            [1]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/femasks.json', -- 1
+            [7]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_accessories.json', -- 7
+        }
+    },
+    props = {
+        male = {
+            [0]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_male_hats.json', -- 0
+            [2]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_male_ears.json', -- 2
+            [1]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_male_glasses.json', -- 1
+            [6]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_male_watches.json', -- 6
+            [7]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_male_bracelets.json', -- 7
+        },
+        female = {
+            [0]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_female_hats.json', -- 0
+            [2]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_female_ears.json', -- 2
+            [1]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_female_glasses.json', -- 1
+            [6]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_female_watches.json', -- 6
+            [7]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/props_female_bracelets.json', -- 7
+        }
+    }
+}
