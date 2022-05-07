@@ -1259,6 +1259,139 @@ function GetPropsData(id)
     return result
 end
 
+function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+end
+
+function GetComponentsDataWorkaround(id, cb)
+    local result = {}
+
+    local componentBlacklist = nil
+
+    local isMale = GetEntityModel(previewPed) == GetHashKey('mp_m_freemode_01')
+
+    if blacklist ~= nil then
+        if GetEntityModel(previewPed) == GetHashKey('mp_m_freemode_01') then
+            componentBlacklist = blacklist.components.male
+        elseif GetEntityModel(previewPed) == GetHashKey('mp_f_freemode_01') then
+            componentBlacklist = blacklist.components.female
+        end
+    end
+
+    local allClothes
+
+    ESX.TriggerServerCallback('cui_character_workaround:getClothingComponent', function(callback)
+        allClothes = json.decode(callback)
+    end, id, isMale)
+
+    while not allClothes do
+        Wait(10)
+    end
+
+    local drawableCount = tablelength(allClothes) - 1
+    for drawable = 0, drawableCount do
+        local textureCount = tablelength(allClothes[tostring(drawable)]) - 1
+
+        for texture = 0, textureCount do
+            -- only named components
+            if allClothes[tostring(drawable)][tostring(texture)].Localized ~= 'NULL' then
+                local blacklisted = false
+
+                if componentBlacklist ~= nil then
+                    if componentBlacklist[id] ~= nil then
+                        if componentBlacklist[id][drawable] ~= nil then
+                            if componentBlacklist[id][drawable][texture] ~= nil then
+                                blacklisted = true
+                            end
+                        end
+                    end
+                end
+
+                if not blacklisted then
+                    table.insert(result, {
+                        name = allClothes[tostring(drawable)][tostring(texture)].Localized,
+                        component = id,
+                        drawable = drawable,
+                        texture = texture
+                    })
+                end
+            end
+        end
+    end
+
+    if cb then
+        cb(result)
+    else
+        return result
+    end
+end
+
+function GetPropsDataWorkaround(id, cb)
+    local result = {}
+
+    local propBlacklist = nil
+
+    local isMale = GetEntityModel(previewPed) == GetHashKey('mp_m_freemode_01')
+
+    if blacklist ~= nil then
+        if GetEntityModel(previewPed) == GetHashKey('mp_m_freemode_01') then
+            propBlacklist = blacklist.props.male
+        elseif GetEntityModel(previewPed) == GetHashKey('mp_f_freemode_01') then
+            propBlacklist = blacklist.props.female
+        end
+    end
+
+    local allProps
+
+    ESX.TriggerServerCallback('cui_character_workaround:getClothingProp', function(callback)
+        allProps = json.decode(callback)
+    end, id, isMale)
+
+    while not allProps do
+        Wait(10)
+    end
+
+    local drawableCount = tablelength(allProps) - 1
+
+    for drawable = 0, drawableCount do
+        local textureCount = tablelength(allProps[tostring(drawable)]) - 1
+
+        for texture = 0, textureCount do
+            -- only named props
+            if allProps[tostring(drawable)][tostring(texture)].Localized ~= 'NULL' then
+                local blacklisted = false
+
+                if propBlacklist ~= nil then
+                    if propBlacklist[id] ~= nil then
+                        if propBlacklist[id][drawable] ~= nil then
+                            if propBlacklist[id][drawable][texture] ~= nil then
+                                blacklisted = true
+                            end
+                        end
+                    end
+                end
+
+                if not blacklisted then
+                    table.insert(result, {
+                        name = allProps[tostring(drawable)][tostring(texture)].Localized,
+                        prop = id,
+                        drawable = drawable,
+                        texture = texture
+                    })
+                end
+            end
+        end
+    end
+
+    if cb then
+        cb(result)
+    else
+        return result
+    end
+end
+
 function GetClothesData()
     local result = {
         topsover = {},
@@ -1296,6 +1429,93 @@ function GetClothesData()
             mouth (3), left hand (4), righ thand (5), left wrist (6), right wrist (7), hip (8), 
             left foot(9), right foot (10)
     ]]
+
+    -- Workaround:
+
+    local isLoading = 0
+    if #result.topsover <= 0 then
+        isLoading = isLoading + 1
+        GetComponentsDataWorkaround(11, function(data)
+            result.topsover = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.topsunder <= 0 then
+        isLoading = isLoading + 1
+        GetComponentsDataWorkaround(8, function(data)
+            result.topsunder = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.pants <= 0 then
+        isLoading = isLoading + 1
+        GetComponentsDataWorkaround(4, function(data)
+            result.pants = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.shoes <= 0 then
+        isLoading = isLoading + 1
+        GetComponentsDataWorkaround(6, function(data)
+            result.shoes = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.masks <= 0 then
+        isLoading = isLoading + 1
+        GetComponentsDataWorkaround(1, function(data)
+            result.masks = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.neckarms <= 0 then
+        isLoading = isLoading + 1
+        GetComponentsDataWorkaround(7, function(data)
+            result.neckarms = data
+            isLoading = isLoading - 1
+        end)
+    end
+
+    if #result.hats <= 0 then
+        isLoading = isLoading + 1
+        GetPropsDataWorkaround(0, function(data)
+            result.hats = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.ears <= 0 then
+        isLoading = isLoading + 1
+        GetPropsDataWorkaround(2, function(data)
+            result.ears = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.glasses <= 0 then
+        isLoading = isLoading + 1
+        GetPropsDataWorkaround(1, function(data)
+            result.glasses = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.lefthands <= 0 then
+        isLoading = isLoading + 1
+        GetPropsDataWorkaround(6, function(data)
+            result.lefthands = data
+            isLoading = isLoading - 1
+        end)
+    end
+    if #result.righthands <= 0 then
+        isLoading = isLoading + 1
+        GetPropsDataWorkaround(7, function(data)
+            result.righthands = data
+            isLoading = isLoading - 1
+        end)
+    end
+
+    while isLoading > 0 do
+        Wait(10)
+    end
+
     return result
 end
 
