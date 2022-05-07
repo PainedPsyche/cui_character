@@ -301,6 +301,34 @@ if not Config.StandAlone then
         xPlayer.triggerEvent('cui_character:open', { 'apparel' })
         end, true, {help = 'Open character apparel editor.', validate = true, arguments = {}
     })
+    
+    ESX.RegisterServerCallback('cui_character_workaround:getClothingComponent', function(source, cb, typeId, isMale)
+        local url = ''
+
+        if isMale then
+            url = Config.DefaultClothing.components.male[typeId]
+        else
+            url = Config.DefaultClothing.components.female[typeId]
+        end
+
+        PerformHttpRequest(url, function (errorCode, resultData, resultHeaders)
+            cb(resultData)
+        end)
+    end)
+
+    ESX.RegisterServerCallback('cui_character_workaround:getClothingProp', function(source, cb, typeId, isMale)
+        local url = ''
+
+        if isMale then
+            url = Config.DefaultClothing.props.male[typeId]
+        else
+            url = Config.DefaultClothing.props.female[typeId]
+        end
+
+        PerformHttpRequest(url, function (errorCode, resultData, resultHeaders)
+            cb(resultData)
+        end)
+    end)
 
 -- Standalone Deployment
 else
