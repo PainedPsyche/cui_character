@@ -451,6 +451,17 @@ function loadClothesTab(tab, clothesData, male) {
         glasseslist.append(option);
     });
 
+	    // arms
+    let armslist = tab.find('select#arms.clotheslist');
+    let noarms = male ? 4 : 5;
+    armslist.empty();
+    armslist.append($('<option data-component="3" data-drawable="' + noarms + '" data-texture="0">None</option>')) // "None" option
+    clothesData.arms.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        armslist.append(option);
+    });
+	
     // left hand accessory
     let lefthandlist = tab.find('select#lefthand.clotheslist');
     lefthandlist.empty();
