@@ -1161,7 +1161,7 @@ function refreshContentData(element, data) {
         // refreshComponentList(element, '#bag', 5, data.bags_1, data.bags_2); NOTE: there seems to be no named components in this category, commenting it out
         refreshComponentList(element, '#mask', 1, data.mask_1, data.mask_2);
         refreshComponentList(element, '#neckarm', 7, data.neckarm_1, data.neckarm_2);
-
+        refreshComponentList(element, '#arms', 3, data.arms, data.arms_2);
         // props
         refreshPropList(element, '#hat', 0, data.helmet_1, data.helmet_2);
         refreshPropList(element, '#ears', 2, data.ears_1, data.ears_2);
