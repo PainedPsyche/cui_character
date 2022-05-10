@@ -1282,9 +1282,22 @@ function GetComponentsDataWorkaround(id, cb)
 
     local allClothes
 
-    ESX.TriggerServerCallback('cui_character_workaround:getClothingComponent', function(callback)
-        allClothes = json.decode(callback)
-    end, id, isMale)
+    if Config.UseLocalClothingJSON then
+        local jsonFile = Config.DefaultClothingLocalPath
+        if isMale then
+            jsonFile = jsonFile..Config.DefaultClothing.components.male[id]
+        else
+            jsonFile = jsonFile..Config.DefaultClothing.components.female[id]
+        end
+
+        local loadFile= LoadResourceFile(GetCurrentResourceName(), jsonFile)
+
+        allClothes = json.decode(loadFile)
+    else
+        ESX.TriggerServerCallback('cui_character_workaround:getClothingComponent', function(callback)
+            allClothes = json.decode(callback)
+        end, id, isMale)
+    end
 
     while not allClothes do
         Wait(10)
@@ -1345,9 +1358,21 @@ function GetPropsDataWorkaround(id, cb)
 
     local allProps
 
-    ESX.TriggerServerCallback('cui_character_workaround:getClothingProp', function(callback)
-        allProps = json.decode(callback)
-    end, id, isMale)
+    if Config.UseLocalClothingJSON then
+        local jsonFile = Config.DefaultClothingLocalPath
+        if isMale then
+            jsonFile = jsonFile..Config.DefaultClothing.props.male[id]
+        else
+            jsonFile = jsonFile..Config.DefaultClothing.props.female[id]
+        end
+
+        local loadFile= LoadResourceFile(GetCurrentResourceName(), jsonFile)
+        allProps = json.decode(loadFile)
+    else
+        ESX.TriggerServerCallback('cui_character_workaround:getClothingProp', function(callback)
+            allProps = json.decode(callback)
+        end, id, isMale)
+    end
 
     while not allProps do
         Wait(10)

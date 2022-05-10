@@ -1,3 +1,15 @@
+# LostJ3ster's fork of PainedPsyche's cui_character
+## Changes
+In this fork I changed the way to load clothing data.
+By default PainedPsyche loads the data from GTA itself. Due to an updated Native that does not work anymore.
+This fork includes a workaround to
+ a) load the clothing data from local files (clothingnames/*.json) (default)
+ b) load the clothing data from [root-cause's v-clothingnames repository](https://github.com/root-cause/v-clothingnames)
+
+Loading the clothing data from local files will reduce the load time a lot, which was requested by [Ciwiel on the cfx forum](https://forum.cfx.re/t/release-cleanui-cui-character/1914841/899)
+
+To change loading style, change Config.UseLocalClothingJSON to false, which will cause the data to be pulled from github, every time the menu opens. 
+
 # CleanUI (cui) character
 An advanced character and clothes editor that aims to be comfortable to use, hide complexity and blend in with original GTA V interface elements.
 

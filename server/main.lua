@@ -301,34 +301,37 @@ if not Config.StandAlone then
         xPlayer.triggerEvent('cui_character:open', { 'apparel' })
         end, true, {help = 'Open character apparel editor.', validate = true, arguments = {}
     })
-    
-    ESX.RegisterServerCallback('cui_character_workaround:getClothingComponent', function(source, cb, typeId, isMale)
-        local url = ''
 
-        if isMale then
-            url = Config.DefaultClothing.components.male[typeId]
-        else
-            url = Config.DefaultClothing.components.female[typeId]
-        end
 
-        PerformHttpRequest(url, function (errorCode, resultData, resultHeaders)
-            cb(resultData)
+    if not Config.UseLocalClothingJSON then
+        ESX.RegisterServerCallback('cui_character_workaround:getClothingComponent', function(source, cb, typeId, isMale)
+            local url = Config.DefaultClothingUrlBase
+
+            if isMale then
+                url = url..Config.DefaultClothing.components.male[typeId]
+            else
+                url = url..Config.DefaultClothing.components.female[typeId]
+            end
+
+            PerformHttpRequest(url, function (errorCode, resultData, resultHeaders)
+                cb(resultData)
+            end)
         end)
-    end)
 
-    ESX.RegisterServerCallback('cui_character_workaround:getClothingProp', function(source, cb, typeId, isMale)
-        local url = ''
+        ESX.RegisterServerCallback('cui_character_workaround:getClothingProp', function(source, cb, typeId, isMale)
+            local url = Config.DefaultClothingUrlBase
 
-        if isMale then
-            url = Config.DefaultClothing.props.male[typeId]
-        else
-            url = Config.DefaultClothing.props.female[typeId]
-        end
+            if isMale then
+                url = url..Config.DefaultClothing.props.male[typeId]
+            else
+                url = url..Config.DefaultClothing.props.female[typeId]
+            end
 
-        PerformHttpRequest(url, function (errorCode, resultData, resultHeaders)
-            cb(resultData)
+            PerformHttpRequest(url, function (errorCode, resultData, resultHeaders)
+                cb(resultData)
+            end)
         end)
-    end)
+    end
 
 -- Standalone Deployment
 else
