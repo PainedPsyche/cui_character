@@ -158,7 +158,7 @@ Config.DefaultClothing = {
             [8]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_undershirts.json', -- 8
             [4]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_legs.json', -- 4
             [6]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_shoes.json', -- 6
-            [1]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/femasks.json', -- 1
+            [1]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/masks.json', -- 1
             [7]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_accessories.json', -- 7
             [3]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_torsos.json', -- 3
         }
