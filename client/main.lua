@@ -1404,6 +1404,7 @@ function GetClothesData()
         hats = {},
         ears = {},
         glasses = {},
+		arms = {},
         lefthands = {},
         righthands = {},
     }
@@ -1415,7 +1416,7 @@ function GetClothesData()
     -- result.bags = GetComponentsData(5)   -- there seems to be no named components in this category
     result.masks = GetComponentsData(1)
     result.neckarms = GetComponentsData(7)  -- chains/ties/suspenders/bangles
-
+    result.arms = GetComponentsData(3)
     result.hats = GetPropsData(0)
     result.ears = GetPropsData(2)
     result.glasses = GetPropsData(1)
