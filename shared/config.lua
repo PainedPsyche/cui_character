@@ -151,6 +151,7 @@ Config.DefaultClothing = {
             [6]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/male_shoes.json', -- 6
             [1]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/masks.json', -- 1
             [7]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/male_accessories.json', -- 7
+            [3]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/male_torsos.json', -- 3
         },
         female = {
             [11]    = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_tops.json', -- 11
@@ -159,6 +160,7 @@ Config.DefaultClothing = {
             [6]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_shoes.json', -- 6
             [1]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/femasks.json', -- 1
             [7]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_accessories.json', -- 7
+            [3]     = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/female_torsos.json', -- 3
         }
     },
     props = {

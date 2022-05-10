@@ -1476,6 +1476,13 @@ function GetClothesData()
             isLoading = isLoading - 1
         end)
     end
+    if #result.arms <= 0 then
+        isLoading = isLoading + 1
+        GetComponentsDataWorkaround(3, function(data)
+            result.arms = data
+            isLoading = isLoading - 1
+        end)
+    end
 
     if #result.hats <= 0 then
         isLoading = isLoading + 1
