@@ -2053,7 +2053,7 @@ if Config.EnableESXIdentityIntegration then
             LoadCharacter(oldChar, function()
                 local playerPed = PlayerPedId()
                 SetPedAoBlobRendering(playerPed, true)
-                SetEntityAlpha(playerPed, 255)
+                SetEntityAlpha(playerPed, 0)
             end)
             currentIdentity = {
                 firstName = nil,
