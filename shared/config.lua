@@ -140,3 +140,47 @@ if Config.StandAlone then
     Config.EnableESXIdentityIntegration = false
     Config.EnableNewIdentityProviders = false
 end
+
+Config.UseLocalClothingJSON = true -- true: Load from local files (faster, maybe out of date) | false: load from github (slower, maybe newer)
+
+Config.DefaultClothingLocalPath = 'clothingnames/' -- Path where the clothing json files are located
+Config.DefaultClothingUrlBase = 'https://raw.githubusercontent.com/root-cause/v-clothingnames/master/' -- Base path to root-causes clothing repo. Don't touch this.
+
+Config.DefaultClothing = { -- Default clothings. Don't touch, unless you know what you're doing.
+    components = {
+        male = {
+            [11]    = 'male_tops.json', -- 11
+            [8]     = 'male_undershirts.json', -- 8
+            [4]     = 'male_legs.json', -- 4
+            [6]     = 'male_shoes.json', -- 6
+            [1]     = 'masks.json', -- 1
+            [7]     = 'male_accessories.json', -- 7
+            [3]     = 'male_torsos.json', -- 3
+        },
+        female = {
+            [11]    = 'female_tops.json', -- 11
+            [8]     = 'female_undershirts.json', -- 8
+            [4]     = 'female_legs.json', -- 4
+            [6]     = 'female_shoes.json', -- 6
+            [1]     = 'masks.json', -- 1
+            [7]     = 'female_accessories.json', -- 7
+            [3]     = 'female_torsos.json', -- 3
+        }
+    },
+    props = {
+        male = {
+            [0]     = 'props_male_hats.json', -- 0
+            [2]     = 'props_male_ears.json', -- 2
+            [1]     = 'props_male_glasses.json', -- 1
+            [6]     = 'props_male_watches.json', -- 6
+            [7]     = 'props_male_bracelets.json', -- 7
+        },
+        female = {
+            [0]     = 'props_female_hats.json', -- 0
+            [2]     = 'props_female_ears.json', -- 2
+            [1]     = 'props_female_glasses.json', -- 1
+            [6]     = 'props_female_watches.json', -- 6
+            [7]     = 'props_female_bracelets.json', -- 7
+        }
+    }
+}

@@ -451,6 +451,17 @@ function loadClothesTab(tab, clothesData, male) {
         glasseslist.append(option);
     });
 
+	    // arms
+    let armslist = tab.find('select#arms.clotheslist');
+    let noarms = male ? 4 : 5;
+    armslist.empty();
+    armslist.append($('<option data-component="3" data-drawable="' + noarms + '" data-texture="0">None</option>')) // "None" option
+    clothesData.arms.forEach(function (item) {
+        let option = $('<option data-component="' + item.component + '" data-drawable="' + item.drawable + '" data-texture="' + item.texture + '"></option>');
+        option.text(item.name)
+        armslist.append(option);
+    });
+	
     // left hand accessory
     let lefthandlist = tab.find('select#lefthand.clotheslist');
     lefthandlist.empty();
@@ -1161,7 +1172,7 @@ function refreshContentData(element, data) {
         // refreshComponentList(element, '#bag', 5, data.bags_1, data.bags_2); NOTE: there seems to be no named components in this category, commenting it out
         refreshComponentList(element, '#mask', 1, data.mask_1, data.mask_2);
         refreshComponentList(element, '#neckarm', 7, data.neckarm_1, data.neckarm_2);
-
+        refreshComponentList(element, '#arms', 3, data.arms, data.arms_2);
         // props
         refreshPropList(element, '#hat', 0, data.helmet_1, data.helmet_2);
         refreshPropList(element, '#ears', 2, data.ears_1, data.ears_2);

@@ -45,6 +45,7 @@ files {
     'ui/pages/optional/hair_male.html',
     'ui/pages/optional/makeup_eye.html',
     'ui/pages/optional/makeup_facepaint.html',
+    'clothingnames/*.json',
 }
 
 dependencies {

@@ -302,6 +302,37 @@ if not Config.StandAlone then
         end, true, {help = 'Open character apparel editor.', validate = true, arguments = {}
     })
 
+
+    if not Config.UseLocalClothingJSON then
+        ESX.RegisterServerCallback('cui_character_workaround:getClothingComponent', function(source, cb, typeId, isMale)
+            local url = Config.DefaultClothingUrlBase
+
+            if isMale then
+                url = url..Config.DefaultClothing.components.male[typeId]
+            else
+                url = url..Config.DefaultClothing.components.female[typeId]
+            end
+
+            PerformHttpRequest(url, function (errorCode, resultData, resultHeaders)
+                cb(resultData)
+            end)
+        end)
+
+        ESX.RegisterServerCallback('cui_character_workaround:getClothingProp', function(source, cb, typeId, isMale)
+            local url = Config.DefaultClothingUrlBase
+
+            if isMale then
+                url = url..Config.DefaultClothing.props.male[typeId]
+            else
+                url = url..Config.DefaultClothing.props.female[typeId]
+            end
+
+            PerformHttpRequest(url, function (errorCode, resultData, resultHeaders)
+                cb(resultData)
+            end)
+        end)
+    end
+
 -- Standalone Deployment
 else
     -- Create the database table if it does not exist
